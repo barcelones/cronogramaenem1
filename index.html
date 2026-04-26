@@ -36,7 +36,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Calendário */
-        .cal-header { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
+        .cal-header { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; flex-wrap: wrap; }
         
         .calendar-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; border-radius: 15px; background: var(--border); }
         .calendar-wrapper::-webkit-scrollbar { height: 8px; }
@@ -89,11 +89,6 @@
         .icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; }
         .icon-btn:hover { opacity: 1; transform: scale(1.1); }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: var(--danger); width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-
-        /* Estilo da lista da Visão Diária */
-        .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; }
-        .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
-        .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
 
         /* Redação Grid */
         .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
@@ -168,8 +163,14 @@
         <section id="calendario" class="page">
             <h2 style="margin-bottom: 20px;">Organize seus Meses</h2>
             <div class="cal-header">
-                <select id="cal-month" onchange="renderCalendar()"></select>
-                <select id="cal-year" onchange="renderCalendar()"></select>
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <select id="cal-month" onchange="renderCalendar()"></select>
+                    <select id="cal-year" onchange="renderCalendar()"></select>
+                </div>
+                <div style="margin-left:auto; display:flex; align-items:center; gap:10px; background:var(--card); padding:8px 15px; border-radius:12px; border:1px solid var(--border);">
+                    <span style="font-weight:bold; color:var(--purple); font-size:0.9rem;">Meta Redação:</span>
+                    <input type="number" id="cal-meta-redacao" value="900" style="width:80px; margin:0; padding:6px; background:var(--bg);" onblur="saveCalMeta()">
+                </div>
             </div>
             
             <div class="calendar-wrapper">
@@ -184,7 +185,23 @@
                 <span class="badge-type questoes" style="background: var(--accent);">Questões</span>
                 <span class="badge-type simulado" style="background: var(--danger);">Simulados</span>
             </div>
-            <div id="tasks-list"></div>
+            
+            <h3 style="color:var(--text); margin-bottom:15px; font-size:1.1rem; border-bottom:1px solid var(--border); padding-bottom:5px;">A Fazer (Pendentes)</h3>
+            <div id="tasks-pending-list"></div>
+
+            <div style="display:flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 2px dashed var(--border);">
+                <button class="btn-action" style="width:48%; background:transparent; border:1px solid var(--danger); color:var(--danger); margin:0;" onclick="toggleList('incomplete')">⚠️ Ver Incompletas</button>
+                <button class="btn-action" style="width:48%; background:transparent; border:1px solid var(--success); color:var(--success); margin:0;" onclick="toggleList('done')">✅ Ver Concluídas</button>
+            </div>
+
+            <div id="tasks-incomplete-container" style="display:none; margin-top:20px;">
+                <h3 style="color:var(--danger); margin-bottom:15px; font-size:1rem;">Tarefas Atrasadas / Incompletas</h3>
+                <div id="tasks-incomplete-list"></div>
+            </div>
+            <div id="tasks-done-container" style="display:none; margin-top:20px;">
+                <h3 style="color:var(--success); margin-bottom:15px; font-size:1rem;">Tarefas Concluídas</h3>
+                <div id="tasks-done-list"></div>
+            </div>
         </section>
 
         <section id="redacao" class="page">
@@ -213,13 +230,10 @@
                         <select id="pomo-focus-time" style="width:120px;">
                             <option value="40">Foco: 40m</option><option value="50" selected>Foco: 50m</option>
                             <option value="60">Foco: 60m</option><option value="90">Foco: 90m</option>
-                            <option value="120">Foco: 120m</option><option value="240">Foco: 240m</option>
-                            <option value="600">Foco: 600m</option>
                         </select>
                         <select id="pomo-break-time" style="width:120px;">
                             <option value="5">Pausa: 5m</option><option value="10">Pausa: 10m</option>
-                            <option value="15">Pausa: 15m</option><option value="20">Pausa: 20m</option>
-                            <option value="30">Pausa: 30m</option>
+                            <option value="15">Pausa: 15m</option>
                         </select>
                     </div>
                     <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums;" id="pomo-display">50:00</div>
@@ -234,8 +248,7 @@
                     <h3 style="color: var(--accent);">Cronômetro Flexível</h3>
                     <select id="stopwatch-input" style="width:150px; margin: 10px auto;">
                         <option value="60">1 Hora</option><option value="120">2 Horas</option>
-                        <option value="240">4 Horas</option><option value="330" selected>5h 30m (ENEM)</option>
-                        <option value="440">7h 20m</option>
+                        <option value="330" selected>5h 30m (ENEM)</option>
                     </select>
                     <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums;" id="stop-display">00:00</div>
                     <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
@@ -266,17 +279,15 @@
                 <button class="btn-action" style="width:auto; margin:0; padding:10px 20px; background:var(--primary); color:#000;" onclick="initCharts()">Filtrar Dados</button>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                <div class="chart-card">
-                    <h3 style="color: var(--danger); margin-bottom: 10px;">⚠️ Revisão de Erros</h3>
-                    <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Zere seus erros para garantir os 800+!</p>
-                    <div id="review-list" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
+            <div class="chart-card" style="margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap: wrap; gap:10px;">
+                    <div>
+                        <h3 style="color: var(--danger); margin-bottom: 5px;">⚠️ Revisão de Erros</h3>
+                        <p style="font-size: 0.85rem; color: var(--dim);">Zere seus erros para garantir os 800+!</p>
+                    </div>
+                    <button class="btn-action" style="width:auto; margin:0; background:var(--card); border:1px solid var(--accent); color:var(--accent);" onclick="openImprovementModal()">📊 Ver Pontos a Melhorar</button>
                 </div>
-                <div class="chart-card">
-                    <h3 style="color: var(--accent); margin-bottom: 10px;">📈 Matérias para Melhorar</h3>
-                    <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Matérias com taxa de acerto abaixo de 70%.</p>
-                    <div id="improve-list" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-                </div>
+                <div id="review-list" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
             </div>
 
             <div class="perf-dashboard">
@@ -322,12 +333,8 @@
                             <option value="bar">Barras (Tabela)</option>
                         </select>
                     </div>
-                    <div id="time-pie-container">
-                        <canvas id="timePieChart" style="max-height: 250px;"></canvas>
-                    </div>
-                    <div id="time-bar-container" style="display:none; height: 250px;">
-                        <canvas id="timeBarChart"></canvas>
-                    </div>
+                    <div id="time-pie-container"><canvas id="timePieChart" style="max-height: 250px;"></canvas></div>
+                    <div id="time-bar-container" style="display:none; height: 250px;"><canvas id="timeBarChart"></canvas></div>
                 </div>
 
                 <div class="chart-card">
@@ -338,15 +345,11 @@
                             <option value="bar">Barras (Tabela)</option>
                         </select>
                     </div>
-                    <div id="qnt-pie-container">
-                        <canvas id="qntPieChart" style="max-height: 250px;"></canvas>
-                    </div>
-                    <div id="qnt-bar-container" style="display:none; height: 250px;">
-                        <canvas id="qntBarChart"></canvas>
-                    </div>
+                    <div id="qnt-pie-container"><canvas id="qntPieChart" style="max-height: 250px;"></canvas></div>
+                    <div id="qnt-bar-container" style="display:none; height: 250px;"><canvas id="qntBarChart"></canvas></div>
                 </div>
             </div>
-
+            
             <div class="chart-card">
                 <h3 style="margin-bottom: 15px;">Questões Respondidas por Dia</h3>
                 <canvas id="dailyBarChart" style="max-height: 300px;"></canvas>
@@ -355,6 +358,37 @@
 
         <footer style="margin-top: 50px; text-align: center; color: var(--dim); font-size: 0.85rem;">Criado pelo <strong>Grupo Conexão</strong></footer>
     </main>
+</div>
+
+<div id="modal-improvement" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--accent); margin-bottom: 15px;">📊 Pontos a Melhorar</h3>
+        <p style="font-size: 0.9rem; color: var(--dim); margin-bottom: 20px;">Balanço das suas avaliações e matérias que precisam de mais atenção.</p>
+        
+        <div style="display:flex; justify-content:space-between; background:var(--bg); padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border);">
+            <div style="text-align:center;">
+                <div style="font-size:1.5rem; color:var(--success); font-weight:bold;" id="imp-reviewed-count">0</div>
+                <div style="font-size:0.8rem; color:var(--dim);">Erros Avaliados</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:1.5rem; color:var(--danger); font-weight:bold;" id="imp-pending-count">0</div>
+                <div style="font-size:0.8rem; color:var(--dim);">Pendentes</div>
+            </div>
+        </div>
+
+        <h4 style="color:var(--text); margin-bottom:10px; font-size:1rem;">⚠️ Atenção nessas Matérias (< 70%)</h4>
+        <div id="improve-list" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom:20px;"></div>
+
+        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-improvement')">Fechar Relatório</button>
+    </div>
+</div>
+
+<div id="modal-photo-view" class="modal">
+    <div class="modal-content" style="text-align:center;">
+        <h3 style="color: var(--purple); margin-bottom: 15px;">📷 Sua Redação</h3>
+        <img id="view-photo-img" src="" style="max-width:100%; max-height:60vh; border-radius:10px; border:2px solid var(--border); margin-bottom:15px; object-fit:contain;">
+        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-photo-view')">Fechar Imagem</button>
+    </div>
 </div>
 
 <div id="modal-notif" class="modal">
@@ -372,24 +406,18 @@
 <div id="modal-settings" class="modal">
     <div class="modal-content">
         <h3 style="color: var(--primary); margin-bottom: 15px;">Personalizar Perfil</h3>
-        
         <label style="font-size: 0.85rem; color: var(--dim);">Como quer ser chamado?</label>
         <input type="text" id="set-name" placeholder="Seu Nome">
-        
         <label style="font-size: 0.85rem; color: var(--dim);">Foto de Perfil (Link ou Galeria)</label>
         <div style="display:flex; gap:10px; margin-bottom: 8px;">
             <input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg" style="margin:0; flex:1;">
             <input type="file" id="set-photo-file" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
             <button class="btn-action" style="width:auto; margin:0; padding:10px 15px; background:var(--bg); border:1px solid var(--border); color:var(--text);" onclick="document.getElementById('set-photo-file').click()">📂 Galeria</button>
         </div>
-
         <button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar Configurações</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button>
-        
         <hr style="border:0; border-top:1px solid var(--border); margin: 25px 0;">
-        
         <button class="btn-action" style="background: #334155; color: var(--danger); margin-bottom: 15px;" onclick="logout()">🚪 Sair da Conta</button>
-
         <h4 style="color: var(--danger); margin-bottom:10px;">Área de Perigo</h4>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetPlatform()">Zerar Plataforma (Apagar Tudo)</button>
     </div>
@@ -400,10 +428,7 @@
 <div id="modal-daily" class="modal">
     <div class="modal-content">
         <h3 id="daily-date-label" style="color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Tarefas do Dia</h3>
-        
-        <div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
-            </div>
-
+        <div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div>
         <button class="btn-action" style="background: var(--success); color: #000;" onclick="openNewTaskModal()">+ Agendar Nova Tarefa</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-daily')">Fechar Visão do Dia</button>
     </div>
@@ -419,9 +444,7 @@
             <option value="simulado">Simulado</option>
             <option value="redacao">Redação</option>
         </select>
-
         <div id="dynamic-fields"></div>
-
         <div style="display:flex; gap:10px; margin-top:10px;">
             <div style="flex:1;">
                 <label style="font-size:0.8rem; color:var(--dim);">Início</label>
@@ -432,15 +455,12 @@
                 <input type="time" id="task-end-time" value="09:00">
             </div>
         </div>
-
         <div id="repeat-container" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
             <input type="checkbox" id="task-repeat" style="width: 20px;">
-            <label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas (mesmo dia)</label>
+            <label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas</label>
         </div>
-
         <button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button>
-        
         <div id="delete-task-container" style="display: none; margin-top: 15px;">
             <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button>
         </div>
@@ -479,6 +499,7 @@ let selectedDate = null;
 let activeTask = null;
 let editingTaskId = null;
 let uploadedImageBase64 = "";
+let tempRedacaoPhoto = ""; // Foto da redação em avaliação
 
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
@@ -489,27 +510,24 @@ const subjectColors = {
 function getColor(materia) { return subjectColors[materia] || '#94a3b8'; }
 
 const defaultTopics = {
-    "Matemática": ["Matemática Básica", "Estatística", "Geometria Plana", "Geometria Espacial", "Funções", "Probabilidade"],
+    "Matemática": ["Matemática Básica", "Estatística", "Geometria Plana", "Geometria Espacial", "Funções"],
     "Biologia": ["Ecologia", "Citologia", "Genética", "Fisiologia Humana", "Botânica", "Evolução"],
     "Física": ["Mecânica", "Eletrodinâmica", "Termologia", "Ondulatória", "Óptica"],
     "Química": ["Físico-Química", "Química Geral", "Química Orgânica", "Estequiometria", "Eletroquímica"],
-    "História": ["Idade Contemporânea", "História do Brasil (Império)", "Era Vargas", "Guerra Fria", "Brasil Colônia"],
-    "Geografia": ["Geografia Agrária", "Meio Ambiente", "Geopolítica", "Geografia Urbana", "Climatologia"],
-    "Filosofia/Sociologia": ["Ética e Moral", "Filosofia Antiga", "Sociologia do Trabalho", "Cultura e Ideologia", "Contratualistas"],
-    "Linguagens": ["Interpretação de Texto", "Figuras de Linguagem", "Vanguardas Europeias", "Literatura Moderna", "Artes Plásticas"]
+    "História": ["Idade Contemporânea", "História do Brasil", "Era Vargas", "Guerra Fria"],
+    "Geografia": ["Geografia Agrária", "Meio Ambiente", "Geopolítica", "Geografia Urbana"],
+    "Filosofia/Sociologia": ["Ética e Moral", "Filosofia Antiga", "Sociologia do Trabalho"],
+    "Linguagens": ["Interpretação de Texto", "Figuras de Linguagem", "Vanguardas Europeias"]
 };
 
 function updateTopicDatalist() {
     const materia = document.getElementById('task-materia').value;
     const datalist = document.getElementById('topic-suggestions');
     datalist.innerHTML = '';
-    
     let custom = JSON.parse(localStorage.getItem('user_custom_topics')) || {};
     let defaults = defaultTopics[materia] || [];
     let userT = custom[materia] || [];
-    
-    let allTopics = [...new Set([...defaults, ...userT])];
-    allTopics.forEach(t => { let opt = document.createElement('option'); opt.value = t; datalist.appendChild(opt); });
+    [...new Set([...defaults, ...userT])].forEach(t => { let opt = document.createElement('option'); opt.value = t; datalist.appendChild(opt); });
 }
 
 function saveCustomTopic(materia, topic) {
@@ -530,12 +548,7 @@ async function resetPlatform() {
         snapshot.docs.forEach(doc => { batch.delete(doc.ref); });
         await batch.commit();
         
-        localStorage.removeItem('enem_meta');
-        localStorage.removeItem('enem_ano');
-        localStorage.removeItem('user_custom_topics');
-        localStorage.removeItem('custom_profile_pic');
-        localStorage.removeItem('last_review_notif');
-        localStorage.removeItem('has_unread_notif');
+        localStorage.clear(); // Limpa tudo
         
         alert("Tudo zerado! Bora focar pros 800+.");
         document.getElementById('user-pic').src = auth.currentUser.photoURL || 'https://via.placeholder.com/70';
@@ -551,32 +564,45 @@ function loadEdits() {
     if(ano) document.getElementById('edit-ano').innerText = ano;
     let daysLeft = localStorage.getItem('enem_days') || 190;
     document.getElementById('countdown-days').innerText = `${daysLeft} dias`;
+    
+    // Meta Calendário
+    document.getElementById('cal-meta-redacao').value = localStorage.getItem('meta_redacao') || 900;
 }
 function saveEdits() {
     localStorage.setItem('enem_meta', document.getElementById('edit-meta').innerText);
     localStorage.setItem('enem_ano', document.getElementById('edit-ano').innerText);
 }
+function saveCalMeta() {
+    localStorage.setItem('meta_redacao', document.getElementById('cal-meta-redacao').value);
+    renderCalendar(); // Re-renderiza para atualizar os troféus
+}
 
-// FOTO E PERFIL
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if(!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
         uploadedImageBase64 = e.target.result;
-        document.getElementById('set-photo').value = "Imagem carregada da galeria";
+        document.getElementById('set-photo').value = "Imagem carregada";
         document.getElementById('set-photo').disabled = true;
     };
+    reader.readAsDataURL(file);
+}
+
+function handleRedacaoPhotoUpload(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) { tempRedacaoPhoto = e.target.result; };
     reader.readAsDataURL(file);
 }
 
 function openSettings() {
     uploadedImageBase64 = "";
     document.getElementById('set-name').value = auth.currentUser.displayName || '';
-    
     const localPhoto = localStorage.getItem('custom_profile_pic');
     if(localPhoto && localPhoto.startsWith('data:image')) {
-        document.getElementById('set-photo').value = "Imagem carregada da galeria";
+        document.getElementById('set-photo').value = "Imagem carregada";
         document.getElementById('set-photo').disabled = true;
     } else {
         document.getElementById('set-photo').value = localPhoto || auth.currentUser.photoURL || '';
@@ -588,20 +614,14 @@ function openSettings() {
 async function saveSettings() {
     const name = document.getElementById('set-name').value;
     let photo = document.getElementById('set-photo').value;
-    
     try {
-        if(uploadedImageBase64) {
-            localStorage.setItem('custom_profile_pic', uploadedImageBase64);
-        } else if (photo !== "Imagem carregada da galeria") {
-            localStorage.setItem('custom_profile_pic', photo);
-        }
+        if(uploadedImageBase64) localStorage.setItem('custom_profile_pic', uploadedImageBase64);
+        else if (photo !== "Imagem carregada") localStorage.setItem('custom_profile_pic', photo);
 
         await auth.currentUser.updateProfile({ displayName: name });
         document.getElementById('user-name').innerText = name.split(' ')[0];
-        
         const finalPhoto = localStorage.getItem('custom_profile_pic') || auth.currentUser.photoURL || 'https://via.placeholder.com/70';
         document.getElementById('user-pic').src = finalPhoto;
-        
         closeModal('modal-settings');
         alert("Ficou chique demais sô! Perfil atualizado.");
     } catch(e) { alert("Erro ao atualizar: " + e.message); }
@@ -610,50 +630,30 @@ async function saveSettings() {
 const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 const monthSelect = document.getElementById('cal-month');
 const yearSelect = document.getElementById('cal-year');
-
 months.forEach((m, i) => { let opt = document.createElement('option'); opt.value = i; opt.innerText = m; monthSelect.appendChild(opt); });
 for(let y = 2025; y <= 2027; y++) { let opt = document.createElement('option'); opt.value = y; opt.innerText = y; yearSelect.appendChild(opt); }
-
-const now = new Date();
-monthSelect.value = now.getMonth();
-yearSelect.value = now.getFullYear();
+const now = new Date(); monthSelect.value = now.getMonth(); yearSelect.value = now.getFullYear();
 
 function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+function logout() { closeModal('modal-settings'); auth.signOut(); }
 
-function logout() { 
-    closeModal('modal-settings');
-    auth.signOut(); 
-}
-
-// SISTEMA DE NOTIFICAÇÕES ALEATÓRIAS
 function checkNotifications() {
     let lastNotif = localStorage.getItem('last_review_notif');
     let nowTime = new Date().getTime();
     let oneWeek = 7 * 24 * 60 * 60 * 1000;
     let needsNotif = false;
-
-    // Checa se tem alguma tarefa com erro não revisada
     let hasUnreviewedErrors = currentTasks.some(t => t.status === 'done' && t.errors > 0 && !t.reviewed);
 
     if (hasUnreviewedErrors) {
         if (!lastNotif || (nowTime - parseInt(lastNotif)) > oneWeek) {
-            // Sorteio: 30% de chance de notificar quando fechar 1 semana
-            if (Math.random() < 0.3) {
-                needsNotif = true;
-                localStorage.setItem('last_review_notif', nowTime.toString());
-            }
+            if (Math.random() < 0.3) { needsNotif = true; localStorage.setItem('last_review_notif', nowTime.toString()); }
         }
-    } else {
-        // Se zerou os erros, apaga a notificação visual pendente
-        localStorage.setItem('has_unread_notif', 'false');
-    }
+    } else { localStorage.setItem('has_unread_notif', 'false'); }
 
     if (needsNotif || localStorage.getItem('has_unread_notif') === 'true') {
         document.getElementById('notif-badge').style.display = 'block';
         localStorage.setItem('has_unread_notif', 'true');
-    } else {
-        document.getElementById('notif-badge').style.display = 'none';
-    }
+    } else { document.getElementById('notif-badge').style.display = 'none'; }
 }
 
 function openNotifications() {
@@ -667,10 +667,8 @@ auth.onAuthStateChanged(user => {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app').style.display = 'flex';
         document.getElementById('user-name').innerText = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
-        
         const finalPhoto = localStorage.getItem('custom_profile_pic') || user.photoURL || 'https://via.placeholder.com/70';
         document.getElementById('user-pic').src = finalPhoto;
-        
         loadEdits();
         loadTasks();
     } else {
@@ -689,12 +687,19 @@ function showPage(id, btn) {
 
 function toggleChart(type) {
     const selectVal = document.getElementById(`${type}-chart-type`).value;
-    if(selectVal === 'pie') {
-        document.getElementById(`${type}-pie-container`).style.display = 'block';
-        document.getElementById(`${type}-bar-container`).style.display = 'none';
+    if(selectVal === 'pie') { document.getElementById(`${type}-pie-container`).style.display = 'block'; document.getElementById(`${type}-bar-container`).style.display = 'none'; } 
+    else { document.getElementById(`${type}-pie-container`).style.display = 'none'; document.getElementById(`${type}-bar-container`).style.display = 'block'; }
+}
+
+function toggleList(target) {
+    const incDiv = document.getElementById('tasks-incomplete-container');
+    const donDiv = document.getElementById('tasks-done-container');
+    if(target === 'incomplete') {
+        incDiv.style.display = incDiv.style.display === 'none' ? 'block' : 'none';
+        donDiv.style.display = 'none';
     } else {
-        document.getElementById(`${type}-pie-container`).style.display = 'none';
-        document.getElementById(`${type}-bar-container`).style.display = 'block';
+        donDiv.style.display = donDiv.style.display === 'none' ? 'block' : 'none';
+        incDiv.style.display = 'none';
     }
 }
 
@@ -702,7 +707,6 @@ function toggleTaskFields() {
     const type = document.getElementById('task-type').value;
     const container = document.getElementById('dynamic-fields');
     let html = '';
-    
     const matSelect = `
         <select id="task-materia" onchange="updateTopicDatalist()">
             <option value="Matemática">Matemática</option><option value="Biologia">Biologia</option>
@@ -712,51 +716,12 @@ function toggleTaskFields() {
             <option value="Linguagens">Linguagens</option>
         </select>
     `;
-
-    if (type === 'aula') {
-        html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Conteúdo da Aula (Ex: Eletrodinâmica)">`;
-    } else if (type === 'questoes') {
-        html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
-    } else if (type === 'simulado') {
-        html = `
-            <select id="task-materia">
-                <option value="1º Dia (Ling/Humanas)">1º Dia (Linguagens/Humanas)</option>
-                <option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option>
-                <option value="Geral">Simulado Geral</option>
-            </select>
-        `;
-    } else if (type === 'redacao') {
-        html = `<input type="hidden" id="task-materia" value="Redação"><input type="text" id="task-content" placeholder="Tema da Redação">`;
-    }
+    if (type === 'aula') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Conteúdo da Aula (Ex: Eletrodinâmica)">`;
+    else if (type === 'questoes') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
+    else if (type === 'simulado') html = `<select id="task-materia"><option value="1º Dia (Ling/Humanas)">1º Dia (Linguagens/Humanas)</option><option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option><option value="Geral">Simulado Geral</option></select>`;
+    else if (type === 'redacao') html = `<input type="hidden" id="task-materia" value="Redação"><input type="text" id="task-content" placeholder="Tema da Redação">`;
     container.innerHTML = html;
-    
     if(type === 'aula' || type === 'questoes') updateTopicDatalist();
-}
-
-function renderDailyTasks(dateStr) {
-    const list = document.getElementById('daily-tasks-list');
-    const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
-    
-    if (dayTasks.length === 0) {
-        list.innerHTML = '<p style="color:var(--dim); text-align:center; padding: 20px 0;">Você tá livre hoje, uai! Nenhuma tarefa agendada.</p>';
-        return;
-    }
-
-    let html = '';
-    dayTasks.forEach(t => {
-        let cor = getColor(t.materia);
-        let contentDesc = t.content ? ` - ${t.content}` : '';
-        html += `
-            <div class="daily-task-item" style="border-left-color: ${cor}">
-                <div class="time">${t.startTime} às ${t.endTime}</div>
-                <div class="title">${t.materia} (${t.type.toUpperCase()})${contentDesc}</div>
-                <div style="margin-top: 5px;">
-                    <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
-                </div>
-            </div>
-        `;
-    });
-    list.innerHTML = html;
 }
 
 function openNewTaskModal() {
@@ -781,6 +746,7 @@ function renderCalendar() {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const todayStr = new Date().toISOString().split('T')[0];
+    const metaRedacao = parseInt(localStorage.getItem('meta_redacao')) || 900;
 
     for(let i = 0; i < firstDay; i++) body.innerHTML += '<div></div>';
 
@@ -791,11 +757,9 @@ function renderCalendar() {
         
         const dayDiv = document.createElement('div');
         dayDiv.className = `day-box ${isToday ? 'today' : ''}`;
-        
         dayDiv.onclick = () => {
             selectedDate = dateStr;
-            const dateBR = dateStr.split('-').reverse().join('/');
-            document.getElementById('daily-date-label').innerText = `O que temos pra dia ${dateBR}?`;
+            document.getElementById('daily-date-label').innerText = `O que temos pra dia ${dateStr.split('-').reverse().join('/')}?`;
             renderDailyTasks(dateStr);
             document.getElementById('modal-daily').style.display = 'flex';
         };
@@ -804,7 +768,9 @@ function renderCalendar() {
         dayTasks.forEach(t => {
             let colorClass = t.type;
             let timeTxt = t.startTime ? `${t.startTime} - ` : '';
-            if(t.status === 'done') html += `<div class="tag ${colorClass}" style="opacity:0.6; text-decoration:line-through;">${timeTxt}${t.materia}</div>`;
+            let isRedacaoMedal = (t.type === 'redacao' && t.status === 'done' && t.score >= metaRedacao) ? ' 🏆' : '';
+            
+            if(t.status === 'done') html += `<div class="tag ${colorClass}" style="opacity:0.6; text-decoration:line-through;">${timeTxt}${t.materia}${isRedacaoMedal}</div>`;
             else html += `<div class="tag ${colorClass}">${timeTxt}${t.materia}</div>`;
         });
         
@@ -813,20 +779,36 @@ function renderCalendar() {
     }
 }
 
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function renderDailyTasks(dateStr) {
+    const list = document.getElementById('daily-tasks-list');
+    const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+    if (dayTasks.length === 0) { list.innerHTML = '<p style="color:var(--dim); text-align:center; padding: 20px 0;">Você tá livre hoje, uai! Nenhuma tarefa agendada.</p>'; return; }
 
-function timeToMins(timeStr) {
-    if(!timeStr) return 0;
-    let parts = timeStr.split(':');
-    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    let html = '';
+    dayTasks.forEach(t => {
+        let cor = getColor(t.materia);
+        let contentDesc = t.content ? ` - ${t.content}` : '';
+        html += `
+            <div class="daily-task-item" style="border-left-color: ${cor}">
+                <div class="time">${t.startTime} às ${t.endTime}</div>
+                <div class="title">${t.materia} (${t.type.toUpperCase()})${contentDesc}</div>
+                <div style="margin-top: 5px;">
+                    <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
+                </div>
+            </div>
+        `;
+    });
+    list.innerHTML = html;
 }
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function timeToMins(timeStr) { if(!timeStr) return 0; let parts = timeStr.split(':'); return parseInt(parts[0]) * 60 + parseInt(parts[1]); }
 
 async function handleSaveTask() {
     const type = document.getElementById('task-type').value;
     const materia = document.getElementById('task-materia').value;
     const contentElem = document.getElementById('task-content');
     const qntElem = document.getElementById('task-qnt');
-    
     const startTime = document.getElementById('task-start-time').value;
     const endTime = document.getElementById('task-end-time').value;
 
@@ -835,236 +817,216 @@ async function handleSaveTask() {
         let start = new Date(`1970-01-01T${startTime}:00`);
         let end = new Date(`1970-01-01T${endTime}:00`);
         plannedTime = (end - start) / 60000;
+        if (plannedTime <= 0) return alert("Opa, trem errado! O horário final precisa ser maior que o horário de início.");
         
-        if (plannedTime <= 0) {
-            alert("Opa, trem errado! O horário final precisa ser maior que o horário de início (se for de tarde, use formato 24h tipo 17:00, 18:00, etc). Arruma lá sô!");
-            return;
-        }
-
-        const newStartMins = timeToMins(startTime);
-        const newEndMins = timeToMins(endTime);
         const dayTasks = currentTasks.filter(t => t.date === selectedDate && t.id !== editingTaskId);
-        
         for (let t of dayTasks) {
-            const existingStart = timeToMins(t.startTime);
-            const existingEnd = timeToMins(t.endTime);
-            
-            if (newStartMins < existingEnd && newEndMins > existingStart) {
-                alert(`Opa, trem bão não! Você já tem '${t.materia}' agendado das ${t.startTime} às ${t.endTime}. Você não tem Vira-Tempo pra estudar duas coisas juntas sô! Escolha outro horário.`);
-                return;
+            if (timeToMins(startTime) < timeToMins(t.endTime) && timeToMins(endTime) > timeToMins(t.startTime)) {
+                return alert(`Opa, trem bão não! Você já tem '${t.materia}' agendado nesse horário.`);
             }
         }
     }
     
     let contentVal = contentElem ? contentElem.value : '';
-    
-    if((type === 'aula' || type === 'questoes') && contentVal) {
-        saveCustomTopic(materia, contentVal);
-    }
+    if((type === 'aula' || type === 'questoes') && contentVal) saveCustomTopic(materia, contentVal);
 
     const taskData = {
         userId: auth.currentUser.uid, type, materia, status: 'pending',
-        content: contentVal,
-        qnt: qntElem ? parseInt(qntElem.value) : 0,
+        content: contentVal, qnt: qntElem ? parseInt(qntElem.value) : 0,
         startTime, endTime, plannedTime, reviewed: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     if(editingTaskId) {
-        // Quando edita, mantemos o status de review caso já exista
         const oldTask = currentTasks.find(t => t.id === editingTaskId);
         if(oldTask && oldTask.reviewed !== undefined) taskData.reviewed = oldTask.reviewed;
-        
         taskData.date = selectedDate; 
         await db.collection("tasks").doc(editingTaskId).update(taskData);
-        closeModal('modal-task');
-        loadTasks();
-        return;
+        closeModal('modal-task'); loadTasks(); return;
     }
 
     const repeat = document.getElementById('task-repeat').checked;
     const baseDate = new Date(selectedDate + 'T12:00:00');
-    const iterations = repeat ? 3 : 1;
-
-    for(let i = 0; i < iterations; i++) {
-        const d = new Date(baseDate);
-        d.setDate(d.getDate() + (i * 7));
+    for(let i = 0; i < (repeat ? 3 : 1); i++) {
+        const d = new Date(baseDate); d.setDate(d.getDate() + (i * 7));
         taskData.date = d.toISOString().split('T')[0];
         await db.collection("tasks").add(taskData);
     }
-    closeModal('modal-task');
-    loadTasks();
+    closeModal('modal-task'); loadTasks();
 }
 
 function openEditModal(id) {
     const task = currentTasks.find(t => t.id === id);
     if(!task) return;
-    
-    editingTaskId = task.id;
-    selectedDate = task.date;
-    
+    editingTaskId = task.id; selectedDate = task.date;
     document.getElementById('modal-date-label').innerText = `Editar: ${task.date.split('-').reverse().join('/')}`;
     document.getElementById('task-type').value = task.type;
     toggleTaskFields();
-    
     document.getElementById('task-materia').value = task.materia;
     if(document.getElementById('task-content')) document.getElementById('task-content').value = task.content || '';
     if(document.getElementById('task-qnt')) document.getElementById('task-qnt').value = task.qnt || '';
-    
     document.getElementById('task-start-time').value = task.startTime || '00:00';
     document.getElementById('task-end-time').value = task.endTime || '00:00';
-    
     document.getElementById('repeat-container').style.display = 'none'; 
     document.getElementById('delete-task-container').style.display = 'block'; 
-    
-    closeModal('modal-daily'); 
-    document.getElementById('modal-task').style.display = 'flex';
+    closeModal('modal-daily'); document.getElementById('modal-task').style.display = 'flex';
 }
 
 function loadTasks() {
     db.collection("tasks").where("userId", "==", auth.currentUser.uid)
       .onSnapshot(snap => {
           currentTasks = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-          renderCalendar();
-          renderTaskList();
-          renderReviewSection(); // Atualiza a aba de revisão
-          checkNotifications();  // Checa se precisa do sininho
-          
-          // Se estiver na aba desempenho, atualiza os gráficos automaticamente
+          renderCalendar(); renderTaskList(); renderReviewSection(); checkNotifications();
           if(document.getElementById('desempenho').classList.contains('active')) initCharts();
       });
 }
 
-function renderTaskList() {
-    const list = document.getElementById('tasks-list');
-    const redacaoList = document.getElementById('redacao-list');
-    list.innerHTML = ""; redacaoList.innerHTML = "";
+function renderCard(t, statusClass, statusText) {
+    let details = `${t.startTime || '?'} às ${t.endTime || '?'} (${t.plannedTime || 0} min)`;
+    if(t.type === 'aula') details += ` | ${t.content}`;
+    else if(t.type === 'questoes') details += ` | ${t.content} - Meta: ${t.qnt}Q`;
+    else if(t.type === 'redacao') details += ` | Tema: ${t.content}`;
+
+    const card = document.createElement('div');
+    card.className = `task-card ${statusClass}`;
     
-    const today = new Date().toISOString().split('T')[0];
-    const sorted = currentTasks.sort((a,b) => {
-        let dateCmp = b.date.localeCompare(a.date);
-        if(dateCmp !== 0) return dateCmp;
-        return (b.startTime || '00:00').localeCompare(a.startTime || '00:00');
-    });
+    // Botão de ver foto da redação
+    let photoBtn = (t.type === 'redacao' && t.photo) ? `<button class="btn-edit" style="color:var(--primary); border-color:var(--primary);" onclick="openPhotoModal('${t.photo}')">📷 Ver Foto</button>` : '';
 
-    sorted.forEach(t => {
-        let statusClass = t.status === 'done' ? 'done' : (t.date < today ? 'incomplete' : '');
-        let statusText = t.status === 'done' ? 'CONCLUÍDO' : (t.date < today ? 'INCOMPLETA' : 'PENDENTE');
-        
-        let details = `${t.startTime || '?'} às ${t.endTime || '?'} (${t.plannedTime || 0} min)`;
-        if(t.type === 'aula') details += ` | ${t.content}`;
-        else if(t.type === 'questoes') details += ` | ${t.content} - Meta: ${t.qnt}Q`;
-        else if(t.type === 'redacao') details += ` | Tema: ${t.content}`;
-
-        const card = document.createElement('div');
-        card.className = `task-card ${statusClass}`;
-        
-        card.innerHTML = `
-            <div style="flex:1;">
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
-                    <span class="badge-type ${t.type}">${t.type}</span>
-                    <strong style="color:var(--text); font-size:1.1rem;">${t.date.split('-').reverse().join('/')} - ${t.materia}</strong>
-                </div>
-                <div style="color:var(--dim); margin:5px 0; font-size:0.9rem;">${details}</div>
-                ${t.score ? `<div style="color:var(--purple); font-weight:bold;">Nota: ${t.score}</div>` : ''}
-                <span style="font-size: 0.8rem; font-weight: bold; color: ${t.status === 'done' ? 'var(--success)' : (statusClass === 'incomplete' ? 'var(--danger)' : 'var(--dim)')}">${statusText}</span>
+    card.innerHTML = `
+        <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+                <span class="badge-type ${t.type}">${t.type}</span>
+                <strong style="color:var(--text); font-size:1.1rem;">${t.date.split('-').reverse().join('/')} - ${t.materia}</strong>
             </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
-                ${t.status === 'pending' ? `<button onclick="openDoneModal('${t.id}')" style="background:var(--success); border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#000;">Avaliar</button>` : ''}
-            </div>
-        `;
-        
-        if(t.type === 'redacao') redacaoList.appendChild(card);
-        else list.appendChild(card);
-    });
+            <div style="color:var(--dim); margin:5px 0; font-size:0.9rem;">${details}</div>
+            ${t.score ? `<div style="color:var(--purple); font-weight:bold; margin-top:5px;">Nota: ${t.score}</div>` : ''}
+            <span style="font-size: 0.8rem; font-weight: bold; margin-top:5px; display:inline-block; color: ${t.status === 'done' ? 'var(--success)' : (statusClass === 'incomplete' ? 'var(--danger)' : 'var(--dim)')}">${statusText}</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+            ${photoBtn}
+            <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
+            ${t.status === 'pending' ? `<button onclick="openDoneModal('${t.id}')" style="background:var(--success); border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#000;">Avaliar</button>` : ''}
+        </div>
+    `;
+    return card;
 }
 
-// SISTEMA DE REVISÃO E MELHORIAS
+function renderTaskList() {
+    const listPending = document.getElementById('tasks-pending-list');
+    const listIncomplete = document.getElementById('tasks-incomplete-list');
+    const listDone = document.getElementById('tasks-done-list');
+    const redacaoList = document.getElementById('redacao-list');
+    
+    listPending.innerHTML = ""; listIncomplete.innerHTML = ""; listDone.innerHTML = ""; redacaoList.innerHTML = "";
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    let redacaoArr = [];
+    
+    currentTasks.forEach(t => {
+        let statusClass = t.status === 'done' ? 'done' : (t.date < today ? 'incomplete' : '');
+        let statusText = t.status === 'done' ? 'CONCLUÍDO' : (t.date < today ? 'ATRASADA' : 'PENDENTE');
+        
+        let card = renderCard(t, statusClass, statusText);
+
+        if (t.type === 'redacao') {
+            t._statusWeight = statusClass === 'done' ? 1 : (statusClass === 'incomplete' ? 3 : 2); // 1:Feitas, 2:Pendentes, 3:Incompletas
+            redacaoArr.push({task: t, card: card});
+        } else {
+            if (statusClass === 'done') listDone.appendChild(card);
+            else if (statusClass === 'incomplete') listIncomplete.appendChild(card);
+            else listPending.appendChild(card);
+        }
+    });
+
+    // Ordenação personalizada das Redações
+    redacaoArr.sort((a,b) => {
+        if(a.task._statusWeight !== b.task._statusWeight) return a.task._statusWeight - b.task._statusWeight;
+        return b.task.date.localeCompare(a.task.date);
+    }).forEach(item => redacaoList.appendChild(item.card));
+    
+    if(listPending.innerHTML === '') listPending.innerHTML = '<p style="color:var(--dim); font-size:0.9rem;">Nenhuma tarefa pendente por aqui!</p>';
+    if(listIncomplete.innerHTML === '') listIncomplete.innerHTML = '<p style="color:var(--dim); font-size:0.9rem;">Você não tem tarefas atrasadas!</p>';
+    if(listDone.innerHTML === '') listDone.innerHTML = '<p style="color:var(--dim); font-size:0.9rem;">Nenhuma tarefa concluída ainda.</p>';
+    if(redacaoList.innerHTML === '') redacaoList.innerHTML = '<p style="color:var(--dim); font-size:0.9rem;">Nenhuma redação registrada.</p>';
+}
+
+function openPhotoModal(imgSrc) {
+    document.getElementById('view-photo-img').src = imgSrc;
+    document.getElementById('modal-photo-view').style.display = 'flex';
+}
+
+function openImprovementModal() { document.getElementById('modal-improvement').style.display = 'flex'; }
+
 function renderReviewSection() {
     const reviewList = document.getElementById('review-list');
     const improveList = document.getElementById('improve-list');
-    let reviewHtml = '';
-    let matStats = {};
+    let reviewHtml = ''; let matStats = {}; let reviewedCount = 0; let pendingCount = 0;
 
     currentTasks.forEach(t => {
         if(t.status === 'done' && (t.type === 'questoes' || t.type === 'simulado')) {
-            // Conta os dados para ver o que melhorar
             if(!matStats[t.materia]) matStats[t.materia] = { hits: 0, total: 0 };
-            let hits = t.hits || 0;
-            let errors = t.errors || 0;
-            matStats[t.materia].hits += hits;
-            matStats[t.materia].total += (hits + errors);
+            let hits = t.hits || 0; let errors = t.errors || 0;
+            matStats[t.materia].hits += hits; matStats[t.materia].total += (hits + errors);
 
-            // Popula a lista de revisão
-            if(errors > 0 && !t.reviewed) {
-                reviewHtml += `
-                    <div style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--danger); flex-wrap: wrap; gap: 10px;">
-                        <div>
-                            <strong style="color:#fff;">${t.materia}</strong> <span style="color:var(--dim); font-size:0.9rem;">- ${t.content || 'Treino Geral'}</span>
-                            <div style="font-size:0.85rem; color:var(--danger); font-weight:bold; margin-top:3px;">❌ ${errors} erro(s) no dia ${t.date.split('-').reverse().join('/')}</div>
+            if(errors > 0) {
+                if(t.reviewed) { reviewedCount++; } 
+                else {
+                    pendingCount++;
+                    reviewHtml += `
+                        <div style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--danger); flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <strong style="color:#fff;">${t.materia}</strong> <span style="color:var(--dim); font-size:0.9rem;">- ${t.content || 'Treino Geral'}</span>
+                                <div style="font-size:0.85rem; color:var(--danger); font-weight:bold; margin-top:3px;">❌ ${errors} erro(s) em ${t.date.split('-').reverse().join('/')}</div>
+                            </div>
+                            <button onclick="markAsReviewed('${t.id}')" style="background:var(--success); color:#000; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.85rem;">Acertei / Revisado</button>
                         </div>
-                        <button onclick="markAsReviewed('${t.id}')" style="background:var(--success); color:#000; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.85rem;">Acertei / Revisado</button>
-                    </div>
-                `;
+                    `;
+                }
             }
         }
     });
 
-    if(reviewHtml === '') {
-        reviewHtml = '<div style="text-align:center; padding: 20px 0; color:var(--dim);">Tudo limpo, sô! Nenhuma revisão pendente. 🎉</div>';
-    }
+    if(reviewHtml === '') reviewHtml = '<div style="text-align:center; padding: 20px 0; color:var(--dim);">Tudo limpo, sô! Nenhuma revisão pendente. 🎉</div>';
     reviewList.innerHTML = reviewHtml;
 
-    // Calcula matérias abaixo de 70% de acerto
+    document.getElementById('imp-reviewed-count').innerText = reviewedCount;
+    document.getElementById('imp-pending-count').innerText = pendingCount;
+
     let improveArr = Object.keys(matStats).map(mat => {
-        let acc = matStats[mat].total > 0 ? (matStats[mat].hits / matStats[mat].total) : 0;
-        return { materia: mat, acc: acc, total: matStats[mat].total };
-    }).filter(item => item.acc < 0.70 && item.total >= 5) // Pega as com menos de 70% (e que já fez pelo menos 5 questões)
-      .sort((a,b) => a.acc - b.acc).slice(0, 4); // Pega as 4 piores
+        return { materia: mat, acc: matStats[mat].total > 0 ? (matStats[mat].hits / matStats[mat].total) : 0, total: matStats[mat].total };
+    }).filter(item => item.acc < 0.70 && item.total >= 5).sort((a,b) => a.acc - b.acc).slice(0, 4);
 
     let impHtml = '';
-    improveArr.forEach(item => {
-        impHtml += `<span style="background:rgba(245, 158, 11, 0.15); color:var(--accent); padding:10px 15px; border-radius:8px; border:1px solid var(--accent); font-weight:bold; font-size:0.9rem;">${item.materia} (${(item.acc*100).toFixed(0)}%)</span>`;
-    });
-
-    if(impHtml === '') {
-        impHtml = '<div style="color:var(--success); font-weight:bold; width: 100%; text-align: center;">Suas médias estão ótimas! Continue assim! 🔥</div>';
-    }
+    improveArr.forEach(item => { impHtml += `<span style="background:rgba(245, 158, 11, 0.15); color:var(--accent); padding:10px 15px; border-radius:8px; border:1px solid var(--accent); font-weight:bold; font-size:0.9rem;">${item.materia} (${(item.acc*100).toFixed(0)}%)</span>`; });
+    if(impHtml === '') impHtml = '<div style="color:var(--success); font-weight:bold; width: 100%; text-align: center;">Suas médias estão ótimas! Continue assim! 🔥</div>';
     improveList.innerHTML = impHtml;
 }
 
-async function markAsReviewed(id) {
-    await db.collection("tasks").doc(id).update({reviewed: true});
-    // O onSnapshot do loadTasks já vai atualizar a lista sozinho
-}
-
-async function deleteTaskFromModal() {
-    if(!editingTaskId) return;
-    if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return;
-    
-    await db.collection("tasks").doc(editingTaskId).delete();
-    closeModal('modal-task');
-}
+async function markAsReviewed(id) { await db.collection("tasks").doc(id).update({reviewed: true}); }
+async function deleteTaskFromModal() { if(!editingTaskId) return; if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return; await db.collection("tasks").doc(editingTaskId).delete(); closeModal('modal-task'); }
 
 function openDoneModal(id) {
     activeTask = currentTasks.find(t => t.id === id);
+    tempRedacaoPhoto = ""; // reseta foto temporária
     document.getElementById('done-task-info').innerText = `${activeTask.materia} (${activeTask.type.toUpperCase()})`;
     
     const container = document.getElementById('done-dynamic-fields');
     let html = '';
     
     if(activeTask.type === 'redacao') {
-        html = `<input type="number" id="done-score" placeholder="Nota da Redação (0 - 1000)" max="1000">`;
+        html = `
+            <input type="number" id="done-score" placeholder="Nota da Redação (0 - 1000)" max="1000">
+            <div style="margin-top:15px; background:var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border);">
+                <label style="font-size:0.85rem; color:var(--dim); display:block; margin-bottom:8px;">📷 Adicionar Foto da Redação (Opcional)</label>
+                <input type="file" id="done-redacao-file" accept="image/*" onchange="handleRedacaoPhotoUpload(event)" style="margin:0; padding:5px;">
+            </div>
+        `;
     } else {
         html = `<input type="number" id="done-time" value="${activeTask.plannedTime || ''}" placeholder="Tempo real gasto em minutos">`;
         if(activeTask.type === 'questoes' || activeTask.type === 'simulado') {
-            html += `
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="done-hits" placeholder="Acertos" style="border-color:var(--success)">
-                    <input type="number" id="done-errors" placeholder="Erros" style="border-color:var(--danger)">
-                </div>
-            `;
+            html += `<div style="display:flex; gap:10px;"><input type="number" id="done-hits" placeholder="Acertos" style="border-color:var(--success)"><input type="number" id="done-errors" placeholder="Erros" style="border-color:var(--danger)"></div>`;
         }
     }
     container.innerHTML = html;
@@ -1078,25 +1040,17 @@ async function confirmTaskCompletion() {
         const score = parseInt(document.getElementById('done-score').value);
         if(isNaN(score)) return alert("Insira a nota, sô!");
         updateData.score = score;
+        if(tempRedacaoPhoto) updateData.photo = tempRedacaoPhoto;
     } else {
         const time = parseInt(document.getElementById('done-time').value);
         if(isNaN(time)) return alert("Preencha o tempo gasto!");
         updateData.realTime = time;
-        
         if(activeTask.type === 'questoes' || activeTask.type === 'simulado') {
             const hits = parseInt(document.getElementById('done-hits').value);
             const errs = parseInt(document.getElementById('done-errors').value);
-            
             if(isNaN(hits) || isNaN(errs)) return alert("Preencha acertos e erros direito!");
-            
-            if (activeTask.type === 'questoes' && activeTask.qnt > 0) {
-                if ((hits + errs) > activeTask.qnt) {
-                    return alert(`Uai, conta errada sô! Você agendou fazer ${activeTask.qnt} questões no máximo. Você não pode colocar ${hits + errs} no total (Acertos + Erros). Arruma a soma aí!`);
-                }
-            }
-            
-            updateData.hits = hits;
-            updateData.errors = errs;
+            if (activeTask.type === 'questoes' && activeTask.qnt > 0) { if ((hits + errs) > activeTask.qnt) return alert(`Uai, conta errada sô! A soma de acertos e erros não pode ser maior que as questões cadastradas.`); }
+            updateData.hits = hits; updateData.errors = errs;
         }
     }
 
@@ -1104,7 +1058,6 @@ async function confirmTaskCompletion() {
     closeModal('modal-done');
 }
 
-// POMODORO & CRONÔMETRO
 let timerObj = { pomo: { int: null, time: 3000 }, stop: { int: null, time: 0 } };
 function formatTime(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 function startPomodoro() { let mins = document.getElementById('pomo-focus-time').value; resetTimer('pomo', mins * 60); startTimer('pomo'); }
@@ -1116,177 +1069,86 @@ function startStopwatch() { clearInterval(timerObj.stop.int); let limit = docume
 function pauseStopwatch() { clearInterval(timerObj.stop.int); }
 function resetStopwatch() { pauseStopwatch(); timerObj.stop.time = 0; document.getElementById('stop-display').innerText = "00:00"; }
 
-// LÓGICA DE FILTROS E GRÁFICOS
-function toggleDashDates() {
-    const type = document.getElementById('dash-filter-type').value;
-    const customDiv = document.getElementById('custom-dates');
-    customDiv.style.display = (type === 'custom') ? 'flex' : 'none';
-}
+function toggleDashDates() { document.getElementById('custom-dates').style.display = (document.getElementById('dash-filter-type').value === 'custom') ? 'flex' : 'none'; }
 
 function getFilteredTasks() {
-    const type = document.getElementById('dash-filter-type').value;
-    const today = new Date();
-    
+    const type = document.getElementById('dash-filter-type').value; const today = new Date();
     return currentTasks.filter(t => {
         if (t.status !== 'done') return false; 
-
         const taskDateObj = new Date(t.date + 'T12:00:00');
-
         if (type === 'week') {
-            const dayOfWeek = today.getDay(); 
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - dayOfWeek);
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
-            
-            return taskDateObj >= new Date(startOfWeek.toISOString().split('T')[0]+'T00:00:00') && 
-                   taskDateObj <= new Date(endOfWeek.toISOString().split('T')[0]+'T23:59:59');
+            const startOfWeek = new Date(today); startOfWeek.setDate(today.getDate() - today.getDay());
+            const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6);
+            return taskDateObj >= new Date(startOfWeek.toISOString().split('T')[0]+'T00:00:00') && taskDateObj <= new Date(endOfWeek.toISOString().split('T')[0]+'T23:59:59');
         } 
-        else if (type === 'month') {
-            return taskDateObj.getMonth() === today.getMonth() && taskDateObj.getFullYear() === today.getFullYear();
-        }
+        else if (type === 'month') { return taskDateObj.getMonth() === today.getMonth() && taskDateObj.getFullYear() === today.getFullYear(); }
         else if (type === 'custom') {
-            const startStr = document.getElementById('dash-start').value;
-            const endStr = document.getElementById('dash-end').value;
-            if(!startStr || !endStr) return true; 
-            return t.date >= startStr && t.date <= endStr;
+            const startStr = document.getElementById('dash-start').value; const endStr = document.getElementById('dash-end').value;
+            if(!startStr || !endStr) return true; return t.date >= startStr && t.date <= endStr;
         }
-        
         return true; 
     });
 }
 
-let donutChart, dailyBarChart, redacaoLine, redacaoMonthChart, timePieChart, qntPieChart;
-let timeBarChart, qntBarChart;
+let donutChart, dailyBarChart, redacaoLine, redacaoMonthChart, timePieChart, qntPieChart, timeBarChart, qntBarChart;
 
 function initCharts() {
     const filteredDoneTasks = getFilteredTasks();
-    const practiceTasks = filteredDoneTasks.filter(t => t.type === 'questoes' || t.type === 'simulado');
     
-    const ctxRed = document.getElementById('redacaoChart');
-    const ctxRedMonth = document.getElementById('redacaoMonthChart');
-    
-    // GRÁFICOS DE REDAÇÃO
-    if(ctxRed && ctxRedMonth) {
-        if(redacaoLine) redacaoLine.destroy();
-        if(redacaoMonthChart) redacaoMonthChart.destroy();
-
+    if(document.getElementById('redacaoChart')) {
+        if(redacaoLine) redacaoLine.destroy(); if(redacaoMonthChart) redacaoMonthChart.destroy();
         const redacoes = currentTasks.filter(t => t.type === 'redacao' && t.status === 'done').sort((a,b) => a.date.localeCompare(b.date));
         
-        // Linha: Evolução das Notas
-        redacaoLine = new Chart(ctxRed.getContext('2d'), {
-            type: 'line',
-            data: { labels: redacoes.map(r => r.date.split('-').reverse().slice(0,2).join('/')), datasets: [{ label: 'Nota', data: redacoes.map(r => r.score), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', fill: true, tension: 0.3 }] },
+        redacaoLine = new Chart(document.getElementById('redacaoChart').getContext('2d'), {
+            type: 'line', data: { labels: redacoes.map(r => r.date.split('-').reverse().slice(0,2).join('/')), datasets: [{ label: 'Nota', data: redacoes.map(r => r.score), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', fill: true, tension: 0.3 }] },
             options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 1000, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { display: false } } }
         });
 
-        // Barra: Redações por Mês
         let monthCounts = {};
-        redacoes.forEach(r => {
-            let monthLabel = r.date.substring(0, 7).split('-').reverse().join('/'); // Pega YYYY-MM e vira MM/YYYY
-            monthCounts[monthLabel] = (monthCounts[monthLabel] || 0) + 1;
-        });
-
-        redacaoMonthChart = new Chart(ctxRedMonth.getContext('2d'), {
-            type: 'bar',
-            data: { 
-                labels: Object.keys(monthCounts), 
-                datasets: [{ label: 'Redações feitas', data: Object.values(monthCounts), backgroundColor: '#f59e0b', borderRadius: 4 }] 
-            },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } }, 
-                scales: { 
-                    y: { beginAtZero: true, ticks: { stepSize: 1, color: '#94a3b8' } }, 
-                    x: { ticks: { color: '#94a3b8' } } 
-                } 
-            }
+        redacoes.forEach(r => { let monthLabel = r.date.substring(0, 7).split('-').reverse().join('/'); monthCounts[monthLabel] = (monthCounts[monthLabel] || 0) + 1; });
+        redacaoMonthChart = new Chart(document.getElementById('redacaoMonthChart').getContext('2d'), {
+            type: 'bar', data: { labels: Object.keys(monthCounts), datasets: [{ label: 'Redações feitas', data: Object.values(monthCounts), backgroundColor: '#f59e0b', borderRadius: 4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } } }
         });
     }
 
-    // GRÁFICOS DE DESEMPENHO
-    const ctxDonut = document.getElementById('accDonutChart');
-    const ctxBar = document.getElementById('dailyBarChart');
-    const ctxTime = document.getElementById('timePieChart');
-    const ctxQnt = document.getElementById('qntPieChart');
-
-    if(ctxDonut && ctxBar && ctxTime && ctxQnt) {
-        if(donutChart) donutChart.destroy(); 
-        if(dailyBarChart) dailyBarChart.destroy();
-        if(timePieChart) timePieChart.destroy();
-        if(qntPieChart) qntPieChart.destroy();
-        if(timeBarChart) timeBarChart.destroy(); 
-        if(qntBarChart) qntBarChart.destroy();   
+    if(document.getElementById('accDonutChart')) {
+        if(donutChart) donutChart.destroy(); if(dailyBarChart) dailyBarChart.destroy();
+        if(timePieChart) timePieChart.destroy(); if(qntPieChart) qntPieChart.destroy();
+        if(timeBarChart) timeBarChart.destroy(); if(qntBarChart) qntBarChart.destroy();   
 
         let totalHits = 0, totalErrors = 0, totalTime = 0;
-        const dailyQuestions = {};
-        const timeData = {};
-        const qntData = {};
+        const dailyQuestions = {}; const timeData = {}; const qntData = {};
 
         filteredDoneTasks.forEach(t => {
-            const mat = t.materia;
-            if(t.realTime) timeData[mat] = (timeData[mat] || 0) + t.realTime;
-
+            const mat = t.materia; if(t.realTime) timeData[mat] = (timeData[mat] || 0) + t.realTime;
             if((t.type === 'questoes' || t.type === 'simulado') && t.hits !== undefined && t.errors !== undefined) {
-                totalHits += t.hits;
-                totalErrors += t.errors;
-                if(t.realTime) totalTime += t.realTime;
-
-                dailyQuestions[t.date] = (dailyQuestions[t.date] || 0) + (t.hits + t.errors);
-                qntData[mat] = (qntData[mat] || 0) + (t.hits + t.errors);
+                totalHits += t.hits; totalErrors += t.errors; if(t.realTime) totalTime += t.realTime;
+                dailyQuestions[t.date] = (dailyQuestions[t.date] || 0) + (t.hits + t.errors); qntData[mat] = (qntData[mat] || 0) + (t.hits + t.errors);
             }
         });
 
         const totalQ = totalHits + totalErrors;
-        const accRatio = totalQ > 0 ? ((totalHits / totalQ) * 100).toFixed(0) : 0;
-        const avgTimeSecs = totalQ > 0 ? Math.floor((totalTime * 60) / totalQ) : 0;
-
-        document.getElementById('stat-accuracy').innerText = accRatio + '%';
-        document.getElementById('stat-total-q').innerText = totalQ;
-        document.getElementById('stat-hits').innerText = totalHits;
-        document.getElementById('stat-errors').innerText = totalErrors;
-        document.getElementById('stat-avg-time').innerText = avgTimeSecs + 's';
+        document.getElementById('stat-accuracy').innerText = (totalQ > 0 ? ((totalHits / totalQ) * 100).toFixed(0) : 0) + '%';
+        document.getElementById('stat-total-q').innerText = totalQ; document.getElementById('stat-hits').innerText = totalHits;
+        document.getElementById('stat-errors').innerText = totalErrors; document.getElementById('stat-avg-time').innerText = (totalQ > 0 ? Math.floor((totalTime * 60) / totalQ) : 0) + 's';
         document.getElementById('center-donut-text').innerHTML = `${totalQ}<br><span style="font-size:0.8rem; font-weight:normal; color:var(--dim)">questões</span>`;
 
-        donutChart = new Chart(ctxDonut.getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: ['Certas', 'Erradas'], datasets: [{ data: [totalHits, totalErrors], backgroundColor: ['#22c55e', '#ef4444'], borderWidth: 0, cutout: '75%' }] },
+        donutChart = new Chart(document.getElementById('accDonutChart').getContext('2d'), {
+            type: 'doughnut', data: { labels: ['Certas', 'Erradas'], datasets: [{ data: [totalHits, totalErrors], backgroundColor: ['#22c55e', '#ef4444'], borderWidth: 0, cutout: '75%' }] },
             options: { plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9', padding: 20 } } } }
         });
 
         const sortedDates = Object.keys(dailyQuestions).sort();
-        dailyBarChart = new Chart(ctxBar.getContext('2d'), {
-            type: 'bar',
-            data: { 
-                labels: sortedDates.map(d => d.split('-').reverse().slice(0,2).join('/')), 
-                datasets: [{ label: 'Questões Feitas', data: sortedDates.map(d => dailyQuestions[d]), backgroundColor: '#38bdf8', borderRadius: 4 }] 
-            },
+        dailyBarChart = new Chart(document.getElementById('dailyBarChart').getContext('2d'), {
+            type: 'bar', data: { labels: sortedDates.map(d => d.split('-').reverse().slice(0,2).join('/')), datasets: [{ label: 'Questões Feitas', data: sortedDates.map(d => dailyQuestions[d]), backgroundColor: '#38bdf8', borderRadius: 4 }] },
             options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#94a3b8', stepSize: 5 } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { display: false } } }
         });
 
-        timePieChart = new Chart(ctxTime.getContext('2d'), {
-            type: 'pie',
-            data: { labels: Object.keys(timeData), datasets: [{ data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderWidth: 0 }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } }
-        });
-
-        timeBarChart = new Chart(document.getElementById('timeBarChart').getContext('2d'), {
-            type: 'bar',
-            data: { labels: Object.keys(timeData), datasets: [{ label: 'Minutos Estudados', data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderRadius: 4 }] },
-            options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Minutos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
-        });
-
-        qntPieChart = new Chart(ctxQnt.getContext('2d'), {
-            type: 'pie',
-            data: { labels: Object.keys(qntData), datasets: [{ data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderWidth: 0 }] },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } }
-        });
-
-        qntBarChart = new Chart(document.getElementById('qntBarChart').getContext('2d'), {
-            type: 'bar',
-            data: { labels: Object.keys(qntData), datasets: [{ label: 'Quantidade de Questões', data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderRadius: 4 }] },
-            options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Questões Feitas', color: '#94a3b8' }, ticks: { color: '#94a3b8', stepSize: 1 } }, y: { ticks: { color: '#94a3b8' } } } }
-        });
+        timePieChart = new Chart(document.getElementById('timePieChart').getContext('2d'), { type: 'pie', data: { labels: Object.keys(timeData), datasets: [{ data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderWidth: 0 }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } } });
+        timeBarChart = new Chart(document.getElementById('timeBarChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(timeData), datasets: [{ label: 'Minutos Estudados', data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderRadius: 4 }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Minutos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } } });
+        qntPieChart = new Chart(document.getElementById('qntPieChart').getContext('2d'), { type: 'pie', data: { labels: Object.keys(qntData), datasets: [{ data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderWidth: 0 }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } } });
+        qntBarChart = new Chart(document.getElementById('qntBarChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(qntData), datasets: [{ label: 'Quantidade de Questões', data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderRadius: 4 }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Questões Feitas', color: '#94a3b8' }, ticks: { color: '#94a3b8', stepSize: 1 } }, y: { ticks: { color: '#94a3b8' } } } } });
     }
 }
 </script>
