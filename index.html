@@ -449,6 +449,14 @@
     </div>
 </div>
 
+<div id="modal-success" class="modal">
+    <div class="modal-content" style="text-align: center;">
+        <h3 style="color: var(--success); margin-bottom: 15px; font-size: 1.8rem;">✅ Sucesso!</h3>
+        <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Seu agendamento foi salvo e está de acordo com as regras da plataforma. Bora pra cima desses 800+, uai!</p>
+        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-success')">Continuar</button>
+    </div>
+</div>
+
 <datalist id="topic-suggestions"></datalist>
 
 <div id="modal-daily" class="modal">
@@ -534,7 +542,7 @@ function toggleTaskFilter(type) {
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
     "Redação": "#a855f7", "Linguagens": "#ec4899", "Humanas": "#8b5cf6", "História": "#f97316",
-    "Geografia": "#14b8a6", "Filosofia/Sociologia": "#6366f1", "1º Dia (Ling/Humanas)": "#d946ef", "2º Dia (Mat/Natureza)": "#84cc16", "Geral": "#fbbf24"
+    "Geografia": "#14b8a6", "Filosofia": "#6366f1", "Sociologia": "#4f46e5", "1º Dia (Ling/Humanas)": "#d946ef", "2º Dia (Mat/Natureza)": "#84cc16", "Geral": "#fbbf24"
 };
 function getColor(materia) { return subjectColors[materia] || '#94a3b8'; }
 
@@ -545,7 +553,8 @@ const defaultTopics = {
     "Química": ["Físico-Química", "Química Geral", "Química Orgânica", "Estequiometria", "Eletroquímica"],
     "História": ["Idade Contemporânea", "História do Brasil", "Era Vargas", "Guerra Fria"],
     "Geografia": ["Geografia Agrária", "Meio Ambiente", "Geopolítica", "Geografia Urbana"],
-    "Filosofia/Sociologia": ["Ética e Moral", "Filosofia Antiga", "Sociologia do Trabalho"],
+    "Filosofia": ["Ética e Moral", "Filosofia Antiga", "Socráticos"],
+    "Sociologia": ["Sociologia do Trabalho", "Cultura e Ideologia", "Movimentos Sociais"],
     "Linguagens": ["Interpretação de Texto", "Figuras de Linguagem", "Vanguardas Europeias"]
 };
 
@@ -650,10 +659,10 @@ function toggleList(target) {
 
 function toggleTaskFields() {
     const type = document.getElementById('task-type').value; const container = document.getElementById('dynamic-fields'); let html = '';
-    const matSelect = `<select id="task-materia" onchange="updateTopicDatalist()"><option value="Matemática">Matemática</option><option value="Biologia">Biologia</option><option value="Física">Física</option><option value="Química">Química</option><option value="História">História</option><option value="Geografia">Geografia</option><option value="Filosofia/Sociologia">Filosofia/Sociologia</option><option value="Linguagens">Linguagens</option></select>`;
+    const matSelect = `<select id="task-materia" onchange="updateTopicDatalist()"><option value="Matemática">Matemática</option><option value="Biologia">Biologia</option><option value="Física">Física</option><option value="Química">Química</option><option value="História">História</option><option value="Geografia">Geografia</option><option value="Filosofia">Filosofia</option><option value="Sociologia">Sociologia</option><option value="Linguagens">Linguagens</option></select>`;
     if (type === 'aula') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Conteúdo da Aula">`;
     else if (type === 'questoes') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
-    else if (type === 'simulado') html = `<select id="task-materia"><option value="1º Dia (Ling/Humanas)">1º Dia (Ling/Humanas)</option><option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option><option value="Geral">Simulado Geral</option></select>`;
+    else if (type === 'simulado') html = `<select id="task-materia"><option value="1º Dia (Ling/Humanas)">1º Dia (Ling/Humanas)</option><option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option><option value="Geral">Simulado Geral</option></select><input type="number" id="task-qnt" placeholder="Quantidade de questões do simulado">`;
     else if (type === 'redacao') { html = `<input type="hidden" id="task-materia" value="Redação"><input type="text" id="task-content" placeholder="Tema da Redação"><label style="font-size:0.85rem; color:var(--dim); margin-top:10px; display:block;">Qual a sua meta de pontuação?</label><input type="number" id="task-meta-redacao" placeholder="Ex: 900" max="1000">`; }
     container.innerHTML = html; if(type === 'aula' || type === 'questoes') updateTopicDatalist();
 }
@@ -723,7 +732,10 @@ async function handleSaveTask() {
         if(oldTask && oldTask.type === 'redacao' && oldTask.metaRedacao) taskData.metaRedacao = oldTask.metaRedacao; 
         taskData.date = selectedDate; 
         await db.collection("tasks").doc(editingTaskId).update(taskData);
-        closeModal('modal-task'); loadTasks(); return;
+        closeModal('modal-task');
+        loadTasks();
+        document.getElementById('modal-success').style.display = 'flex'; // Exibe o modal de sucesso
+        return;
     }
 
     const repeat = document.getElementById('task-repeat').checked, baseDate = new Date(selectedDate + 'T12:00:00');
@@ -731,7 +743,9 @@ async function handleSaveTask() {
         const d = new Date(baseDate); d.setDate(d.getDate() + (i * 7));
         taskData.date = d.toISOString().split('T')[0]; await db.collection("tasks").add(taskData);
     }
-    closeModal('modal-task'); loadTasks();
+    closeModal('modal-task');
+    loadTasks();
+    document.getElementById('modal-success').style.display = 'flex'; // Exibe o modal de sucesso
 }
 
 function openEditModal(id) {
@@ -766,7 +780,7 @@ function loadTasks() {
 function renderCard(t, statusClass, statusText) {
     let details = `${t.startTime || '?'} às ${t.endTime || '?'} (${t.plannedTime || 0} min)`;
     if(t.type === 'aula') details += ` | ${t.content}`;
-    else if(t.type === 'questoes') details += ` | ${t.content} - Meta: ${t.qnt}Q`;
+    else if(t.type === 'questoes' || t.type === 'simulado') details += ` | ${t.content || ''} - Meta: ${t.qnt}Q`;
     else if(t.type === 'redacao') details += ` | Tema: ${t.content}`;
 
     const card = document.createElement('div'); card.className = `task-card ${statusClass}`;
@@ -783,6 +797,12 @@ function renderCard(t, statusClass, statusText) {
             scoreHtml = `<div style="color:${scoreColor}; font-weight:bold; margin-top:5px;">🎯 ${scoreText}</div>`;
         } else { scoreHtml = `<div style="color:var(--purple); font-weight:bold; margin-top:5px;">Nota: ${t.score}</div>`; }
     }
+    
+    // Lógica para esconder o botão de edição em redações concluídas (apenas na aba de redação, ou em todas as listagens)
+    let editBtnHtml = `<button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>`;
+    if (t.type === 'redacao' && statusClass === 'done') {
+        editBtnHtml = ''; // Não mostra o botão de editar
+    }
 
     card.innerHTML = `
         <div style="flex:1;">
@@ -795,7 +815,7 @@ function renderCard(t, statusClass, statusText) {
             <span style="font-size: 0.8rem; font-weight: bold; margin-top:5px; display:inline-block; color: ${t.status === 'done' ? 'var(--success)' : (statusClass === 'incomplete' ? 'var(--danger)' : 'var(--dim)')}">${statusText}</span>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;">
-            ${photoBtn} <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
+            ${photoBtn} ${editBtnHtml}
             ${t.status === 'pending' ? `<button onclick="openDoneModal('${t.id}')" style="background:var(--success); border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#000;">Avaliar</button>` : ''}
         </div>
     `;
@@ -935,7 +955,7 @@ async function confirmTaskCompletion() {
             
             if(isNaN(hits) || isNaN(errs)) return alert("Preencha acertos e erros direito!");
             if(!diff) return alert("Sô, esqueceu de marcar a dificuldade da questão!");
-            if (activeTask.type === 'questoes' && activeTask.qnt > 0) { if ((hits + errs) > activeTask.qnt) return alert(`A soma de acertos e erros não pode ser maior que a meta cadastrada.`); }
+            if ((activeTask.type === 'questoes' || activeTask.type === 'simulado') && activeTask.qnt > 0) { if ((hits + errs) > activeTask.qnt) return alert(`A soma de acertos e erros não pode ser maior que a meta cadastrada.`); }
             
             updateData.hits = hits; updateData.errors = errs; updateData.difficulty = diff;
         }
@@ -981,7 +1001,7 @@ function renderConquistas() {
 
         if (q.materia === 'Matemática') stats.matQ += qs;
         else if (['Biologia', 'Física', 'Química'].includes(q.materia)) stats.natQ += qs;
-        else if (['História', 'Geografia', 'Filosofia/Sociologia'].includes(q.materia)) stats.humQ += qs;
+        else if (['História', 'Geografia', 'Filosofia', 'Sociologia'].includes(q.materia)) stats.humQ += qs;
         else if (q.materia === 'Linguagens') stats.linQ += qs;
     });
 
