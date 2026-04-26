@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard ENEM 800+ - Cloud Sync</title>
+    <title>Plataforma ENEM 800+ - Cloud Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -14,230 +14,295 @@
         :root {
             --bg: #0f172a; --card-bg: #1e293b; --primary: #38bdf8;
             --text: #f1f5f9; --danger: #ef4444; --success: #22c55e;
-            --border: #334155;
+            --border: #334155; --sidebar: #0b1120;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Login */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .btn-google {
-            background-color: #ffffff; color: #000; padding: 15px 30px; border-radius: 8px;
-            font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 10px;
-            font-size: 16px; transition: 0.3s; margin-top: 20px;
-        }
-        .btn-google:hover { background-color: #f1f5f9; transform: translateY(-3px); }
+        /* Login Screen */
+        #login-screen { position: absolute; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .btn-google { background-color: #fff; color: #000; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 10px; font-size: 16px; margin-top: 20px; transition: 0.2s; }
+        .btn-google:hover { transform: scale(1.05); }
 
-        /* Dashboard */
-        #dashboard { display: none; width: 100%; max-width: 1200px; padding: 20px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--card-bg); border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .user-info { display: flex; align-items: center; gap: 15px; }
-        .user-info img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); }
-
-        /* Grid Principal do Site */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
-
-        .panel { background: var(--card-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--border); }
-        .panel-title { margin-bottom: 20px; font-size: 1.3rem; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 10px;}
-
-        /* Temporizadores menores e alinhados */
-        .timers-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .timer-card { background: #0f172a; padding: 20px; border-radius: 12px; text-align: center; border-left: 4px solid var(--primary); }
-        .display-time { font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
+        /* Dashboard Layout */
+        #dashboard { display: none; width: 100%; display: flex; }
         
-        /* Botões */
-        .btn { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; margin: 3px; }
-        .btn-start { background: var(--success); color: #000; }
-        .btn-pause { background: var(--primary); color: #000; }
-        .btn-reset { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
-        .btn-logout { background: var(--danger); color: white; padding: 10px 20px; }
-
-        /* Tarefas e Calendário */
-        .task-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .task-input-group input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: white; }
-        .task-input-group button { background: var(--primary); color: #000; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        /* Sidebar Menu */
+        .sidebar { width: 250px; background: var(--sidebar); padding: 20px; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+        .user-profile { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .user-profile img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
         
+        .nav-btn { background: transparent; color: var(--text); border: none; padding: 15px; text-align: left; font-size: 1rem; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; font-weight: 600; }
+        .nav-btn:hover { background: var(--card-bg); }
+        .nav-btn.active { background: var(--primary); color: #000; }
+        
+        .logout-btn { margin-top: auto; background: var(--danger); color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-title { font-size: 2rem; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+
+        /* Estilos do Calendário */
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; }
+        .day-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 15px 5px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; text-align: center; }
+        .day-btn:hover { border-color: var(--primary); }
+        .day-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        
+        .task-input-area { display: flex; gap: 10px; margin-bottom: 20px; background: var(--card-bg); padding: 20px; border-radius: 12px; }
+        .task-input-area input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: white; }
+        .btn-add { background: var(--success); color: #000; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
         .task-list { list-style: none; }
-        .task-list li { background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
-        
-        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; margin-top: 15px; }
-        .day { background: var(--bg); padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid var(--border); }
-        .day.active { background: var(--primary); color: #000; font-weight: bold; }
+        .task-list li { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
+        .btn-del { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 
+        /* Estilos dos Temporizadores */
+        .timers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .timer-card { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; border-top: 4px solid var(--primary); }
+        .display-time { font-size: 4rem; font-weight: 800; margin: 20px 0; }
+        .timer-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; color: #000; }
+
+        /* Dashboard Visual */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .stat-card { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; }
+        .stat-number { font-size: 3rem; color: var(--primary); font-weight: bold; margin: 10px 0; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Projeto <span style="color:var(--primary)">Aprovação</span></h1>
-        <p style="color: #94a3b8;">Faça login para sincronizar sua rotina de estudos</p>
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">Projeto <span style="color:var(--primary)">800+</span></h1>
+        <p style="color: #94a3b8; font-size: 1.2rem;">Sua plataforma de aprovação</p>
         <button class="btn-google" onclick="loginGoogle()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
             Entrar com o Google
         </button>
     </div>
 
-    <div id="dashboard">
-        <header class="header">
-            <div class="user-info">
-                <img id="user-pic" src="" alt="Avatar">
-                <div>
-                    <h2 id="user-name">Carregando...</h2>
-                    <small style="color: var(--success)">● Nuvem Ativa</small>
-                </div>
+    <div id="dashboard" style="display: none;">
+        
+        <nav class="sidebar">
+            <div class="user-profile">
+                <img id="user-pic" src="" alt="Foto">
+                <h3 id="user-name">Carregando...</h3>
+                <small style="color: var(--success);">Online</small>
             </div>
-            <button class="btn-logout" onclick="logout()">Sair</button>
-        </header>
-
-        <div class="main-grid">
             
-            <div class="panel">
-                <h3 class="panel-title">⏱️ Controle de Foco</h3>
-                <div class="timers-container">
-                    <div class="timer-card">
-                        <h4>Pomodoro (Estudo)</h4>
-                        <div class="display-time" id="pomo-display">50:00</div>
-                        <button class="btn btn-start" onclick="startTimer('pomo', 3000)">Start</button>
-                        <button class="btn btn-pause" onclick="pauseTimer('pomo')">Pause</button>
-                        <button class="btn btn-reset" onclick="resetTimer('pomo', 3000)">Reset</button>
-                    </div>
+            <button class="nav-btn active" onclick="changePage('page-calendario', this)">📅 Calendário</button>
+            <button class="nav-btn" onclick="changePage('page-tarefas', this)">📝 Tarefas Gerais</button>
+            <button class="nav-btn" onclick="changePage('page-foco', this)">⏱️ Modo Foco</button>
+            <button class="nav-btn" onclick="changePage('page-desempenho', this)">📊 Desempenho</button>
 
-                    <div class="timer-card" style="border-color: #f59e0b;">
-                        <h4>Cronômetro (Simulados)</h4>
-                        <div class="display-time" id="stopwatch-display">00:00</div>
-                        <button class="btn btn-start" onclick="startStopwatch()">Start</button>
-                        <button class="btn btn-pause" onclick="pauseStopwatch()">Pause</button>
-                        <button class="btn btn-reset" onclick="resetStopwatch()">Reset</button>
-                    </div>
-                </div>
-            </div>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </nav>
 
-            <div>
-                <div class="panel" style="margin-bottom: 20px;">
-                    <h3 class="panel-title">📅 Cronograma Semanal</h3>
-                    <div class="calendar-days">
-                        <div class="day">Dom</div>
-                        <div class="day active">Seg</div>
-                        <div class="day">Ter</div>
-                        <div class="day">Qua</div>
-                        <div class="day">Qui</div>
-                        <div class="day">Sex</div>
-                        <div class="day">Sáb</div>
-                    </div>
-                    <p style="margin-top: 15px; font-size: 0.9rem; color: #94a3b8;">*Hoje: Estudo focado em Ciências da Natureza e Matemática.</p>
+        <main class="main-content">
+            
+            <section id="page-calendario" class="page active">
+                <h2 class="page-title">Cronograma Semanal</h2>
+                
+                <div class="week-grid" id="week-days">
+                    <div class="day-btn active" onclick="selectDay('Segunda', this)">Segunda</div>
+                    <div class="day-btn" onclick="selectDay('Terça', this)">Terça</div>
+                    <div class="day-btn" onclick="selectDay('Quarta', this)">Quarta</div>
+                    <div class="day-btn" onclick="selectDay('Quinta', this)">Quinta</div>
+                    <div class="day-btn" onclick="selectDay('Sexta', this)">Sexta</div>
+                    <div class="day-btn" onclick="selectDay('Sábado', this)">Sábado</div>
+                    <div class="day-btn" onclick="selectDay('Domingo', this)">Domingo</div>
                 </div>
 
-                <div class="panel">
-                    <h3 class="panel-title">📝 Metas do Dia</h3>
-                    <div class="task-input-group">
-                        <input type="text" id="task-input" placeholder="Ex: Resolver 20 questões de Física...">
-                        <button onclick="addTask()">Adicionar</button>
-                    </div>
-                    <ul class="task-list" id="task-list">
-                        <li>Fazer revisão de Biologia <button class="btn btn-reset" onclick="this.parentElement.remove()">X</button></li>
-                        <li>Assistir aula de Redação <button class="btn btn-reset" onclick="this.parentElement.remove()">X</button></li>
+                <div class="task-input-area">
+                    <input type="text" id="cal-task-input" placeholder="Ex: Estudar Ecologia + 15 questões...">
+                    <button class="btn-add" onclick="addCalendarTask()">Adicionar ao Dia</button>
+                </div>
+
+                <h3 style="margin-bottom: 15px;">Matérias para <span id="current-day-title" style="color:var(--primary)">Segunda</span>:</h3>
+                <ul class="task-list" id="calendar-task-list">
                     </ul>
-                </div>
-            </div>
+            </section>
 
-        </div>
+            <section id="page-tarefas" class="page">
+                <h2 class="page-title">Backlog de Estudos (Sem data)</h2>
+                <div class="task-input-area">
+                    <input type="text" id="gen-task-input" placeholder="Ex: Ler o livro Machado de Assis, Revisar fórmulas...">
+                    <button class="btn-add" onclick="addGeneralTask()">Adicionar</button>
+                </div>
+                <ul class="task-list" id="general-task-list"></ul>
+            </section>
+
+            <section id="page-foco" class="page">
+                <h2 class="page-title">Central de Foco</h2>
+                <div class="timers-grid">
+                    <div class="timer-card">
+                        <h3>Pomodoro (Foco)</h3>
+                        <div class="display-time" id="pomo-display">50:00</div>
+                        <button class="timer-btn" style="background:var(--success)" onclick="startTimer('pomo', 3000)">Start</button>
+                        <button class="timer-btn" style="background:var(--primary)" onclick="pauseTimer('pomo')">Pause</button>
+                        <button class="timer-btn" style="background:transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetTimer('pomo', 3000)">Reset</button>
+                    </div>
+
+                    <div class="timer-card" style="border-top-color: #f59e0b;">
+                        <h3>Simulado (Cronômetro)</h3>
+                        <div class="display-time" id="stopwatch-display">00:00</div>
+                        <button class="timer-btn" style="background:var(--success)" onclick="startStopwatch()">Start</button>
+                        <button class="timer-btn" style="background:var(--primary)" onclick="pauseStopwatch()">Pause</button>
+                        <button class="timer-btn" style="background:transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetStopwatch()">Reset</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-desempenho" class="page">
+                <h2 class="page-title">Meu Desempenho</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Horas Focadas (Essa semana)</h3>
+                        <div class="stat-number">12h 30m</div>
+                        <p style="color: #94a3b8;">Continue no ritmo!</p>
+                    </div>
+                    <div class="stat-card" style="border-top: 4px solid #f59e0b;">
+                        <h3>Questões Resolvidas</h3>
+                        <div class="stat-number">145</div>
+                        <p style="color: #94a3b8;">Meta semanal: 200</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
     <script>
-        // AS SUAS CHAVES JÁ ESTÃO AQUI
+        // ==============================================================
+        // ⚠️ ATENÇÃO: COLOQUE SUAS CHAVES DO FIREBASE ABAIXO
+        // ==============================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyDAozYqHIjJe-ptzkVIfqLMC2XTyMG0GaI",
-            authDomain: "meucronogramaenem.firebaseapp.com",
-            projectId: "meucronogramaenem",
-            storageBucket: "meucronogramaenem.firebasestorage.app",
-            messagingSenderId: "933774063012",
-            appId: "1:933774063012:web:5f3556ea2c0f1885a4bd31",
-            measurementId: "G-9CQSYGWYEY"
+            apiKey: "COLE_AQUI",
+            authDomain: "COLE_AQUI",
+            projectId: "COLE_AQUI",
+            storageBucket: "COLE_AQUI",
+            messagingSenderId: "COLE_AQUI",
+            appId: "COLE_AQUI",
+            measurementId: "COLE_AQUI"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Autenticação
-        function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider);
-        }
-
+        // 1. LÓGICA DE LOGIN E TELA
+        function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('dashboard').style.display = 'flex';
+                document.getElementById('user-name').innerText = user.displayName.split(' ')[0];
                 document.getElementById('user-pic').src = user.photoURL;
+                loadCalendarTasks(); // Carrega as tarefas salvas localmente
             } else {
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('dashboard').style.display = 'none';
             }
         });
 
-        // Temporizadores
-        let timers = { pomo: { interval: null, left: 3000 } };
-        let stopwatch = { interval: null, elapsed: 0 };
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
+        // 2. NAVEGAÇÃO ENTRE AS PÁGINAS (ABAS)
+        function changePage(pageId, btnElement) {
+            // Esconde todas as páginas
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            // Tira a cor de todos os botões do menu
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Mostra a página certa e colore o botão clicado
+            document.getElementById(pageId).classList.add('active');
+            btnElement.classList.add('active');
         }
 
-        function startTimer(type, defaultTime) {
-            clearInterval(timers[type].interval);
-            timers[type].interval = setInterval(() => {
-                if (timers[type].left > 0) {
-                    timers[type].left--;
-                    document.getElementById(`${type}-display`).innerText = formatTime(timers[type].left);
-                } else {
-                    clearInterval(timers[type].interval);
-                    alert("Tempo esgotado! Faça uma pausa.");
-                }
-            }, 1000);
+        // 3. LÓGICA DO CALENDÁRIO E TAREFAS
+        let diaAtual = 'Segunda';
+        
+        // Memória local para as tarefas (Até ligarmos 100% no banco do Google)
+        let tarefasPorDia = JSON.parse(localStorage.getItem('tarefasEnem')) || {
+            'Segunda': [], 'Terça': [], 'Quarta': [], 'Quinta': [], 'Sexta': [], 'Sábado': [], 'Domingo': []
+        };
+
+        function selectDay(dia, btnElement) {
+            diaAtual = dia;
+            document.getElementById('current-day-title').innerText = dia;
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderCalendarTasks();
         }
 
-        function pauseTimer(type) { clearInterval(timers[type].interval); }
-        function resetTimer(type, defaultTime) {
-            pauseTimer(type);
-            timers[type].left = defaultTime;
-            document.getElementById(`${type}-display`).innerText = formatTime(defaultTime);
+        function addCalendarTask() {
+            const input = document.getElementById('cal-task-input');
+            const task = input.value.trim();
+            if (task !== "") {
+                tarefasPorDia[diaAtual].push(task);
+                localStorage.setItem('tarefasEnem', JSON.stringify(tarefasPorDia)); // Salva no PC
+                input.value = "";
+                renderCalendarTasks();
+            }
         }
 
-        function startStopwatch() {
-            clearInterval(stopwatch.interval);
-            stopwatch.interval = setInterval(() => {
-                stopwatch.elapsed++;
-                document.getElementById('stopwatch-display').innerText = formatTime(stopwatch.elapsed);
-            }, 1000);
-        }
-        function pauseStopwatch() { clearInterval(stopwatch.interval); }
-        function resetStopwatch() {
-            pauseStopwatch();
-            stopwatch.elapsed = 0;
-            document.getElementById('stopwatch-display').innerText = "00:00";
+        function renderCalendarTasks() {
+            const list = document.getElementById('calendar-task-list');
+            list.innerHTML = "";
+            tarefasPorDia[diaAtual].forEach((task, index) => {
+                list.innerHTML += `
+                    <li>
+                        ${task} 
+                        <button class="btn-del" onclick="removeTask('${diaAtual}', ${index})">Excluir</button>
+                    </li>
+                `;
+            });
         }
 
-        // Adicionar Tarefas
-        function addTask() {
-            const input = document.getElementById('task-input');
-            const taskText = input.value.trim();
-            if(taskText !== "") {
-                const li = document.createElement('li');
-                li.innerHTML = `${taskText} <button class="btn btn-reset" onclick="this.parentElement.remove()">X</button>`;
-                document.getElementById('task-list').appendChild(li);
+        function removeTask(dia, index) {
+            tarefasPorDia[dia].splice(index, 1);
+            localStorage.setItem('tarefasEnem', JSON.stringify(tarefasPorDia));
+            renderCalendarTasks();
+        }
+
+        function loadCalendarTasks() { renderCalendarTasks(); }
+
+        // Tarefas Gerais
+        function addGeneralTask() {
+            const input = document.getElementById('gen-task-input');
+            if (input.value.trim() !== "") {
+                document.getElementById('general-task-list').innerHTML += `
+                    <li>${input.value} <button class="btn-del" onclick="this.parentElement.remove()">Excluir</button></li>
+                `;
                 input.value = "";
             }
         }
+
+        // 4. TEMPORIZADORES (Mesma lógica que já funcionava)
+        let timers = { pomo: { interval: null, left: 3000 } };
+        let stopwatch = { interval: null, elapsed: 0 };
+
+        function formatTime(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+        
+        function startTimer(type, def) {
+            clearInterval(timers[type].interval);
+            timers[type].interval = setInterval(() => {
+                if (timers[type].left > 0) { timers[type].left--; document.getElementById(`${type}-display`).innerText = formatTime(timers[type].left); } 
+                else { clearInterval(timers[type].interval); alert("Fim do bloco!"); }
+            }, 1000);
+        }
+        function pauseTimer(type) { clearInterval(timers[type].interval); }
+        function resetTimer(type, def) { pauseTimer(type); timers[type].left = def; document.getElementById(`${type}-display`).innerText = formatTime(def); }
+
+        function startStopwatch() {
+            clearInterval(stopwatch.interval);
+            stopwatch.interval = setInterval(() => { stopwatch.elapsed++; document.getElementById('stopwatch-display').innerText = formatTime(stopwatch.elapsed); }, 1000);
+        }
+        function pauseStopwatch() { clearInterval(stopwatch.interval); }
+        function resetStopwatch() { pauseStopwatch(); stopwatch.elapsed = 0; document.getElementById('stopwatch-display').innerText = "00:00"; }
     </script>
 </body>
 </html>
