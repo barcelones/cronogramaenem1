@@ -377,6 +377,10 @@
 
         <button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button>
+        
+        <div id="delete-task-container" style="display: none; margin-top: 15px;">
+            <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button>
+        </div>
     </div>
 </div>
 
@@ -629,6 +633,9 @@ function renderDailyTasks(dateStr) {
             <div class="daily-task-item" style="border-left-color: ${cor}">
                 <div class="time">${t.startTime} às ${t.endTime}</div>
                 <div class="title">${t.materia} (${t.type.toUpperCase()})${contentDesc}</div>
+                <div style="margin-top: 5px;">
+                    <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
+                </div>
             </div>
         `;
     });
@@ -643,8 +650,9 @@ function openNewTaskModal() {
     document.getElementById('task-start-time').value = '08:00';
     document.getElementById('task-end-time').value = '09:00';
     document.getElementById('repeat-container').style.display = 'flex';
-    closeModal('modal-daily'); // Fecha a visão do dia
-    document.getElementById('modal-task').style.display = 'flex'; // Abre para criar
+    document.getElementById('delete-task-container').style.display = 'none'; // Esconde botão de excluir ao criar
+    closeModal('modal-daily'); 
+    document.getElementById('modal-task').style.display = 'flex'; 
 }
 
 function renderCalendar() {
@@ -667,7 +675,6 @@ function renderCalendar() {
         const dayDiv = document.createElement('div');
         dayDiv.className = `day-box ${isToday ? 'today' : ''}`;
         
-        // MODIFICADO: Agora ao clicar no dia, abre a Visão do Dia
         dayDiv.onclick = () => {
             selectedDate = dateStr;
             const dateBR = dateStr.split('-').reverse().join('/');
@@ -691,7 +698,6 @@ function renderCalendar() {
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// Função auxiliar para converter "HH:MM" em minutos (ex: "08:30" vira 510)
 function timeToMins(timeStr) {
     if(!timeStr) return 0;
     let parts = timeStr.split(':');
@@ -713,13 +719,11 @@ async function handleSaveTask() {
         let end = new Date(`1970-01-01T${endTime}:00`);
         plannedTime = (end - start) / 60000;
         
-        // VALIDAÇÃO 1: HORÁRIO INVERTIDO
         if (plannedTime <= 0) {
             alert("Opa, trem errado! O horário final precisa ser maior que o horário de início (se for de tarde, use formato 24h tipo 17:00, 18:00, etc). Arruma lá sô!");
             return;
         }
 
-        // VALIDAÇÃO 2: TRAVA DE CONFLITO DE HORÁRIO (Vira-Tempo da Hermione)
         const newStartMins = timeToMins(startTime);
         const newEndMins = timeToMins(endTime);
         const dayTasks = currentTasks.filter(t => t.date === selectedDate && t.id !== editingTaskId);
@@ -728,7 +732,6 @@ async function handleSaveTask() {
             const existingStart = timeToMins(t.startTime);
             const existingEnd = timeToMins(t.endTime);
             
-            // Lógica: Se o novo começar antes do antigo acabar, E o novo acabar depois do antigo começar = Bateu!
             if (newStartMins < existingEnd && newEndMins > existingStart) {
                 alert(`Opa, trem bão não! Você já tem '${t.materia}' agendado das ${t.startTime} às ${t.endTime}. Você não tem Vira-Tempo pra estudar duas coisas juntas sô! Escolha outro horário.`);
                 return;
@@ -791,6 +794,9 @@ function openEditModal(id) {
     document.getElementById('task-end-time').value = task.endTime || '00:00';
     
     document.getElementById('repeat-container').style.display = 'none'; 
+    document.getElementById('delete-task-container').style.display = 'block'; // Mostra botão excluir ao editar
+    
+    closeModal('modal-daily'); // Fecha visão do dia se estiver aberta
     document.getElementById('modal-task').style.display = 'flex';
 }
 
@@ -826,6 +832,8 @@ function renderTaskList() {
 
         const card = document.createElement('div');
         card.className = `task-card ${statusClass}`;
+        
+        // MODIFICADO: Removido o botão 🗑️ da lista principal. Só tem Editar e Avaliar.
         card.innerHTML = `
             <div style="flex:1;">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
@@ -837,8 +845,7 @@ function renderTaskList() {
                 <span style="font-size: 0.8rem; font-weight: bold; color: ${t.status === 'done' ? 'var(--success)' : (statusClass === 'incomplete' ? 'var(--danger)' : 'var(--dim)')}">${statusText}</span>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️</button>
-                <button class="btn-edit" style="color:var(--danger); border-color:var(--danger);" onclick="deleteTask('${t.id}')">🗑️</button>
+                <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
                 ${t.status === 'pending' ? `<button onclick="openDoneModal('${t.id}')" style="background:var(--success); border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#000;">Avaliar</button>` : ''}
             </div>
         `;
@@ -848,10 +855,14 @@ function renderTaskList() {
     });
 }
 
-// FUNÇÃO PARA EXCLUIR TAREFAS DIRETAMENTE
-async function deleteTask(id) {
+// NOVA FUNÇÃO: EXCLUIR TAREFA DE DENTRO DO MODAL DE EDIÇÃO
+async function deleteTaskFromModal() {
+    if(!editingTaskId) return;
     if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return;
-    await db.collection("tasks").doc(id).delete();
+    
+    await db.collection("tasks").doc(editingTaskId).delete();
+    closeModal('modal-task');
+    loadTasks();
 }
 
 function openDoneModal(id) {
