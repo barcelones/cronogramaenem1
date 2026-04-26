@@ -44,11 +44,11 @@
         .day-box.today { border: 1px solid var(--accent); background: #1e293b; }
         .day-num { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
         
-        .tag { font-size: 0.65rem; font-weight: bold; padding: 3px 6px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #000; }
+        .tag { font-size: 0.75rem; font-weight: bold; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
         .tag.aula { background: var(--primary); }
         .tag.questoes { background: var(--accent); }
-        .tag.simulado { background: var(--danger); color: #fff; }
-        .tag.redacao { background: var(--purple); color: #fff; }
+        .tag.simulado { background: var(--danger); }
+        .tag.redacao { background: var(--purple); }
 
         /* Modais */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 20px; }
@@ -56,11 +56,14 @@
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 0.9rem; }
         .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
 
-        /* Tarefas */
+        /* Tarefas e Badges */
         .task-card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .task-card.incomplete { border-left-color: var(--danger); opacity: 0.8; }
         .task-card.done { border-left-color: var(--success); }
-        .badge-type { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: #000; }
+        
+        /* Modificado para Branco e Maior */
+        .badge-type { padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        
         .btn-edit { background: transparent; border: 1px solid var(--dim); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
         .btn-edit:hover { border-color: var(--primary); color: var(--primary); }
 
@@ -76,14 +79,25 @@
         .stat-label { font-size: 0.85rem; color: var(--dim); }
         .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; }
 
+        /* Perfil e Engrenagem Desktop */
+        .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; }
         .gear-icon { position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
         .gear-icon:hover { opacity: 1; transform: rotate(45deg); }
 
+        /* Responsividade Mobile (Corrigido o perfil) */
         @media (max-width: 900px) {
             #app { flex-direction: column; }
-            .sidebar { width: 100%; padding: 15px; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 5px; border-right: none; border-bottom: 1px solid var(--border); }
-            .sidebar-header, .logout-btn { display: none; }
+            .sidebar { width: 100%; padding: 15px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+            
+            /* O cabeçalho agora aparece como uma linha no mobile */
+            .sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 15px; }
+            .sidebar-header img { width: 50px !important; height: 50px !important; padding: 2px !important; margin: 0; }
+            .sidebar-header h3 { margin-top: 0 !important; font-size: 1.1rem !important; margin-bottom: 0 !important; }
+            .gear-icon { position: static; font-size: 1.6rem; margin-left: auto; } /* Engrenagem à direita no mobile */
+            
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
+            .logout-btn { display: block; width: 100%; margin-top: 5px; flex: 1 1 100%; }
+            
             .main { padding: 15px; }
             .calendar-grid { gap: 4px; padding: 5px; }
             .day-label { padding: 5px; font-size: 0.65rem; }
@@ -96,7 +110,7 @@
 
 <div id="login-screen">
     <h1 style="font-size: 3rem; margin-bottom: 15px;">Projeto <span style="color:var(--primary)">800+</span></h1>
-    <p style="color: var(--dim); max-width: 450px; margin-bottom: 30px;">"A disciplina e os dados mostram o caminho. Sua aprovação te espera, sô."</p>
+    <p style="color: var(--dim); max-width: 450px; margin-bottom: 30px;">"A disciplina e os dados mostram o caminho. Sua aprovação te espera."</p>
     <button class="btn-google" onclick="loginGoogle()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
         Acessar Plataforma
@@ -105,10 +119,10 @@
 
 <div id="app">
     <nav class="sidebar">
-        <div class="sidebar-header" style="text-align:center; margin-bottom: 30px; width: 100%; position: relative;">
-            <button class="gear-icon" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
+        <div class="sidebar-header">
             <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px;">
             <h3 id="user-name" style="margin-top:15px; font-size: 1.2rem;">Estudante</h3>
+            <button class="gear-icon" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
         </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
         <button class="nav-link" onclick="showPage('calendario', this)">📅 Calendário</button>
@@ -122,7 +136,7 @@
     <main class="main">
         <section id="inicio" class="page active">
             <div style="padding: 20px 0; text-align: center;">
-                <h1 style="font-size: 2.8rem; color: var(--primary);">Bora estudar, uai!</h1>
+                <h1 style="font-size: 2.8rem; color: var(--primary);">Bora estudar!</h1>
                 <div style="margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px;">
                     <div style="background:var(--card); padding:25px; border-radius:15px; border-bottom: 4px solid var(--primary);">
                         <h3 style="color: var(--primary)">Meta</h3>
@@ -152,9 +166,9 @@
         <section id="tarefas" class="page">
             <h2 style="margin-bottom: 25px;">Lista de Tarefas</h2>
             <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
-                <span class="badge-type aula">Aulas</span>
-                <span class="badge-type questoes">Questões</span>
-                <span class="badge-type simulado">Simulados</span>
+                <span class="badge-type aula" style="background: var(--primary);">Aulas</span>
+                <span class="badge-type questoes" style="background: var(--accent);">Questões</span>
+                <span class="badge-type simulado" style="background: var(--danger);">Simulados</span>
             </div>
             <div id="tasks-list"></div>
         </section>
@@ -424,7 +438,7 @@ function saveCustomTopic(materia, topic) {
 
 // ZERAR PLATAFORMA
 async function resetPlatform() {
-    if(!confirm("Atenção sô! Isso vai apagar TODO o seu histórico, tarefas e redações para sempre! Tem certeza?")) return;
+    if(!confirm("Atenção! Isso vai apagar TODO o seu histórico, tarefas e redações para sempre! Tem certeza?")) return;
     
     try {
         const snapshot = await db.collection("tasks").where("userId", "==", auth.currentUser.uid).get();
@@ -473,7 +487,7 @@ async function saveSettings() {
         document.getElementById('user-name').innerText = name.split(' ')[0];
         if(photo) document.getElementById('user-pic').src = photo;
         closeModal('modal-settings');
-        alert("Perfil atualizado sô!");
+        alert("Perfil atualizado!");
     } catch(e) { alert("Erro ao atualizar: " + e.message); }
 }
 
@@ -614,7 +628,6 @@ async function handleSaveTask() {
     
     let contentVal = contentElem ? contentElem.value : '';
     
-    // Salva o tema no histórico inteligente se for aula/questão
     if((type === 'aula' || type === 'questoes') && contentVal) {
         saveCustomTopic(materia, contentVal);
     }
