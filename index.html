@@ -1,0 +1,206 @@
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard ENEM - Cloud Sync</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+        <style>
+            :root {
+                --bg: #0f172a; --card-bg: #1e293b; --primary: #38bdf8;
+                --text: #f1f5f9; --danger: #ef4444; --success: #22c55e;
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+            body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+
+            /* Tela de Login */
+            #login-screen {
+                display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+            }
+            .btn-google {
+                background-color: #ffffff; color: #000; padding: 15px 30px; border-radius: 8px;
+                font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 10px;
+                font-size: 16px; transition: 0.2s;
+            }
+            .btn-google:hover { background-color: #f1f5f9; transform: scale(1.05); }
+
+            /* Dashboard Oculto inicialmente */
+            #dashboard { display: none; width: 100%; max-width: 1000px; padding: 20px; }
+            
+            .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--card-bg); border-radius: 12px; margin-bottom: 20px;}
+            .user-info { display: flex; align-items: center; gap: 15px; }
+            .user-info img { width: 40px; border-radius: 50%; }
+
+            /* Grid dos Temporizadores */
+            .timers-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+            @media(min-width: 768px) { .timers-grid { grid-template-columns: 1fr 1fr 1fr; } }
+            
+            .timer-card { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; border-top: 4px solid var(--primary); }
+            .display-time { font-size: 3rem; font-weight: bold; margin: 15px 0; font-variant-numeric: tabular-nums; }
+            
+            .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; color: #000; }
+            .btn-start { background: var(--success); }
+            .btn-pause { background: var(--primary); }
+            .btn-reset { background: var(--danger); color: white; }
+            .btn-logout { background: var(--danger); color: white; padding: 10px 20px; border:none; border-radius: 6px; cursor: pointer;}
+        </style>
+    </head>
+    <body>
+
+        <div id="login-screen">
+            <h1 style="margin-bottom: 10px;">Cronograma Aprovação</h1>
+            <p style="margin-bottom: 30px; color: #94a3b8;">Faça login para sincronizar seus estudos na nuvem</p>
+            <button class="btn-google" onclick="loginGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
+                Entrar com o Google
+            </button>
+        </div>
+
+        <div id="dashboard">
+            <div class="header">
+                <div class="user-info">
+                    <img id="user-pic" src="" alt="Foto">
+                    <div>
+                        <h3 id="user-name">Usuário</h3>
+                        <small style="color: #22c55e;">Status: Conectado na Nuvem ☁️</small>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+
+            <h2 style="margin-bottom: 20px;">Central de Foco</h2>
+            
+            <div class="timers-grid">
+                <div class="timer-card" style="border-color: var(--primary);">
+                    <h3>Pomodoro (Foco)</h3>
+                    <div class="display-time" id="pomo-display">50:00</div>
+                    <button class="btn btn-start" onclick="startTimer('pomo', 3000)">Iniciar</button>
+                    <button class="btn btn-pause" onclick="pauseTimer('pomo')">Pausar</button>
+                    <button class="btn btn-reset" onclick="resetTimer('pomo', 3000)">Reset</button>
+                </div>
+
+                <div class="timer-card" style="border-color: #f59e0b;">
+                    <h3>Cronômetro (Livre)</h3>
+                    <div class="display-time" id="stopwatch-display">00:00</div>
+                    <button class="btn btn-start" onclick="startStopwatch()">Iniciar</button>
+                    <button class="btn btn-pause" onclick="pauseStopwatch()">Pausar</button>
+                    <button class="btn btn-reset" onclick="resetStopwatch()">Reset</button>
+                </div>
+
+                <div class="timer-card" style="border-color: #8b5cf6;">
+                    <h3>Pausa / Descanso</h3>
+                    <div class="display-time" id="break-display">10:00</div>
+                    <button class="btn btn-start" onclick="startTimer('break', 600)">Iniciar</button>
+                    <button class="btn btn-pause" onclick="pauseTimer('break')">Pausar</button>
+                    <button class="btn btn-reset" onclick="resetTimer('break', 600)">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ==============================================================
+            // ⚠️ ATENÇÃO: COLOQUE SUAS CHAVES DO FIREBASE AQUI
+            // ==============================================================
+            const firebaseConfig = {
+                apiKey: "AIzaSyDAozYqHIjJe-ptzkVIfqLMC2XTyMG0GaI",
+                authDomain: "meucronogramaenem.firebaseapp.com",
+                projectId: "meucronogramaenem",
+                storageBucket: "meucronogramaenem.firebasestorage.app",
+                messagingSenderId: "933774063012",
+                appId: "1:933774063012:web:5f3556ea2c0f1885a4bd31"
+            };
+
+            // Inicializa o Firebase APENAS SE a chave foi preenchida
+            let db, auth;
+            if(firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+            }
+
+            // ==============================================================
+            // LÓGICA DE LOGIN (GOOGLE)
+            // ==============================================================
+            function loginGoogle() {
+                if(!auth) return alert("Você precisa configurar o Firebase primeiro! Veja o código fonte.");
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider).catch(error => alert("Erro ao logar: " + error.message));
+            }
+
+            function logout() { auth.signOut(); }
+
+            // Verifica se o usuário está logado
+            if(auth) {
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        // Esconde login, mostra dashboard
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        document.getElementById('user-name').innerText = user.displayName;
+                        document.getElementById('user-pic').src = user.photoURL;
+                        // Aqui você chamaria a função para puxar os dados do Firestore
+                        // carregarDados(user.uid);
+                    } else {
+                        // Esconde dashboard, mostra login
+                        document.getElementById('login-screen').style.display = 'flex';
+                        document.getElementById('dashboard').style.display = 'none';
+                    }
+                });
+            }
+
+            // ==============================================================
+            // LÓGICA DOS TEMPORIZADORES
+            // ==============================================================
+            let timers = { pomo: { interval: null, left: 3000 }, break: { interval: null, left: 600 } };
+            let stopwatch = { interval: null, elapsed: 0 };
+
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+            // Timers Regressivos (Pomodoro e Break)
+            function startTimer(type, defaultTime) {
+                clearInterval(timers[type].interval);
+                timers[type].interval = setInterval(() => {
+                    if (timers[type].left > 0) {
+                        timers[type].left--;
+                        document.getElementById(`${type}-display`).innerText = formatTime(timers[type].left);
+                    } else {
+                        clearInterval(timers[type].interval);
+                        alert("Tempo esgotado!");
+                    }
+                }, 1000);
+            }
+
+            function pauseTimer(type) { clearInterval(timers[type].interval); }
+            
+            function resetTimer(type, defaultTime) {
+                clearInterval(timers[type].interval);
+                timers[type].left = defaultTime;
+                document.getElementById(`${type}-display`).innerText = formatTime(defaultTime);
+            }
+
+            // Cronômetro Progressivo
+            function startStopwatch() {
+                clearInterval(stopwatch.interval);
+                stopwatch.interval = setInterval(() => {
+                    stopwatch.elapsed++;
+                    document.getElementById('stopwatch-display').innerText = formatTime(stopwatch.elapsed);
+                }, 1000);
+            }
+            function pauseStopwatch() { clearInterval(stopwatch.interval); }
+            function resetStopwatch() {
+                clearInterval(stopwatch.interval);
+                stopwatch.elapsed = 0;
+                document.getElementById('stopwatch-display').innerText = "00:00";
+            }
+        </script>
+    </body>
+    </html>
