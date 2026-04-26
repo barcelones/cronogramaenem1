@@ -83,15 +83,20 @@
         .stat-label { font-size: 0.85rem; color: var(--dim); }
         .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; }
 
-        /* Perfil e Engrenagem */
+        /* Perfil e Engrenagem + Sininho */
         .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; }
-        .gear-icon { position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
-        .gear-icon:hover { opacity: 1; transform: rotate(45deg); }
+        .header-icons { position: absolute; top: 0px; right: 0px; display: flex; gap: 8px; }
+        .icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; }
+        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: var(--danger); width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
         /* Estilo da lista da Visão Diária */
         .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; }
         .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
         .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
+
+        /* Redação Grid */
+        .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
 
         @media (max-width: 900px) {
             #app { flex-direction: column; }
@@ -100,12 +105,13 @@
             .sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 15px; }
             .sidebar-header img { width: 50px !important; height: 50px !important; padding: 2px !important; margin: 0; }
             .sidebar-header h3 { margin-top: 0 !important; font-size: 1.1rem !important; margin-bottom: 0 !important; }
-            .gear-icon { position: static; font-size: 1.6rem; margin-left: auto; }
+            .header-icons { position: static; margin-left: auto; }
             
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
             
             .main { padding: 15px; }
             .perf-dashboard { grid-template-columns: 1fr; }
+            .redacao-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -123,9 +129,12 @@
 <div id="app">
     <nav class="sidebar">
         <div class="sidebar-header">
+            <div class="header-icons">
+                <button class="icon-btn" onclick="openNotifications()" title="Notificações">🔔<span id="notif-badge" class="notif-badge"></span></button>
+                <button class="icon-btn" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
+            </div>
             <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px;">
             <h3 id="user-name" style="margin-top:15px; font-size: 1.2rem;">Estudante</h3>
-            <button class="gear-icon" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
         </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
         <button class="nav-link" onclick="showPage('calendario', this)">📅 Calendário</button>
@@ -180,9 +189,18 @@
 
         <section id="redacao" class="page">
             <h2 style="margin-bottom: 25px;">Histórico de Redações</h2>
-            <div class="chart-card" style="margin-bottom: 30px; height: 300px;">
-                <canvas id="redacaoChart"></canvas>
+            
+            <div class="redacao-grid">
+                <div class="chart-card" style="height: 300px;">
+                    <h3 style="margin-bottom: 15px; text-align: center; font-size: 1rem;">Evolução das Notas</h3>
+                    <canvas id="redacaoChart"></canvas>
+                </div>
+                <div class="chart-card" style="height: 300px;">
+                    <h3 style="margin-bottom: 15px; text-align: center; font-size: 1rem;">Redações feitas por Mês</h3>
+                    <canvas id="redacaoMonthChart"></canvas>
+                </div>
             </div>
+
             <div id="redacao-list"></div>
         </section>
 
@@ -248,8 +266,17 @@
                 <button class="btn-action" style="width:auto; margin:0; padding:10px 20px; background:var(--primary); color:#000;" onclick="initCharts()">Filtrar Dados</button>
             </div>
 
-            <div class="dash-header">
-                <strong>ℹ️</strong> Atualmente apenas questões do tipo "Treino" e "Simulado" são consideradas nas taxas de acertos e erros.
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                <div class="chart-card">
+                    <h3 style="color: var(--danger); margin-bottom: 10px;">⚠️ Revisão de Erros</h3>
+                    <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Zere seus erros para garantir os 800+!</p>
+                    <div id="review-list" style="max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3 style="color: var(--accent); margin-bottom: 10px;">📈 Matérias para Melhorar</h3>
+                    <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Matérias com taxa de acerto abaixo de 70%.</p>
+                    <div id="improve-list" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                </div>
             </div>
 
             <div class="perf-dashboard">
@@ -328,6 +355,18 @@
 
         <footer style="margin-top: 50px; text-align: center; color: var(--dim); font-size: 0.85rem;">Criado pelo <strong>Grupo Conexão</strong></footer>
     </main>
+</div>
+
+<div id="modal-notif" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--accent); margin-bottom: 15px;">🔔 Mensagem do Sistema</h3>
+        <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">
+            Opa, tudo bão? Passando pra lembrar que você tem <strong>erros pendentes de revisão</strong> lá na aba de Desempenho. 
+            Revisar o que a gente erra é o segredo de ouro pra chegar nos 800+! Bora lá dar uma conferida?
+        </p>
+        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-notif'); showPage('desempenho', document.querySelectorAll('.nav-link')[5])">Ir para Revisão</button>
+        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-notif')">Fechar</button>
+    </div>
 </div>
 
 <div id="modal-settings" class="modal">
@@ -495,6 +534,8 @@ async function resetPlatform() {
         localStorage.removeItem('enem_ano');
         localStorage.removeItem('user_custom_topics');
         localStorage.removeItem('custom_profile_pic');
+        localStorage.removeItem('last_review_notif');
+        localStorage.removeItem('has_unread_notif');
         
         alert("Tudo zerado! Bora focar pros 800+.");
         document.getElementById('user-pic').src = auth.currentUser.photoURL || 'https://via.placeholder.com/70';
@@ -584,6 +625,43 @@ function logout() {
     auth.signOut(); 
 }
 
+// SISTEMA DE NOTIFICAÇÕES ALEATÓRIAS
+function checkNotifications() {
+    let lastNotif = localStorage.getItem('last_review_notif');
+    let nowTime = new Date().getTime();
+    let oneWeek = 7 * 24 * 60 * 60 * 1000;
+    let needsNotif = false;
+
+    // Checa se tem alguma tarefa com erro não revisada
+    let hasUnreviewedErrors = currentTasks.some(t => t.status === 'done' && t.errors > 0 && !t.reviewed);
+
+    if (hasUnreviewedErrors) {
+        if (!lastNotif || (nowTime - parseInt(lastNotif)) > oneWeek) {
+            // Sorteio: 30% de chance de notificar quando fechar 1 semana
+            if (Math.random() < 0.3) {
+                needsNotif = true;
+                localStorage.setItem('last_review_notif', nowTime.toString());
+            }
+        }
+    } else {
+        // Se zerou os erros, apaga a notificação visual pendente
+        localStorage.setItem('has_unread_notif', 'false');
+    }
+
+    if (needsNotif || localStorage.getItem('has_unread_notif') === 'true') {
+        document.getElementById('notif-badge').style.display = 'block';
+        localStorage.setItem('has_unread_notif', 'true');
+    } else {
+        document.getElementById('notif-badge').style.display = 'none';
+    }
+}
+
+function openNotifications() {
+    document.getElementById('notif-badge').style.display = 'none';
+    localStorage.setItem('has_unread_notif', 'false');
+    document.getElementById('modal-notif').style.display = 'flex';
+}
+
 auth.onAuthStateChanged(user => {
     if (user) {
         document.getElementById('login-screen').style.display = 'none';
@@ -605,11 +683,10 @@ function showPage(id, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
     if(id === 'desempenho' || id === 'redacao') initCharts();
 }
 
-// NOVA FUNÇÃO: Alternar entre Pizza e Barra
 function toggleChart(type) {
     const selectVal = document.getElementById(`${type}-chart-type`).value;
     if(selectVal === 'pie') {
@@ -789,11 +866,15 @@ async function handleSaveTask() {
         userId: auth.currentUser.uid, type, materia, status: 'pending',
         content: contentVal,
         qnt: qntElem ? parseInt(qntElem.value) : 0,
-        startTime, endTime, plannedTime,
+        startTime, endTime, plannedTime, reviewed: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     if(editingTaskId) {
+        // Quando edita, mantemos o status de review caso já exista
+        const oldTask = currentTasks.find(t => t.id === editingTaskId);
+        if(oldTask && oldTask.reviewed !== undefined) taskData.reviewed = oldTask.reviewed;
+        
         taskData.date = selectedDate; 
         await db.collection("tasks").doc(editingTaskId).update(taskData);
         closeModal('modal-task');
@@ -846,6 +927,11 @@ function loadTasks() {
           currentTasks = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
           renderCalendar();
           renderTaskList();
+          renderReviewSection(); // Atualiza a aba de revisão
+          checkNotifications();  // Checa se precisa do sininho
+          
+          // Se estiver na aba desempenho, atualiza os gráficos automaticamente
+          if(document.getElementById('desempenho').classList.contains('active')) initCharts();
       });
 }
 
@@ -894,13 +980,71 @@ function renderTaskList() {
     });
 }
 
+// SISTEMA DE REVISÃO E MELHORIAS
+function renderReviewSection() {
+    const reviewList = document.getElementById('review-list');
+    const improveList = document.getElementById('improve-list');
+    let reviewHtml = '';
+    let matStats = {};
+
+    currentTasks.forEach(t => {
+        if(t.status === 'done' && (t.type === 'questoes' || t.type === 'simulado')) {
+            // Conta os dados para ver o que melhorar
+            if(!matStats[t.materia]) matStats[t.materia] = { hits: 0, total: 0 };
+            let hits = t.hits || 0;
+            let errors = t.errors || 0;
+            matStats[t.materia].hits += hits;
+            matStats[t.materia].total += (hits + errors);
+
+            // Popula a lista de revisão
+            if(errors > 0 && !t.reviewed) {
+                reviewHtml += `
+                    <div style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--danger); flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <strong style="color:#fff;">${t.materia}</strong> <span style="color:var(--dim); font-size:0.9rem;">- ${t.content || 'Treino Geral'}</span>
+                            <div style="font-size:0.85rem; color:var(--danger); font-weight:bold; margin-top:3px;">❌ ${errors} erro(s) no dia ${t.date.split('-').reverse().join('/')}</div>
+                        </div>
+                        <button onclick="markAsReviewed('${t.id}')" style="background:var(--success); color:#000; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.85rem;">Acertei / Revisado</button>
+                    </div>
+                `;
+            }
+        }
+    });
+
+    if(reviewHtml === '') {
+        reviewHtml = '<div style="text-align:center; padding: 20px 0; color:var(--dim);">Tudo limpo, sô! Nenhuma revisão pendente. 🎉</div>';
+    }
+    reviewList.innerHTML = reviewHtml;
+
+    // Calcula matérias abaixo de 70% de acerto
+    let improveArr = Object.keys(matStats).map(mat => {
+        let acc = matStats[mat].total > 0 ? (matStats[mat].hits / matStats[mat].total) : 0;
+        return { materia: mat, acc: acc, total: matStats[mat].total };
+    }).filter(item => item.acc < 0.70 && item.total >= 5) // Pega as com menos de 70% (e que já fez pelo menos 5 questões)
+      .sort((a,b) => a.acc - b.acc).slice(0, 4); // Pega as 4 piores
+
+    let impHtml = '';
+    improveArr.forEach(item => {
+        impHtml += `<span style="background:rgba(245, 158, 11, 0.15); color:var(--accent); padding:10px 15px; border-radius:8px; border:1px solid var(--accent); font-weight:bold; font-size:0.9rem;">${item.materia} (${(item.acc*100).toFixed(0)}%)</span>`;
+    });
+
+    if(impHtml === '') {
+        impHtml = '<div style="color:var(--success); font-weight:bold; width: 100%; text-align: center;">Suas médias estão ótimas! Continue assim! 🔥</div>';
+    }
+    improveList.innerHTML = impHtml;
+}
+
+async function markAsReviewed(id) {
+    await db.collection("tasks").doc(id).update({reviewed: true});
+    // O onSnapshot do loadTasks já vai atualizar a lista sozinho
+}
+
 async function deleteTaskFromModal() {
     if(!editingTaskId) return;
     if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return;
     
     await db.collection("tasks").doc(editingTaskId).delete();
     closeModal('modal-task');
-    loadTasks();
 }
 
 function openDoneModal(id) {
@@ -928,7 +1072,7 @@ function openDoneModal(id) {
 }
 
 async function confirmTaskCompletion() {
-    let updateData = { status: 'done', completedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    let updateData = { status: 'done', completedAt: firebase.firestore.FieldValue.serverTimestamp(), reviewed: false };
     
     if(activeTask.type === 'redacao') {
         const score = parseInt(document.getElementById('done-score').value);
@@ -958,7 +1102,6 @@ async function confirmTaskCompletion() {
 
     await db.collection("tasks").doc(activeTask.id).update(updateData);
     closeModal('modal-done');
-    loadTasks();
 }
 
 // POMODORO & CRONÔMETRO
@@ -1013,24 +1156,55 @@ function getFilteredTasks() {
     });
 }
 
-let donutChart, dailyBarChart, redacaoLine, timePieChart, qntPieChart;
-let timeBarChart, qntBarChart; // NOVOS GRÁFICOS
+let donutChart, dailyBarChart, redacaoLine, redacaoMonthChart, timePieChart, qntPieChart;
+let timeBarChart, qntBarChart;
 
 function initCharts() {
     const filteredDoneTasks = getFilteredTasks();
     const practiceTasks = filteredDoneTasks.filter(t => t.type === 'questoes' || t.type === 'simulado');
     
     const ctxRed = document.getElementById('redacaoChart');
-    if(ctxRed) {
+    const ctxRedMonth = document.getElementById('redacaoMonthChart');
+    
+    // GRÁFICOS DE REDAÇÃO
+    if(ctxRed && ctxRedMonth) {
         if(redacaoLine) redacaoLine.destroy();
+        if(redacaoMonthChart) redacaoMonthChart.destroy();
+
         const redacoes = currentTasks.filter(t => t.type === 'redacao' && t.status === 'done').sort((a,b) => a.date.localeCompare(b.date));
+        
+        // Linha: Evolução das Notas
         redacaoLine = new Chart(ctxRed.getContext('2d'), {
             type: 'line',
-            data: { labels: redacoes.map(r => r.date.split('-').reverse().slice(0,2).join('/')), datasets: [{ label: 'Nota da Redação', data: redacoes.map(r => r.score), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', fill: true, tension: 0.3 }] },
-            options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 1000, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { labels: { color: '#f1f5f9' } } } }
+            data: { labels: redacoes.map(r => r.date.split('-').reverse().slice(0,2).join('/')), datasets: [{ label: 'Nota', data: redacoes.map(r => r.score), borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', fill: true, tension: 0.3 }] },
+            options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 1000, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { display: false } } }
+        });
+
+        // Barra: Redações por Mês
+        let monthCounts = {};
+        redacoes.forEach(r => {
+            let monthLabel = r.date.substring(0, 7).split('-').reverse().join('/'); // Pega YYYY-MM e vira MM/YYYY
+            monthCounts[monthLabel] = (monthCounts[monthLabel] || 0) + 1;
+        });
+
+        redacaoMonthChart = new Chart(ctxRedMonth.getContext('2d'), {
+            type: 'bar',
+            data: { 
+                labels: Object.keys(monthCounts), 
+                datasets: [{ label: 'Redações feitas', data: Object.values(monthCounts), backgroundColor: '#f59e0b', borderRadius: 4 }] 
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { beginAtZero: true, ticks: { stepSize: 1, color: '#94a3b8' } }, 
+                    x: { ticks: { color: '#94a3b8' } } 
+                } 
+            }
         });
     }
 
+    // GRÁFICOS DE DESEMPENHO
     const ctxDonut = document.getElementById('accDonutChart');
     const ctxBar = document.getElementById('dailyBarChart');
     const ctxTime = document.getElementById('timePieChart');
@@ -1041,8 +1215,8 @@ function initCharts() {
         if(dailyBarChart) dailyBarChart.destroy();
         if(timePieChart) timePieChart.destroy();
         if(qntPieChart) qntPieChart.destroy();
-        if(timeBarChart) timeBarChart.destroy(); // Limpa as barras antigas
-        if(qntBarChart) qntBarChart.destroy();   // Limpa as barras antigas
+        if(timeBarChart) timeBarChart.destroy(); 
+        if(qntBarChart) qntBarChart.destroy();   
 
         let totalHits = 0, totalErrors = 0, totalTime = 0;
         const dailyQuestions = {};
@@ -1090,58 +1264,28 @@ function initCharts() {
             options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#94a3b8', stepSize: 5 } }, x: { ticks: { color: '#94a3b8' } } }, plugins: { legend: { display: false } } }
         });
 
-        // 1. GRÁFICOS DE TEMPO (PIZZA E BARRAS HORIZONTAIS)
         timePieChart = new Chart(ctxTime.getContext('2d'), {
             type: 'pie',
-            data: { 
-                labels: Object.keys(timeData), 
-                datasets: [{ data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderWidth: 0 }] 
-            },
+            data: { labels: Object.keys(timeData), datasets: [{ data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderWidth: 0 }] },
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } }
         });
 
         timeBarChart = new Chart(document.getElementById('timeBarChart').getContext('2d'), {
             type: 'bar',
-            data: { 
-                labels: Object.keys(timeData), 
-                datasets: [{ label: 'Minutos Estudados', data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderRadius: 4 }] 
-            },
-            options: { 
-                indexAxis: 'y', 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
-                scales: { 
-                    x: { title: { display: true, text: 'Minutos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
-                    y: { ticks: { color: '#94a3b8' } }
-                } 
-            }
+            data: { labels: Object.keys(timeData), datasets: [{ label: 'Minutos Estudados', data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderRadius: 4 }] },
+            options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Minutos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } }
         });
 
-        // 2. GRÁFICOS DE QUESTÕES (PIZZA E BARRAS HORIZONTAIS)
         qntPieChart = new Chart(ctxQnt.getContext('2d'), {
             type: 'pie',
-            data: { 
-                labels: Object.keys(qntData), 
-                datasets: [{ data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderWidth: 0 }] 
-            },
+            data: { labels: Object.keys(qntData), datasets: [{ data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderWidth: 0 }] },
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } }
         });
 
         qntBarChart = new Chart(document.getElementById('qntBarChart').getContext('2d'), {
             type: 'bar',
-            data: { 
-                labels: Object.keys(qntData), 
-                datasets: [{ label: 'Quantidade de Questões', data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderRadius: 4 }] 
-            },
-            options: { 
-                indexAxis: 'y', 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
-                scales: { 
-                    x: { title: { display: true, text: 'Questões Feitas', color: '#94a3b8' }, ticks: { color: '#94a3b8', stepSize: 1 } },
-                    y: { ticks: { color: '#94a3b8' } }
-                } 
-            }
+            data: { labels: Object.keys(qntData), datasets: [{ label: 'Quantidade de Questões', data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderRadius: 4 }] },
+            options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Questões Feitas', color: '#94a3b8' }, ticks: { color: '#94a3b8', stepSize: 1 } }, y: { ticks: { color: '#94a3b8' } } } }
         });
     }
 }
