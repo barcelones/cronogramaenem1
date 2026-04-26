@@ -82,20 +82,32 @@
         .diff-medio { background: rgba(245, 158, 11, 0.2); color: var(--accent); border: 1px solid var(--accent); }
         .diff-dificil { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
 
+        /* Missões */
+        .mission-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .mission-type { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; align-self: flex-start; }
+        .mission-type.diaria { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
+        .mission-type.semanal { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+        .mission-type.mensal { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .mission-progress-bg { background: var(--card); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px; }
+        .mission-progress-fill { background: var(--success); height: 100%; transition: 0.4s; }
+
         /* Desempenho e Filtros */
         .dash-header { background: #1e293b; color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 20px; display:flex; align-items:center; gap:10px; border-left: 4px solid var(--primary); flex-wrap: wrap; }
         .filter-bar { display: flex; gap: 10px; align-items: center; background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); flex-wrap: wrap; }
         .perf-dashboard { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 20px; }
-        .chart-card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
+        .chart-card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+        .chart-card.clickable:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-mini-card { background: var(--bg); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
         .stat-val { font-size: 2.5rem; font-weight: 300; margin-bottom: 5px; }
         .stat-label { font-size: 0.85rem; color: var(--dim); }
         .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; }
 
-        /* Perfil e Engrenagem + Sininho */
-        .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; }
-        .header-icons { position: absolute; top: 0px; right: 0px; display: flex; gap: 8px; }
+        /* Perfil e Engrenagem + Sininho + Troféu */
+        .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; padding-top: 15px; }
+        .trophy-btn { position: absolute; left: 0px; top: 10px; font-size: 1.6rem; background: none; border: none; cursor: pointer; transition: 0.3s; opacity: 0.8; z-index: 10; }
+        .trophy-btn:hover { transform: scale(1.15) rotate(-5deg); opacity: 1; }
+        .header-icons { position: absolute; top: 10px; right: 0px; display: flex; gap: 8px; z-index: 10; }
         .icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; }
         .icon-btn:hover { opacity: 1; transform: scale(1.1); }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: var(--danger); width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
@@ -109,10 +121,11 @@
             body { height: auto; overflow-y: auto; display: block; }
             #app { flex-direction: column; display: flex; height: auto; min-height: 100vh; }
             .sidebar { width: 100%; padding: calc(20px + env(safe-area-inset-top)) 15px 15px 15px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
-            .sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 15px; }
+            .sidebar-header { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 10px; padding-top: 40px; }
             .sidebar-header img { width: 50px !important; height: 50px !important; padding: 2px !important; margin: 0; }
             .sidebar-header h3 { margin-top: 0 !important; font-size: 1.1rem !important; margin-bottom: 0 !important; }
-            .header-icons { position: static; margin-left: auto; }
+            .header-icons { position: absolute; top: 0px; right: 0px; }
+            .trophy-btn { top: 0px; left: 0px; }
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
             .main { overflow-y: visible; padding: 15px; height: auto; }
             .perf-dashboard { grid-template-columns: 1fr; }
@@ -134,13 +147,13 @@
 <div id="app">
     <nav class="sidebar">
         <div class="sidebar-header">
+            <button class="trophy-btn" onclick="showPage('conquistas', this)" title="Página de Conquistas">🏆</button>
             <div class="header-icons">
-                <button class="icon-btn" onclick="showPage('conquistas', this)" title="Conquistas">🏆</button>
                 <button class="icon-btn" onclick="openNotifications()" title="Notificações">🔔<span id="notif-badge" class="notif-badge"></span></button>
                 <button class="icon-btn" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
             </div>
-            <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px;">
-            <h3 id="user-name" style="margin-top:15px; font-size: 1.2rem;">Estudante</h3>
+            <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto;">
+            <h3 id="user-name" style="margin-top:10px; font-size: 1.2rem;">Estudante</h3>
         </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
         <button class="nav-link" onclick="showPage('calendario', this)">📅 Calendário</button>
@@ -172,31 +185,39 @@
         </section>
 
         <section id="conquistas" class="page">
-            <h2 style="margin-bottom: 10px;">🏆 Suas Conquistas</h2>
-            <p style="color:var(--dim); margin-bottom:30px;">Continue praticando para desbloquear novas medalhas de desempenho.</p>
+            <h2 style="margin-bottom: 10px;">🏆 Suas Conquistas e Missões</h2>
+            <p style="color:var(--dim); margin-bottom:30px;">Cumpra as missões diárias, semanais e mensais para garantir os 800+!</p>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;" id="medal-container">
-                </div>
-
-            <h3 style="margin-bottom: 20px;">📊 Estatísticas de Questões Resolvidas</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+            <h3 style="margin-bottom: 15px;">📊 Níveis de Questões Resolvidas <span style="font-size:0.8rem; color:var(--dim); font-weight:normal;">(Clique para ver o histórico)</span></h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px;">
                 <div class="chart-card" style="text-align:center;">
                     <div style="font-size:0.85rem; color:var(--dim); text-transform:uppercase; font-weight:bold;">Total Geral</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--primary);" id="stats-total-q">0</div>
                 </div>
-                <div class="chart-card" style="text-align:center;">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('facil')">
                     <div style="font-size:0.85rem; color:var(--success); text-transform:uppercase; font-weight:bold;">Nível Fácil</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-facil-q">0</div>
+                    <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
                 </div>
-                <div class="chart-card" style="text-align:center;">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('medio')">
                     <div style="font-size:0.85rem; color:var(--accent); text-transform:uppercase; font-weight:bold;">Nível Médio</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-medio-q">0</div>
+                    <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
                 </div>
-                <div class="chart-card" style="text-align:center;">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('dificil')">
                     <div style="font-size:0.85rem; color:var(--danger); text-transform:uppercase; font-weight:bold;">Nível Difícil</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-dificil-q">0</div>
+                    <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
                 </div>
             </div>
+
+            <h3 style="margin-bottom: 20px;">🏅 Grandes Medalhas (Vitalícias)</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;" id="medal-container">
+                </div>
+
+            <h3 style="margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 20px;">🎯 Missões de Rotina (Mais de 50 Opções)</h3>
+            <div id="missions-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 10px;">
+                </div>
         </section>
 
         <section id="calendario" class="page">
@@ -366,6 +387,15 @@
 
         <footer style="margin-top: 50px; text-align: center; color: var(--dim); font-size: 0.85rem;">Criado pelo <strong>Grupo Conexão</strong></footer>
     </main>
+</div>
+
+<div id="modal-diff-details" class="modal">
+    <div class="modal-content">
+        <h3 id="diff-modal-title" style="margin-bottom: 15px;">Questões</h3>
+        <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Aqui estão as matérias e conteúdos que você avaliou com esse nível.</p>
+        <div id="diff-modal-list" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
+        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-diff-details')">Fechar Janela</button>
+    </div>
 </div>
 
 <div id="modal-improvement" class="modal">
@@ -685,12 +715,12 @@ async function handleSaveTask() {
     if((type === 'aula' || type === 'questoes') && contentVal) saveCustomTopic(materia, contentVal);
 
     const taskData = { userId: auth.currentUser.uid, type, materia, status: 'pending', content: contentVal, qnt: qntElem ? parseInt(qntElem.value) : 0, startTime, endTime, plannedTime, reviewed: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
-    if (type === 'redacao' && metaRedacaoElem && !editingTaskId) { taskData.metaRedacao = parseInt(metaRedacaoElem.value) || 0; } // Só salva meta se for nova
+    if (type === 'redacao' && metaRedacaoElem && !editingTaskId) { taskData.metaRedacao = parseInt(metaRedacaoElem.value) || 0; } 
 
     if(editingTaskId) {
         const oldTask = currentTasks.find(t => t.id === editingTaskId);
         if(oldTask && oldTask.reviewed !== undefined) taskData.reviewed = oldTask.reviewed;
-        if(oldTask && oldTask.type === 'redacao' && oldTask.metaRedacao) taskData.metaRedacao = oldTask.metaRedacao; // Mantém a meta blindada
+        if(oldTask && oldTask.type === 'redacao' && oldTask.metaRedacao) taskData.metaRedacao = oldTask.metaRedacao; 
         taskData.date = selectedDate; 
         await db.collection("tasks").doc(editingTaskId).update(taskData);
         closeModal('modal-task'); loadTasks(); return;
@@ -796,6 +826,32 @@ function renderTaskList() {
 function openPhotoModal(imgSrc) { document.getElementById('view-photo-img').src = imgSrc; document.getElementById('modal-photo-view').style.display = 'flex'; }
 function openImprovementModal() { document.getElementById('modal-improvement').style.display = 'flex'; }
 
+function openDifficultyDetails(diff) {
+    const list = document.getElementById('diff-modal-list');
+    const title = document.getElementById('diff-modal-title');
+    const diffNames = { 'facil': 'Nível Fácil', 'medio': 'Nível Médio', 'dificil': 'Nível Difícil' };
+    const diffColors = { 'facil': 'var(--success)', 'medio': 'var(--accent)', 'dificil': 'var(--danger)' };
+    
+    title.innerText = `Histórico: ${diffNames[diff]}`; title.style.color = diffColors[diff];
+    const filtered = currentTasks.filter(t => t.status === 'done' && t.difficulty === diff && (t.type === 'questoes' || t.type === 'simulado'));
+    
+    if (filtered.length === 0) { list.innerHTML = '<p style="color:var(--dim); text-align:center;">Nenhuma questão avaliada nesse nível ainda, sô!</p>'; } 
+    else {
+        let html = '';
+        filtered.sort((a,b) => b.date.localeCompare(a.date)).forEach(t => {
+            html += `<div style="background:var(--card); padding:15px; border-radius:8px; margin-bottom:10px; border-left:4px solid ${getColor(t.materia)};">
+                <div style="font-weight:bold; color:var(--text);">${t.date.split('-').reverse().join('/')} - ${t.materia}</div>
+                <div style="font-size:0.85rem; color:var(--dim); margin-top:3px;">${t.content || 'Treinamento Geral'}</div>
+                <div style="margin-top:8px; font-size:0.9rem; font-weight:bold;">
+                    <span style="color:var(--success);">✅ Acertos: ${t.hits||0}</span> <span style="margin: 0 5px; color:var(--border);">|</span> 
+                    <span style="color:var(--danger);">❌ Erros: ${t.errors||0}</span>
+                </div>
+            </div>`;
+        }); list.innerHTML = html;
+    }
+    document.getElementById('modal-diff-details').style.display = 'flex';
+}
+
 function renderReviewSection() {
     const reviewList = document.getElementById('review-list'), improveList = document.getElementById('improve-list');
     let reviewHtml = ''; let matStats = {}; let reviewedCount = 0; let pendingCount = 0;
@@ -834,11 +890,8 @@ function openDoneModal(id) {
     document.getElementById('task-difficulty-val').value = '';
     document.querySelectorAll('#difficulty-selection button').forEach(b => b.style.background = 'var(--bg)');
 
-    if (activeTask.type === 'questoes' || activeTask.type === 'simulado') {
-        diffContainer.style.display = 'block';
-    } else {
-        diffContainer.style.display = 'none';
-    }
+    if (activeTask.type === 'questoes' || activeTask.type === 'simulado') { diffContainer.style.display = 'block'; } 
+    else { diffContainer.style.display = 'none'; }
 
     let html = '';
     if(activeTask.type === 'redacao') {
@@ -890,50 +943,159 @@ async function confirmTaskCompletion() {
     await db.collection("tasks").doc(activeTask.id).update(updateData); closeModal('modal-done');
 }
 
-// GAMIFICAÇÃO: CONQUISTAS
+// ==========================================
+// GAMIFICAÇÃO: CONQUISTAS E 50+ MISSÕES
+// ==========================================
 function renderConquistas() {
+    const today = new Date(); 
+    const todayStr = today.toISOString().split('T')[0];
+    const startOfWeek = new Date(today); startOfWeek.setDate(today.getDate() - today.getDay());
+    const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6);
+    const startWeekStr = startOfWeek.toISOString().split('T')[0];
+    const endWeekStr = endOfWeek.toISOString().split('T')[0];
+    const monthStr = todayStr.substring(0,7);
+
     const doneTasks = currentTasks.filter(t => t.status === 'done');
     const questoes = doneTasks.filter(t => t.type === 'questoes' || t.type === 'simulado');
     const redacoes = doneTasks.filter(t => t.type === 'redacao');
 
-    let totalQ = 0, facilQ = 0, medioQ = 0, dificilQ = 0;
+    // Estatísticas Básicas
+    let stats = {
+        totalQ: 0, facilQ: 0, medioQ: 0, dificilQ: 0,
+        qToday: 0, qWeek: 0, qMonth: 0,
+        timeToday: 0, timeWeek: 0, timeMonth: 0,
+        redToday: 0, redWeek: 0, redMonth: 0,
+        matQ: 0, natQ: 0, humQ: 0, linQ: 0
+    };
+
     questoes.forEach(q => {
         let qs = (q.hits || 0) + (q.errors || 0);
-        totalQ += qs;
-        if (q.difficulty === 'facil') facilQ += qs;
-        if (q.difficulty === 'medio') medioQ += qs;
-        if (q.difficulty === 'dificil') dificilQ += qs;
+        stats.totalQ += qs;
+        if (q.difficulty === 'facil') stats.facilQ += qs;
+        if (q.difficulty === 'medio') stats.medioQ += qs;
+        if (q.difficulty === 'dificil') stats.dificilQ += qs;
+        
+        if (q.date === todayStr) { stats.qToday += qs; stats.timeToday += (q.realTime||0); }
+        if (q.date >= startWeekStr && q.date <= endWeekStr) { stats.qWeek += qs; stats.timeWeek += (q.realTime||0); }
+        if (q.date.startsWith(monthStr)) { stats.qMonth += qs; stats.timeMonth += (q.realTime||0); }
+
+        if (q.materia === 'Matemática') stats.matQ += qs;
+        else if (['Biologia', 'Física', 'Química'].includes(q.materia)) stats.natQ += qs;
+        else if (['História', 'Geografia', 'Filosofia/Sociologia'].includes(q.materia)) stats.humQ += qs;
+        else if (q.materia === 'Linguagens') stats.linQ += qs;
     });
 
-    document.getElementById('stats-total-q').innerText = totalQ;
-    document.getElementById('stats-facil-q').innerText = facilQ;
-    document.getElementById('stats-medio-q').innerText = medioQ;
-    document.getElementById('stats-dificil-q').innerText = dificilQ;
+    redacoes.forEach(r => {
+        if (r.date === todayStr) stats.redToday++;
+        if (r.date >= startWeekStr && r.date <= endWeekStr) stats.redWeek++;
+        if (r.date.startsWith(monthStr)) stats.redMonth++;
+    });
+
+    // Atualiza Painel de Níveis
+    document.getElementById('stats-total-q').innerText = stats.totalQ;
+    document.getElementById('stats-facil-q').innerText = stats.facilQ;
+    document.getElementById('stats-medio-q').innerText = stats.medioQ;
+    document.getElementById('stats-dificil-q').innerText = stats.dificilQ;
 
     let metaBatidaCount = redacoes.filter(r => r.score && r.metaRedacao && r.score >= r.metaRedacao).length;
 
+    // Grandes Medalhas Vitalícias
     const medals = [
-        { title: "Calouro", desc: "Resolver 100 questões", icon: "🌱", val: totalQ, target: 100 },
-        { title: "Veterano", desc: "Resolver 500 questões", icon: "🔥", val: totalQ, target: 500 },
-        { title: "O Grande Mestre", desc: "Resolver 1.000 questões", icon: "👑", val: totalQ, target: 1000 },
+        { title: "Calouro", desc: "Resolver 100 questões", icon: "🌱", val: stats.totalQ, target: 100 },
+        { title: "Veterano", desc: "Resolver 500 questões", icon: "🔥", val: stats.totalQ, target: 500 },
+        { title: "O Grande Mestre", desc: "Resolver 1.000 questões", icon: "👑", val: stats.totalQ, target: 1000 },
         { title: "Escritor", desc: "Fazer 5 redações", icon: "🖋️", val: redacoes.length, target: 5 },
         { title: "Elite 900+", desc: "Bater 10 metas de Redação", icon: "💎", val: metaBatidaCount, target: 10 }
     ];
-
-    const container = document.getElementById('medal-container');
-    container.innerHTML = medals.map(m => {
+    document.getElementById('medal-container').innerHTML = medals.map(m => {
         const isUnlocked = m.val >= m.target;
-        return `
-            <div class="medal-card ${isUnlocked ? 'unlocked' : 'locked'}">
-                <span class="medal-icon">${m.icon}</span>
-                <div class="medal-title">${m.title}</div>
-                <div class="medal-desc">${m.desc}</div>
-                <div style="font-size:0.75rem; color:var(--primary); margin-top:10px; font-weight:bold;">${m.val} / ${m.target}</div>
+        return `<div class="medal-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                    <span class="medal-icon">${m.icon}</span><div class="medal-title">${m.title}</div>
+                    <div class="medal-desc">${m.desc}</div><div style="font-size:0.75rem; color:var(--primary); margin-top:10px; font-weight:bold;">${Math.min(m.val, m.target)} / ${m.target}</div>
+                </div>`;
+    }).join('');
+
+    // Gerador de 50+ Missões Diárias, Semanais e Mensais
+    const missionDefs = [
+        // 15 Diárias
+        { t:'diaria', title:'Aquecimento', desc:'Faça 5 questões hoje', val: stats.qToday, req: 5 },
+        { t:'diaria', title:'Ritmo Bom', desc:'Faça 15 questões hoje', val: stats.qToday, req: 15 },
+        { t:'diaria', title:'Maratona de Hoje', desc:'Faça 30 questões hoje', val: stats.qToday, req: 30 },
+        { t:'diaria', title:'Insano do Dia', desc:'Faça 50 questões hoje', val: stats.qToday, req: 50 },
+        { t:'diaria', title:'Deus do Foco', desc:'Faça 90 questões hoje', val: stats.qToday, req: 90 },
+        { t:'diaria', title:'Start no Foco', desc:'Estude 30 min hoje', val: stats.timeToday, req: 30 },
+        { t:'diaria', title:'Meia Maratona', desc:'Estude 60 min hoje', val: stats.timeToday, req: 60 },
+        { t:'diaria', title:'Foco Intenso', desc:'Estude 120 min hoje', val: stats.timeToday, req: 120 },
+        { t:'diaria', title:'Foco de Elite', desc:'Estude 180 min hoje', val: stats.timeToday, req: 180 },
+        { t:'diaria', title:'Máquina de Estudo', desc:'Estude 240 min hoje', val: stats.timeToday, req: 240 },
+        { t:'diaria', title:'Treino de Redação', desc:'Faça 1 redação hoje', val: stats.redToday, req: 1 },
+        { t:'diaria', title:'Redator Duplo', desc:'Faça 2 redações hoje', val: stats.redToday, req: 2 },
+        { t:'diaria', title:'Fácil e Rápido', desc:'Acerte 10 questões fáceis', val: stats.facilQ, req: 10 },
+        { t:'diaria', title:'Desafio Médio', desc:'Faça 10 questões médias', val: stats.medioQ, req: 10 },
+        { t:'diaria', title:'Superando Limites', desc:'Faça 5 questões difíceis', val: stats.dificilQ, req: 5 },
+
+        // 15 Semanais
+        { t:'semanal', title:'Semana Start', desc:'Faça 50 questões na semana', val: stats.qWeek, req: 50 },
+        { t:'semanal', title:'Semana Focada', desc:'Faça 100 questões na semana', val: stats.qWeek, req: 100 },
+        { t:'semanal', title:'Semana Monstro', desc:'Faça 200 questões na semana', val: stats.qWeek, req: 200 },
+        { t:'semanal', title:'Semana Insana', desc:'Faça 350 questões na semana', val: stats.qWeek, req: 350 },
+        { t:'semanal', title:'Lenda da Semana', desc:'Faça 500 questões na semana', val: stats.qWeek, req: 500 },
+        { t:'semanal', title:'Constância', desc:'Estude 300 min na semana', val: stats.timeWeek, req: 300 },
+        { t:'semanal', title:'Dedicação', desc:'Estude 600 min na semana', val: stats.timeWeek, req: 600 },
+        { t:'semanal', title:'Sede de Aprovação', desc:'Estude 1000 min na semana', val: stats.timeWeek, req: 1000 },
+        { t:'semanal', title:'Imparável', desc:'Estude 1500 min na semana', val: stats.timeWeek, req: 1500 },
+        { t:'semanal', title:'Escritor de Elite', desc:'Faça 2 redações na semana', val: stats.redWeek, req: 2 },
+        { t:'semanal', title:'Treino Pesado Redação', desc:'Faça 4 redações na semana', val: stats.redWeek, req: 4 },
+        { t:'semanal', title:'Rei da Matemática', desc:'Faça 50 questões de Matemática', val: stats.matQ, req: 50 },
+        { t:'semanal', title:'Gênio da Natureza', desc:'Faça 50 questões de Natureza', val: stats.natQ, req: 50 },
+        { t:'semanal', title:'Mestre de Humanas', desc:'Faça 50 questões de Humanas', val: stats.humQ, req: 50 },
+        { t:'semanal', title:'Poliglota/Leitor', desc:'Faça 50 questões de Linguagens', val: stats.linQ, req: 50 },
+
+        // 20 Mensais / Longo Prazo
+        { t:'mensal', title:'Mês Consistente', desc:'Faça 200 questões no mês', val: stats.qMonth, req: 200 },
+        { t:'mensal', title:'Mês de Evolução', desc:'Faça 500 questões no mês', val: stats.qMonth, req: 500 },
+        { t:'mensal', title:'Mês dos 800+', desc:'Faça 1000 questões no mês', val: stats.qMonth, req: 1000 },
+        { t:'mensal', title:'Mês Impossível', desc:'Faça 2000 questões no mês', val: stats.qMonth, req: 2000 },
+        { t:'mensal', title:'Ciborgue dos Estudos', desc:'Faça 3000 questões no mês', val: stats.qMonth, req: 3000 },
+        { t:'mensal', title:'Rotina Saudável', desc:'Estude 1000 min no mês', val: stats.timeMonth, req: 1000 },
+        { t:'mensal', title:'Rotina Focada', desc:'Estude 2500 min no mês', val: stats.timeMonth, req: 2500 },
+        { t:'mensal', title:'Rotina Intensa', desc:'Estude 5000 min no mês', val: stats.timeMonth, req: 5000 },
+        { t:'mensal', title:'O Futuro Calouro', desc:'Estude 8000 min no mês', val: stats.timeMonth, req: 8000 },
+        { t:'mensal', title:'Fábrica de Texto', desc:'Faça 4 redações no mês', val: stats.redMonth, req: 4 },
+        { t:'mensal', title:'Máquina de Argumentos', desc:'Faça 8 redações no mês', val: stats.redMonth, req: 8 },
+        { t:'mensal', title:'Nota 1000 Garantida', desc:'Faça 12 redações no mês', val: stats.redMonth, req: 12 },
+        { t:'mensal', title:'Matemático Ninja', desc:'Faça 200 questões de Matemática', val: stats.matQ, req: 200 },
+        { t:'mensal', title:'Cientista Maluco', desc:'Faça 200 questões de Natureza', val: stats.natQ, req: 200 },
+        { t:'mensal', title:'Filósofo e Historiador', desc:'Faça 200 questões de Humanas', val: stats.humQ, req: 200 },
+        { t:'mensal', title:'Senhor das Palavras', desc:'Faça 200 questões de Linguagens', val: stats.linQ, req: 200 },
+        { t:'mensal', title:'Destruidor de Fáceis', desc:'Acerte 150 questões Fáceis', val: stats.facilQ, req: 150 },
+        { t:'mensal', title:'Equilíbrio Médio', desc:'Acerte 150 questões Médias', val: stats.medioQ, req: 150 },
+        { t:'mensal', title:'Caçador de Pedreiras', desc:'Acerte 100 questões Difíceis', val: stats.dificilQ, req: 100 },
+        { t:'mensal', title:'Absoluto', desc:'Faça 5000 questões totais na vida', val: stats.totalQ, req: 5000 }
+    ];
+
+    const missContainer = document.getElementById('missions-container');
+    let missHtml = '';
+    missionDefs.forEach(m => {
+        let pct = Math.min((m.val / m.req) * 100, 100);
+        let completed = pct === 100;
+        let cName = completed ? 'var(--success)' : 'var(--primary)';
+        missHtml += `
+            <div class="mission-item" style="border-color: ${completed ? 'var(--success)' : 'var(--border)'}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <span class="mission-type ${m.t}">${m.t}</span>
+                    <span style="font-size:0.8rem; font-weight:bold; color:${cName}">${Math.min(m.val, m.req)} / ${m.req}</span>
+                </div>
+                <div style="font-weight:bold; color:#fff;">${m.title}</div>
+                <div style="font-size:0.8rem; color:var(--dim);">${m.desc}</div>
+                <div class="mission-progress-bg"><div class="mission-progress-fill" style="width:${pct}%; background:${cName}"></div></div>
             </div>
         `;
-    }).join('');
+    });
+    missContainer.innerHTML = missHtml;
 }
 
+// ... Resto das ferramentas de gráficos ...
 let timerObj = { pomo: { int: null, time: 3000 }, stop: { int: null, time: 0 } };
 function formatTime(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
 function startPomodoro() { let mins = document.getElementById('pomo-focus-time').value; resetTimer('pomo', mins * 60); startTimer('pomo'); }
