@@ -56,14 +56,11 @@
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 0.9rem; }
         .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
 
-        /* Tarefas e Badges */
+        /* Tarefas */
         .task-card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .task-card.incomplete { border-left-color: var(--danger); opacity: 0.8; }
         .task-card.done { border-left-color: var(--success); }
-        
-        /* Modificado para Branco e Maior */
         .badge-type { padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        
         .btn-edit { background: transparent; border: 1px solid var(--dim); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
         .btn-edit:hover { border-color: var(--primary); color: var(--primary); }
 
@@ -79,21 +76,19 @@
         .stat-label { font-size: 0.85rem; color: var(--dim); }
         .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; }
 
-        /* Perfil e Engrenagem Desktop */
+        /* Perfil e Engrenagem */
         .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; }
         .gear-icon { position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
         .gear-icon:hover { opacity: 1; transform: rotate(45deg); }
 
-        /* Responsividade Mobile (Corrigido o perfil) */
         @media (max-width: 900px) {
             #app { flex-direction: column; }
             .sidebar { width: 100%; padding: 15px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; border-right: none; border-bottom: 1px solid var(--border); }
             
-            /* O cabeçalho agora aparece como uma linha no mobile */
             .sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 15px; }
             .sidebar-header img { width: 50px !important; height: 50px !important; padding: 2px !important; margin: 0; }
             .sidebar-header h3 { margin-top: 0 !important; font-size: 1.1rem !important; margin-bottom: 0 !important; }
-            .gear-icon { position: static; font-size: 1.6rem; margin-left: auto; } /* Engrenagem à direita no mobile */
+            .gear-icon { position: static; font-size: 1.6rem; margin-left: auto; }
             
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
             .logout-btn { display: block; width: 100%; margin-top: 5px; flex: 1 1 100%; }
@@ -305,10 +300,17 @@
 <div id="modal-settings" class="modal">
     <div class="modal-content">
         <h3 style="color: var(--primary); margin-bottom: 15px;">Personalizar Perfil</h3>
+        
         <label style="font-size: 0.85rem; color: var(--dim);">Como quer ser chamado?</label>
         <input type="text" id="set-name" placeholder="Seu Nome">
-        <label style="font-size: 0.85rem; color: var(--dim);">Link da Foto de Perfil (Opcional)</label>
-        <input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg">
+        
+        <label style="font-size: 0.85rem; color: var(--dim);">Foto de Perfil (Link ou Galeria)</label>
+        <div style="display:flex; gap:10px; margin-bottom: 8px;">
+            <input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg" style="margin:0; flex:1;">
+            <input type="file" id="set-photo-file" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
+            <button class="btn-action" style="width:auto; margin:0; padding:10px 15px; background:var(--bg); border:1px solid var(--border); color:var(--text);" onclick="document.getElementById('set-photo-file').click()">📂 Galeria</button>
+        </div>
+
         <button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar Configurações</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button>
         
@@ -386,6 +388,7 @@ let currentTasks = [];
 let selectedDate = null;
 let activeTask = null;
 let editingTaskId = null;
+let uploadedImageBase64 = "";
 
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
@@ -395,7 +398,6 @@ const subjectColors = {
 };
 function getColor(materia) { return subjectColors[materia] || '#94a3b8'; }
 
-// TÓPICOS INTELIGENTES (Auto-Completar)
 const defaultTopics = {
     "Matemática": ["Matemática Básica", "Estatística", "Geometria Plana", "Geometria Espacial", "Funções", "Probabilidade"],
     "Biologia": ["Ecologia", "Citologia", "Genética", "Fisiologia Humana", "Botânica", "Evolução"],
@@ -416,14 +418,8 @@ function updateTopicDatalist() {
     let defaults = defaultTopics[materia] || [];
     let userT = custom[materia] || [];
     
-    // Une defaults + personalizados sem repetir
     let allTopics = [...new Set([...defaults, ...userT])];
-    
-    allTopics.forEach(t => {
-        let opt = document.createElement('option');
-        opt.value = t;
-        datalist.appendChild(opt);
-    });
+    allTopics.forEach(t => { let opt = document.createElement('option'); opt.value = t; datalist.appendChild(opt); });
 }
 
 function saveCustomTopic(materia, topic) {
@@ -436,10 +432,8 @@ function saveCustomTopic(materia, topic) {
     }
 }
 
-// ZERAR PLATAFORMA
 async function resetPlatform() {
     if(!confirm("Atenção! Isso vai apagar TODO o seu histórico, tarefas e redações para sempre! Tem certeza?")) return;
-    
     try {
         const snapshot = await db.collection("tasks").where("userId", "==", auth.currentUser.uid).get();
         const batch = db.batch();
@@ -449,13 +443,13 @@ async function resetPlatform() {
         localStorage.removeItem('enem_meta');
         localStorage.removeItem('enem_ano');
         localStorage.removeItem('user_custom_topics');
+        localStorage.removeItem('custom_profile_pic');
         
         alert("Tudo zerado! Bora começar a focar pros 800+.");
+        document.getElementById('user-pic').src = auth.currentUser.photoURL || 'https://via.placeholder.com/70';
         loadEdits();
         closeModal('modal-settings');
-    } catch(e) {
-        alert("Erro ao zerar: " + e.message);
-    }
+    } catch(e) { alert("Erro ao zerar: " + e.message); }
 }
 
 function loadEdits() {
@@ -463,29 +457,59 @@ function loadEdits() {
     const ano = localStorage.getItem('enem_ano');
     if(meta) document.getElementById('edit-meta').innerText = meta;
     if(ano) document.getElementById('edit-ano').innerText = ano;
-    updateCountdown();
+    let daysLeft = localStorage.getItem('enem_days') || 190;
+    document.getElementById('countdown-days').innerText = `${daysLeft} dias`;
 }
 function saveEdits() {
     localStorage.setItem('enem_meta', document.getElementById('edit-meta').innerText);
     localStorage.setItem('enem_ano', document.getElementById('edit-ano').innerText);
 }
-function updateCountdown() {
-    let daysLeft = localStorage.getItem('enem_days') || 190;
-    document.getElementById('countdown-days').innerText = `${daysLeft} dias`;
+
+// FOTO E PERFIL
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        uploadedImageBase64 = e.target.result;
+        document.getElementById('set-photo').value = "Imagem carregada da galeria";
+        document.getElementById('set-photo').disabled = true;
+    };
+    reader.readAsDataURL(file);
 }
 
 function openSettings() {
+    uploadedImageBase64 = "";
     document.getElementById('set-name').value = auth.currentUser.displayName || '';
-    document.getElementById('set-photo').value = auth.currentUser.photoURL || '';
+    
+    const localPhoto = localStorage.getItem('custom_profile_pic');
+    if(localPhoto && localPhoto.startsWith('data:image')) {
+        document.getElementById('set-photo').value = "Imagem carregada da galeria";
+        document.getElementById('set-photo').disabled = true;
+    } else {
+        document.getElementById('set-photo').value = localPhoto || auth.currentUser.photoURL || '';
+        document.getElementById('set-photo').disabled = false;
+    }
     document.getElementById('modal-settings').style.display = 'flex';
 }
+
 async function saveSettings() {
     const name = document.getElementById('set-name').value;
-    const photo = document.getElementById('set-photo').value;
+    let photo = document.getElementById('set-photo').value;
+    
     try {
-        await auth.currentUser.updateProfile({ displayName: name, photoURL: photo });
+        if(uploadedImageBase64) {
+            localStorage.setItem('custom_profile_pic', uploadedImageBase64);
+        } else if (photo !== "Imagem carregada da galeria") {
+            localStorage.setItem('custom_profile_pic', photo);
+        }
+
+        await auth.currentUser.updateProfile({ displayName: name });
         document.getElementById('user-name').innerText = name.split(' ')[0];
-        if(photo) document.getElementById('user-pic').src = photo;
+        
+        const finalPhoto = localStorage.getItem('custom_profile_pic') || auth.currentUser.photoURL || 'https://via.placeholder.com/70';
+        document.getElementById('user-pic').src = finalPhoto;
+        
         closeModal('modal-settings');
         alert("Perfil atualizado!");
     } catch(e) { alert("Erro ao atualizar: " + e.message); }
@@ -510,7 +534,10 @@ auth.onAuthStateChanged(user => {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app').style.display = 'flex';
         document.getElementById('user-name').innerText = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
-        document.getElementById('user-pic').src = user.photoURL || 'https://via.placeholder.com/70';
+        
+        const finalPhoto = localStorage.getItem('custom_profile_pic') || user.photoURL || 'https://via.placeholder.com/70';
+        document.getElementById('user-pic').src = finalPhoto;
+        
         loadEdits();
         loadTasks();
     } else {
@@ -598,7 +625,6 @@ function renderCalendar() {
             let colorClass = t.type;
             let timeTxt = t.startTime ? `${t.startTime} - ` : '';
             if(t.status === 'done') html += `<div class="tag ${colorClass}" style="opacity:0.6; text-decoration:line-through;">${timeTxt}${t.materia}</div>`;
-            else if(dateStr < todayStr) html += `<div class="tag ${colorClass}" style="background:var(--danger); color:#fff;">${timeTxt}${t.materia}</div>`;
             else html += `<div class="tag ${colorClass}">${timeTxt}${t.materia}</div>`;
         });
         
@@ -765,20 +791,29 @@ async function confirmTaskCompletion() {
     let updateData = { status: 'done', completedAt: firebase.firestore.FieldValue.serverTimestamp() };
     
     if(activeTask.type === 'redacao') {
-        const score = document.getElementById('done-score').value;
-        if(!score) return alert("Insira a nota!");
-        updateData.score = parseInt(score);
+        const score = parseInt(document.getElementById('done-score').value);
+        if(isNaN(score)) return alert("Insira a nota!");
+        updateData.score = score;
     } else {
-        const time = document.getElementById('done-time').value;
-        if(!time) return alert("Preencha o tempo gasto!");
-        updateData.realTime = parseInt(time);
+        const time = parseInt(document.getElementById('done-time').value);
+        if(isNaN(time)) return alert("Preencha o tempo gasto!");
+        updateData.realTime = time;
         
         if(activeTask.type === 'questoes' || activeTask.type === 'simulado') {
-            const hits = document.getElementById('done-hits').value;
-            const errs = document.getElementById('done-errors').value;
-            if(!hits || !errs) return alert("Preencha acertos e erros!");
-            updateData.hits = parseInt(hits);
-            updateData.errors = parseInt(errs);
+            const hits = parseInt(document.getElementById('done-hits').value);
+            const errs = parseInt(document.getElementById('done-errors').value);
+            
+            if(isNaN(hits) || isNaN(errs)) return alert("Preencha acertos e erros!");
+            
+            // Trava de segurança para não ultrapassar a meta (Apenas para questões)
+            if (activeTask.type === 'questoes' && activeTask.qnt > 0) {
+                if ((hits + errs) > activeTask.qnt) {
+                    return alert(`Uai, conta errada sô! Você agendou no máximo ${activeTask.qnt} questões, mas colocou ${hits + errs} no total (Acertos + Erros).`);
+                }
+            }
+            
+            updateData.hits = hits;
+            updateData.errors = errs;
         }
     }
 
