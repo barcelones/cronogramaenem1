@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Plataforma ENEM 800+ | Grupo Conexão</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
@@ -90,12 +90,42 @@
         .icon-btn:hover { opacity: 1; transform: scale(1.1); }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: var(--danger); width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
+        /* Estilo da lista da Visão Diária */
+        .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; }
+        .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
+        .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
+
         /* Redação Grid */
         .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
 
+        /* =========================================
+           CORREÇÃO PARA MOBILE (ROLAGEM SOLTA)
+           ========================================= */
         @media (max-width: 900px) {
-            #app { flex-direction: column; }
-            .sidebar { width: 100%; padding: 15px; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+            body { 
+                height: auto; 
+                overflow-y: auto; 
+                display: block; 
+            }
+            #app { 
+                flex-direction: column; 
+                display: flex; 
+                height: auto; 
+                min-height: 100vh; 
+            }
+            .sidebar { 
+                width: 100%; 
+                /* Adiciona o env(safe-area-inset-top) pro iPhone não cortar a foto */
+                padding: calc(20px + env(safe-area-inset-top)) 15px 15px 15px; 
+                flex-direction: row; 
+                flex-wrap: wrap; 
+                justify-content: center; 
+                align-items: center; 
+                gap: 10px; 
+                border-right: none; 
+                border-bottom: 1px solid var(--border); 
+                overflow: visible; 
+            }
             
             .sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%; gap: 15px; }
             .sidebar-header img { width: 50px !important; height: 50px !important; padding: 2px !important; margin: 0; }
@@ -104,7 +134,11 @@
             
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
             
-            .main { padding: 15px; }
+            .main { 
+                overflow-y: visible; 
+                padding: 15px; 
+                height: auto; 
+            }
             .perf-dashboard { grid-template-columns: 1fr; }
             .redacao-grid { grid-template-columns: 1fr; }
         }
@@ -181,9 +215,9 @@
         <section id="tarefas" class="page">
             <h2 style="margin-bottom: 25px;">Lista de Tarefas</h2>
             <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
-                <span class="badge-type aula" style="background: var(--primary);">Aulas</span>
-                <span class="badge-type questoes" style="background: var(--accent);">Questões</span>
-                <span class="badge-type simulado" style="background: var(--danger);">Simulados</span>
+                <span class="badge-type aula filter-btn" id="filter-aula" style="background: var(--primary); cursor: pointer; transition: 0.3s;" onclick="toggleTaskFilter('aula')">Aulas</span>
+                <span class="badge-type questoes filter-btn" id="filter-questoes" style="background: var(--accent); cursor: pointer; transition: 0.3s;" onclick="toggleTaskFilter('questoes')">Questões</span>
+                <span class="badge-type simulado filter-btn" id="filter-simulado" style="background: var(--danger); cursor: pointer; transition: 0.3s;" onclick="toggleTaskFilter('simulado')">Simulados</span>
             </div>
             
             <h3 style="color:var(--text); margin-bottom:15px; font-size:1.1rem; border-bottom:1px solid var(--border); padding-bottom:5px;">A Fazer (Pendentes)</h3>
@@ -499,7 +533,25 @@ let selectedDate = null;
 let activeTask = null;
 let editingTaskId = null;
 let uploadedImageBase64 = "";
-let tempRedacaoPhoto = ""; // Foto da redação em avaliação
+let tempRedacaoPhoto = ""; 
+
+// --- NOVO SISTEMA DE FILTRO DE TAREFAS ---
+let activeTaskFilter = 'all';
+
+function toggleTaskFilter(type) {
+    if (activeTaskFilter === type) activeTaskFilter = 'all'; 
+    else activeTaskFilter = type; 
+
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.style.opacity = '0.3');
+    if (activeTaskFilter !== 'all') {
+        document.getElementById('filter-' + type).style.opacity = '1';
+    } else {
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.style.opacity = '1');
+    }
+    
+    renderTaskList(); 
+}
+// ------------------------------------------
 
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
@@ -548,7 +600,7 @@ async function resetPlatform() {
         snapshot.docs.forEach(doc => { batch.delete(doc.ref); });
         await batch.commit();
         
-        localStorage.clear(); // Limpa tudo
+        localStorage.clear(); 
         
         alert("Tudo zerado! Bora focar pros 800+.");
         document.getElementById('user-pic').src = auth.currentUser.photoURL || 'https://via.placeholder.com/70';
@@ -565,7 +617,6 @@ function loadEdits() {
     let daysLeft = localStorage.getItem('enem_days') || 190;
     document.getElementById('countdown-days').innerText = `${daysLeft} dias`;
     
-    // Meta Calendário
     document.getElementById('cal-meta-redacao').value = localStorage.getItem('meta_redacao') || 900;
 }
 function saveEdits() {
@@ -574,7 +625,7 @@ function saveEdits() {
 }
 function saveCalMeta() {
     localStorage.setItem('meta_redacao', document.getElementById('cal-meta-redacao').value);
-    renderCalendar(); // Re-renderiza para atualizar os troféus
+    renderCalendar(); 
 }
 
 function handleFileUpload(event) {
@@ -890,7 +941,6 @@ function renderCard(t, statusClass, statusText) {
     const card = document.createElement('div');
     card.className = `task-card ${statusClass}`;
     
-    // Botão de ver foto da redação
     let photoBtn = (t.type === 'redacao' && t.photo) ? `<button class="btn-edit" style="color:var(--primary); border-color:var(--primary);" onclick="openPhotoModal('${t.photo}')">📷 Ver Foto</button>` : '';
 
     card.innerHTML = `
@@ -931,16 +981,18 @@ function renderTaskList() {
         let card = renderCard(t, statusClass, statusText);
 
         if (t.type === 'redacao') {
-            t._statusWeight = statusClass === 'done' ? 1 : (statusClass === 'incomplete' ? 3 : 2); // 1:Feitas, 2:Pendentes, 3:Incompletas
+            t._statusWeight = statusClass === 'done' ? 1 : (statusClass === 'incomplete' ? 3 : 2); 
             redacaoArr.push({task: t, card: card});
         } else {
+            // APLICA O FILTRO AQUI
+            if (activeTaskFilter !== 'all' && t.type !== activeTaskFilter) return;
+
             if (statusClass === 'done') listDone.appendChild(card);
             else if (statusClass === 'incomplete') listIncomplete.appendChild(card);
             else listPending.appendChild(card);
         }
     });
 
-    // Ordenação personalizada das Redações
     redacaoArr.sort((a,b) => {
         if(a.task._statusWeight !== b.task._statusWeight) return a.task._statusWeight - b.task._statusWeight;
         return b.task.date.localeCompare(a.task.date);
@@ -1009,7 +1061,7 @@ async function deleteTaskFromModal() { if(!editingTaskId) return; if(!confirm("D
 
 function openDoneModal(id) {
     activeTask = currentTasks.find(t => t.id === id);
-    tempRedacaoPhoto = ""; // reseta foto temporária
+    tempRedacaoPhoto = ""; 
     document.getElementById('done-task-info').innerText = `${activeTask.materia} (${activeTask.type.toUpperCase()})`;
     
     const container = document.getElementById('done-dynamic-fields');
