@@ -295,10 +295,16 @@
         <input type="text" id="set-name" placeholder="Seu Nome">
         <label style="font-size: 0.85rem; color: var(--dim);">Link da Foto de Perfil (Opcional)</label>
         <input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg">
-        <button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar</button>
+        <button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar Configurações</button>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button>
+        
+        <hr style="border:0; border-top:1px solid var(--border); margin: 25px 0;">
+        <h4 style="color: var(--danger); margin-bottom:10px;">Área de Perigo</h4>
+        <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetPlatform()">Zerar Plataforma (Apagar Tudo)</button>
     </div>
 </div>
+
+<datalist id="topic-suggestions"></datalist>
 
 <div id="modal-task" class="modal">
     <div class="modal-content">
@@ -365,7 +371,7 @@ const db = firebase.firestore();
 let currentTasks = [];
 let selectedDate = null;
 let activeTask = null;
-let editingTaskId = null; // Variável para controlar a Edição
+let editingTaskId = null;
 
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
@@ -374,6 +380,69 @@ const subjectColors = {
     "2º Dia (Mat/Natureza)": "#84cc16", "Geral": "#fbbf24"
 };
 function getColor(materia) { return subjectColors[materia] || '#94a3b8'; }
+
+// TÓPICOS INTELIGENTES (Auto-Completar)
+const defaultTopics = {
+    "Matemática": ["Matemática Básica", "Estatística", "Geometria Plana", "Geometria Espacial", "Funções", "Probabilidade"],
+    "Biologia": ["Ecologia", "Citologia", "Genética", "Fisiologia Humana", "Botânica", "Evolução"],
+    "Física": ["Mecânica", "Eletrodinâmica", "Termologia", "Ondulatória", "Óptica"],
+    "Química": ["Físico-Química", "Química Geral", "Química Orgânica", "Estequiometria", "Eletroquímica"],
+    "História": ["Idade Contemporânea", "História do Brasil (Império)", "Era Vargas", "Guerra Fria", "Brasil Colônia"],
+    "Geografia": ["Geografia Agrária", "Meio Ambiente", "Geopolítica", "Geografia Urbana", "Climatologia"],
+    "Filosofia/Sociologia": ["Ética e Moral", "Filosofia Antiga", "Sociologia do Trabalho", "Cultura e Ideologia", "Contratualistas"],
+    "Linguagens": ["Interpretação de Texto", "Figuras de Linguagem", "Vanguardas Europeias", "Literatura Moderna", "Artes Plásticas"]
+};
+
+function updateTopicDatalist() {
+    const materia = document.getElementById('task-materia').value;
+    const datalist = document.getElementById('topic-suggestions');
+    datalist.innerHTML = '';
+    
+    let custom = JSON.parse(localStorage.getItem('user_custom_topics')) || {};
+    let defaults = defaultTopics[materia] || [];
+    let userT = custom[materia] || [];
+    
+    // Une defaults + personalizados sem repetir
+    let allTopics = [...new Set([...defaults, ...userT])];
+    
+    allTopics.forEach(t => {
+        let opt = document.createElement('option');
+        opt.value = t;
+        datalist.appendChild(opt);
+    });
+}
+
+function saveCustomTopic(materia, topic) {
+    if(!topic) return;
+    let custom = JSON.parse(localStorage.getItem('user_custom_topics')) || {};
+    if(!custom[materia]) custom[materia] = [];
+    if(!custom[materia].includes(topic)) {
+        custom[materia].push(topic);
+        localStorage.setItem('user_custom_topics', JSON.stringify(custom));
+    }
+}
+
+// ZERAR PLATAFORMA
+async function resetPlatform() {
+    if(!confirm("Atenção sô! Isso vai apagar TODO o seu histórico, tarefas e redações para sempre! Tem certeza?")) return;
+    
+    try {
+        const snapshot = await db.collection("tasks").where("userId", "==", auth.currentUser.uid).get();
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => { batch.delete(doc.ref); });
+        await batch.commit();
+        
+        localStorage.removeItem('enem_meta');
+        localStorage.removeItem('enem_ano');
+        localStorage.removeItem('user_custom_topics');
+        
+        alert("Tudo zerado! Bora começar a focar pros 800+.");
+        loadEdits();
+        closeModal('modal-settings');
+    } catch(e) {
+        alert("Erro ao zerar: " + e.message);
+    }
+}
 
 function loadEdits() {
     const meta = localStorage.getItem('enem_meta');
@@ -404,7 +473,7 @@ async function saveSettings() {
         document.getElementById('user-name').innerText = name.split(' ')[0];
         if(photo) document.getElementById('user-pic').src = photo;
         closeModal('modal-settings');
-        alert("Perfil atualizado!");
+        alert("Perfil atualizado sô!");
     } catch(e) { alert("Erro ao atualizar: " + e.message); }
 }
 
@@ -450,7 +519,7 @@ function toggleTaskFields() {
     let html = '';
     
     const matSelect = `
-        <select id="task-materia">
+        <select id="task-materia" onchange="updateTopicDatalist()">
             <option value="Matemática">Matemática</option><option value="Biologia">Biologia</option>
             <option value="Física">Física</option><option value="Química">Química</option>
             <option value="História">História</option><option value="Geografia">Geografia</option>
@@ -460,9 +529,9 @@ function toggleTaskFields() {
     `;
 
     if (type === 'aula') {
-        html = matSelect + `<input type="text" id="task-content" placeholder="Conteúdo da Aula">`;
+        html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Conteúdo da Aula (Ex: Eletrodinâmica)">`;
     } else if (type === 'questoes') {
-        html = matSelect + `<input type="text" id="task-content" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
+        html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
     } else if (type === 'simulado') {
         html = `
             <select id="task-materia">
@@ -475,6 +544,8 @@ function toggleTaskFields() {
         html = `<input type="hidden" id="task-materia" value="Redação"><input type="text" id="task-content" placeholder="Tema da Redação">`;
     }
     container.innerHTML = html;
+    
+    if(type === 'aula' || type === 'questoes') updateTopicDatalist();
 }
 
 function renderCalendar() {
@@ -491,14 +562,13 @@ function renderCalendar() {
 
     for(let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        // Ordena tarefas do dia por horário de início
         const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
         const isToday = todayStr === dateStr;
         
         const dayDiv = document.createElement('div');
         dayDiv.className = `day-box ${isToday ? 'today' : ''}`;
         dayDiv.onclick = () => {
-            editingTaskId = null; // Zera a edição
+            editingTaskId = null;
             selectedDate = dateStr;
             document.getElementById('modal-date-label').innerText = `Agendar: ${dateStr.split('-').reverse().join('/')}`;
             document.getElementById('task-type').value = 'aula';
@@ -534,33 +604,37 @@ async function handleSaveTask() {
     const startTime = document.getElementById('task-start-time').value;
     const endTime = document.getElementById('task-end-time').value;
 
-    // Calcular duração em minutos
     let plannedTime = 0;
     if(startTime && endTime) {
         let start = new Date(`1970-01-01T${startTime}:00`);
         let end = new Date(`1970-01-01T${endTime}:00`);
         plannedTime = (end - start) / 60000;
-        if(plannedTime < 0) plannedTime += 1440; // Passou da meia noite
+        if(plannedTime < 0) plannedTime += 1440;
     }
     
+    let contentVal = contentElem ? contentElem.value : '';
+    
+    // Salva o tema no histórico inteligente se for aula/questão
+    if((type === 'aula' || type === 'questoes') && contentVal) {
+        saveCustomTopic(materia, contentVal);
+    }
+
     const taskData = {
         userId: auth.currentUser.uid, type, materia, status: 'pending',
-        content: contentElem ? contentElem.value : '',
+        content: contentVal,
         qnt: qntElem ? parseInt(qntElem.value) : 0,
         startTime, endTime, plannedTime,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    // MODO EDIÇÃO
     if(editingTaskId) {
-        taskData.date = selectedDate; // Mantém a data
+        taskData.date = selectedDate; 
         await db.collection("tasks").doc(editingTaskId).update(taskData);
         closeModal('modal-task');
         loadTasks();
         return;
     }
 
-    // MODO CRIAÇÃO (Novo)
     const repeat = document.getElementById('task-repeat').checked;
     const baseDate = new Date(selectedDate + 'T12:00:00');
     const iterations = repeat ? 3 : 1;
@@ -586,17 +660,14 @@ function openEditModal(id) {
     document.getElementById('task-type').value = task.type;
     toggleTaskFields();
     
-    // Preenche os campos dinâmicos
     document.getElementById('task-materia').value = task.materia;
     if(document.getElementById('task-content')) document.getElementById('task-content').value = task.content || '';
     if(document.getElementById('task-qnt')) document.getElementById('task-qnt').value = task.qnt || '';
     
-    // Horários
     document.getElementById('task-start-time').value = task.startTime || '00:00';
     document.getElementById('task-end-time').value = task.endTime || '00:00';
     
-    document.getElementById('repeat-container').style.display = 'none'; // Não permite repetir na edição
-    
+    document.getElementById('repeat-container').style.display = 'none'; 
     document.getElementById('modal-task').style.display = 'flex';
 }
 
@@ -615,7 +686,6 @@ function renderTaskList() {
     list.innerHTML = ""; redacaoList.innerHTML = "";
     
     const today = new Date().toISOString().split('T')[0];
-    // Ordenar primeiro por data, depois por horário de início
     const sorted = currentTasks.sort((a,b) => {
         let dateCmp = b.date.localeCompare(a.date);
         if(dateCmp !== 0) return dateCmp;
@@ -729,7 +799,7 @@ function getFilteredTasks() {
     const today = new Date();
     
     return currentTasks.filter(t => {
-        if (t.status !== 'done') return false; // Considera apenas concluídos
+        if (t.status !== 'done') return false; 
 
         const taskDateObj = new Date(t.date + 'T12:00:00');
 
@@ -749,11 +819,11 @@ function getFilteredTasks() {
         else if (type === 'custom') {
             const startStr = document.getElementById('dash-start').value;
             const endStr = document.getElementById('dash-end').value;
-            if(!startStr || !endStr) return true; // Se não preencheu, mostra tudo
+            if(!startStr || !endStr) return true; 
             return t.date >= startStr && t.date <= endStr;
         }
         
-        return true; // "all"
+        return true; 
     });
 }
 
@@ -763,7 +833,6 @@ function initCharts() {
     const filteredDoneTasks = getFilteredTasks();
     const practiceTasks = filteredDoneTasks.filter(t => t.type === 'questoes' || t.type === 'simulado');
     
-    // Gráfico Redação (Aba Redação não filtra por data para mostrar histórico, mas se quiser pode)
     const ctxRed = document.getElementById('redacaoChart');
     if(ctxRed) {
         if(redacaoLine) redacaoLine.destroy();
@@ -775,7 +844,6 @@ function initCharts() {
         });
     }
 
-    // Gráficos Desempenho
     const ctxDonut = document.getElementById('accDonutChart');
     const ctxBar = document.getElementById('dailyBarChart');
     const ctxTime = document.getElementById('timePieChart');
