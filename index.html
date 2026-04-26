@@ -88,6 +88,7 @@
         .mission-type.diaria { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
         .mission-type.semanal { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
         .mission-type.mensal { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .mission-type.vitalicia { background: rgba(34, 197, 94, 0.2); color: var(--success); }
         .mission-progress-bg { background: var(--card); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px; }
         .mission-progress-fill { background: var(--success); height: 100%; transition: 0.4s; }
 
@@ -539,7 +540,6 @@ const db = firebase.firestore();
 let currentTasks = [], selectedDate = null, activeTask = null, editingTaskId = null;
 let uploadedImageBase64 = "", tempRedacaoPhoto = "", activeTaskFilter = 'all';
 
-// Função para centralizar as mensagens de erro/aviso no modal estilizado
 function showAlert(msg) {
     document.getElementById('alert-message').innerText = msg;
     document.getElementById('modal-alert').style.display = 'flex';
@@ -556,7 +556,7 @@ function toggleTaskFilter(type) {
 const subjectColors = {
     "Matemática": "#ef4444", "Biologia": "#22c55e", "Física": "#38bdf8", "Química": "#f59e0b",
     "Redação": "#a855f7", "Linguagens": "#ec4899", "Humanas": "#8b5cf6", "História": "#f97316",
-    "Geografia": "#14b8a6", "Filosofia": "#6366f1", "Sociologia": "#4f46e5", "1º Dia (Ling/Humanas)": "#d946ef", "2º Dia (Mat/Natureza)": "#84cc16", "Geral": "#fbbf24"
+    "Geografia": "#14b8a6", "Filosofia": "#6366f1", "Sociologia": "#4f46e5", "1º Dia (Ling/Humanas)": "#d946ef", "2º Dia (Mat/Natureza)": "#84cc16", "Questões": "#fbbf24", "Geral": "#fbbf24"
 };
 function getColor(materia) { return subjectColors[materia] || '#94a3b8'; }
 
@@ -678,7 +678,7 @@ function toggleTaskFields() {
     const matSelect = `<select id="task-materia" onchange="updateTopicDatalist()"><option value="Matemática">Matemática</option><option value="Biologia">Biologia</option><option value="Física">Física</option><option value="Química">Química</option><option value="História">História</option><option value="Geografia">Geografia</option><option value="Filosofia">Filosofia</option><option value="Sociologia">Sociologia</option><option value="Linguagens">Linguagens</option></select>`;
     if (type === 'aula') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Conteúdo da Aula">`;
     else if (type === 'questoes') html = matSelect + `<input type="text" id="task-content" list="topic-suggestions" placeholder="Assunto das questões"><input type="number" id="task-qnt" placeholder="Quantidade de questões">`;
-    else if (type === 'simulado') html = `<select id="task-materia"><option value="1º Dia (Ling/Humanas)">1º Dia (Ling/Humanas)</option><option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option><option value="Geral">Simulado Geral</option></select><input type="number" id="task-qnt" placeholder="Quantidade de questões do simulado">`;
+    else if (type === 'simulado') html = `<select id="task-materia"><option value="1º Dia (Ling/Humanas)">1º Dia (Ling/Humanas)</option><option value="2º Dia (Mat/Natureza)">2º Dia (Mat/Natureza)</option><option value="Questões">Questões (Simulado Geral)</option></select><input type="text" id="task-content" placeholder="Nome do Simulado (Ex: SAS, Bernoulli, Enem 2023)"><input type="number" id="task-qnt" placeholder="Quantidade de questões do simulado">`;
     else if (type === 'redacao') { html = `<input type="hidden" id="task-materia" value="Redação"><input type="text" id="task-content" placeholder="Tema da Redação"><label style="font-size:0.85rem; color:var(--dim); margin-top:10px; display:block;">Qual a sua meta de pontuação?</label><input type="number" id="task-meta-redacao" placeholder="Ex: 900" max="1000">`; }
     container.innerHTML = html; if(type === 'aula' || type === 'questoes') updateTopicDatalist();
 }
@@ -716,9 +716,13 @@ function renderDailyTasks(dateStr) {
     let html = '';
     dayTasks.forEach(t => {
         let cor = getColor(t.materia);
+        let titleText = `${t.materia} (${t.type.toUpperCase()})`;
+        if (t.type === 'simulado' && t.content) titleText += ` - ${t.content}`;
+        else if (t.content) titleText += ` - ${t.content}`;
+        
         html += `<div class="daily-task-item" style="border-left-color: ${cor}">
                     <div class="time">${t.startTime} às ${t.endTime}</div>
-                    <div class="title">${t.materia} (${t.type.toUpperCase()})${t.content ? ` - ${t.content}` : ''}</div>
+                    <div class="title">${titleText}</div>
                     <div style="margin-top: 5px;"><button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button></div>
                  </div>`;
     }); list.innerHTML = html;
@@ -731,7 +735,6 @@ async function handleSaveTask() {
     const type = document.getElementById('task-type').value, materia = document.getElementById('task-materia').value, contentElem = document.getElementById('task-content'), qntElem = document.getElementById('task-qnt'), startTime = document.getElementById('task-start-time').value, endTime = document.getElementById('task-end-time').value, metaRedacaoElem = document.getElementById('task-meta-redacao');
     let plannedTime = 0;
     
-    // Substituição dos alert nativos pelo showAlert customizado
     if(startTime && endTime) {
         plannedTime = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
         if (plannedTime <= 0) return showAlert("O horário final precisa ser maior que o de início.");
@@ -798,7 +801,8 @@ function loadTasks() {
 function renderCard(t, statusClass, statusText) {
     let details = `${t.startTime || '?'} às ${t.endTime || '?'} (${t.plannedTime || 0} min)`;
     if(t.type === 'aula') details += ` | ${t.content}`;
-    else if(t.type === 'questoes' || t.type === 'simulado') details += ` | ${t.content || ''} - Meta: ${t.qnt}Q`;
+    else if(t.type === 'simulado') details += ` | Simulado: ${t.content || 'Geral'} - Meta: ${t.qnt}Q`;
+    else if(t.type === 'questoes') details += ` | ${t.content || ''} - Meta: ${t.qnt}Q`;
     else if(t.type === 'redacao') details += ` | Tema: ${t.content}`;
 
     const card = document.createElement('div'); card.className = `task-card ${statusClass}`;
@@ -874,9 +878,10 @@ function openDifficultyDetails(diff) {
     else {
         let html = '';
         filtered.sort((a,b) => b.date.localeCompare(a.date)).forEach(t => {
+            let desc = t.type === 'simulado' ? `Simulado: ${t.content || 'Geral'}` : (t.content || 'Treinamento Geral');
             html += `<div style="background:var(--card); padding:15px; border-radius:8px; margin-bottom:10px; border-left:4px solid ${getColor(t.materia)};">
                 <div style="font-weight:bold; color:var(--text);">${t.date.split('-').reverse().join('/')} - ${t.materia}</div>
-                <div style="font-size:0.85rem; color:var(--dim); margin-top:3px;">${t.content || 'Treinamento Geral'}</div>
+                <div style="font-size:0.85rem; color:var(--dim); margin-top:3px;">${desc}</div>
                 <div style="margin-top:8px; font-size:0.9rem; font-weight:bold;">
                     <span style="color:var(--success);">✅ Acertos: ${t.hits||0}</span> <span style="margin: 0 5px; color:var(--border);">|</span> 
                     <span style="color:var(--danger);">❌ Erros: ${t.errors||0}</span>
@@ -891,14 +896,16 @@ function renderReviewSection() {
     const reviewList = document.getElementById('review-list'), improveList = document.getElementById('improve-list');
     let reviewHtml = ''; let matStats = {}; let reviewedCount = 0; let pendingCount = 0;
     currentTasks.forEach(t => {
+        let matLida = t.materia === "Geral" ? "Questões" : t.materia;
         if(t.status === 'done' && (t.type === 'questoes' || t.type === 'simulado')) {
-            if(!matStats[t.materia]) matStats[t.materia] = { hits: 0, total: 0 };
-            let hits = t.hits || 0, errors = t.errors || 0; matStats[t.materia].hits += hits; matStats[t.materia].total += (hits + errors);
+            if(!matStats[matLida]) matStats[matLida] = { hits: 0, total: 0 };
+            let hits = t.hits || 0, errors = t.errors || 0; matStats[matLida].hits += hits; matStats[matLida].total += (hits + errors);
             if(errors > 0) {
                 if(t.reviewed) { reviewedCount++; } else {
                     pendingCount++;
+                    let desc = t.type === 'simulado' ? `Simulado: ${t.content || 'Geral'}` : (t.content || 'Treino Geral');
                     reviewHtml += `<div style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-left:4px solid var(--danger); flex-wrap: wrap; gap: 10px;">
-                                    <div><strong style="color:#fff;">${t.materia}</strong> <span style="color:var(--dim); font-size:0.9rem;">- ${t.content || 'Treino Geral'}</span><div style="font-size:0.85rem; color:var(--danger); font-weight:bold; margin-top:3px;">❌ ${errors} erro(s) em ${t.date.split('-').reverse().join('/')}</div></div>
+                                    <div><strong style="color:#fff;">${matLida}</strong> <span style="color:var(--dim); font-size:0.9rem;">- ${desc}</span><div style="font-size:0.85rem; color:var(--danger); font-weight:bold; margin-top:3px;">❌ ${errors} erro(s) em ${t.date.split('-').reverse().join('/')}</div></div>
                                     <button onclick="markAsReviewed('${t.id}')" style="background:var(--success); color:#000; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.85rem;">Revisado</button>
                                    </div>`;
                 }
@@ -918,7 +925,7 @@ async function deleteTaskFromModal() { if(!editingTaskId) return; if(!confirm("D
 
 function openDoneModal(id) {
     activeTask = currentTasks.find(t => t.id === id); tempRedacaoPhoto = ""; 
-    document.getElementById('done-task-info').innerText = `${activeTask.materia} (${activeTask.type.toUpperCase()})`;
+    document.getElementById('done-task-info').innerText = `${activeTask.materia === 'Geral' ? 'Questões' : activeTask.materia} (${activeTask.type.toUpperCase()})`;
     const container = document.getElementById('done-dynamic-fields');
     const diffContainer = document.getElementById('difficulty-selection');
     
@@ -979,7 +986,7 @@ async function confirmTaskCompletion() {
 }
 
 // ==========================================
-// GAMIFICAÇÃO: CONQUISTAS E 50+ MISSÕES
+// GAMIFICAÇÃO: CONQUISTAS E 50 MISSÕES
 // ==========================================
 function renderConquistas() {
     const today = new Date(); 
@@ -994,7 +1001,6 @@ function renderConquistas() {
     const questoes = doneTasks.filter(t => t.type === 'questoes' || t.type === 'simulado');
     const redacoes = doneTasks.filter(t => t.type === 'redacao');
 
-    // Estatísticas Básicas
     let stats = {
         totalQ: 0, facilQ: 0, medioQ: 0, dificilQ: 0,
         qToday: 0, qWeek: 0, qMonth: 0,
@@ -1014,10 +1020,11 @@ function renderConquistas() {
         if (q.date >= startWeekStr && q.date <= endWeekStr) { stats.qWeek += qs; stats.timeWeek += (q.realTime||0); }
         if (q.date.startsWith(monthStr)) { stats.qMonth += qs; stats.timeMonth += (q.realTime||0); }
 
-        if (q.materia === 'Matemática') stats.matQ += qs;
-        else if (['Biologia', 'Física', 'Química'].includes(q.materia)) stats.natQ += qs;
-        else if (['História', 'Geografia', 'Filosofia', 'Sociologia'].includes(q.materia)) stats.humQ += qs;
-        else if (q.materia === 'Linguagens') stats.linQ += qs;
+        let matLida = q.materia === "Geral" ? "Questões" : q.materia;
+        if (matLida === 'Matemática') stats.matQ += qs;
+        else if (['Biologia', 'Física', 'Química'].includes(matLida)) stats.natQ += qs;
+        else if (['História', 'Geografia', 'Filosofia', 'Sociologia'].includes(matLida)) stats.humQ += qs;
+        else if (matLida === 'Linguagens') stats.linQ += qs;
     });
 
     redacoes.forEach(r => {
@@ -1026,7 +1033,6 @@ function renderConquistas() {
         if (r.date.startsWith(monthStr)) stats.redMonth++;
     });
 
-    // Atualiza Painel de Níveis
     document.getElementById('stats-total-q').innerText = stats.totalQ;
     document.getElementById('stats-facil-q').innerText = stats.facilQ;
     document.getElementById('stats-medio-q').innerText = stats.medioQ;
@@ -1034,7 +1040,6 @@ function renderConquistas() {
 
     let metaBatidaCount = redacoes.filter(r => r.score && r.metaRedacao && r.score >= r.metaRedacao).length;
 
-    // Grandes Medalhas Vitalícias
     const medals = [
         { title: "Calouro", desc: "Resolver 100 questões", icon: "🌱", val: stats.totalQ, target: 100 },
         { title: "Veterano", desc: "Resolver 500 questões", icon: "🔥", val: stats.totalQ, target: 500 },
@@ -1050,12 +1055,79 @@ function renderConquistas() {
                 </div>`;
     }).join('');
 
-    // Gerador de Missões
+    // Array completo com as 50 missões diversificadas
     const missionDefs = [
+        // Diárias (Questões)
         { t:'diaria', title:'Aquecimento', desc:'Faça 5 questões hoje', val: stats.qToday, req: 5 },
+        { t:'diaria', title:'Pegando o Ritmo', desc:'Faça 15 questões hoje', val: stats.qToday, req: 15 },
+        { t:'diaria', title:'Foco Enem', desc:'Faça 30 questões hoje', val: stats.qToday, req: 30 },
+        { t:'diaria', title:'Simulador Parcial', desc:'Faça 45 questões hoje', val: stats.qToday, req: 45 },
+        { t:'diaria', title:'Guerreiro do Dia', desc:'Faça 60 questões hoje', val: stats.qToday, req: 60 },
+        { t:'diaria', title:'Maratonista', desc:'Faça 90 questões hoje', val: stats.qToday, req: 90 },
+
+        // Diárias (Tempo)
+        { t:'diaria', title:'Meia horinha', desc:'Estude 30 min hoje', val: stats.timeToday, req: 30 },
+        { t:'diaria', title:'Uma horinha', desc:'Estude 60 min hoje', val: stats.timeToday, req: 60 },
+        { t:'diaria', title:'Sessão Dupla', desc:'Estude 120 min hoje', val: stats.timeToday, req: 120 },
+        { t:'diaria', title:'Hardcore', desc:'Estude 240 min hoje', val: stats.timeToday, req: 240 },
+        { t:'diaria', title:'Nível Asiático', desc:'Estude 300 min hoje', val: stats.timeToday, req: 300 },
+
+        // Semanais (Questões)
         { t:'semanal', title:'Semana Start', desc:'Faça 50 questões na semana', val: stats.qWeek, req: 50 },
-        { t:'mensal', title:'Mês Consistente', desc:'Faça 200 questões no mês', val: stats.qMonth, req: 200 }
-        // (Aqui a lista pode seguir com as mais de 50 missões que já existiam no seu código original)
+        { t:'semanal', title:'Constância', desc:'Faça 100 questões na semana', val: stats.qWeek, req: 100 },
+        { t:'semanal', title:'Acelerando', desc:'Faça 150 questões na semana', val: stats.qWeek, req: 150 },
+        { t:'semanal', title:'Ritmo Forte', desc:'Faça 200 questões na semana', val: stats.qWeek, req: 200 },
+        { t:'semanal', title:'Modo Máquina', desc:'Faça 300 questões na semana', val: stats.qWeek, req: 300 },
+        { t:'semanal', title:'Imparável', desc:'Faça 400 questões na semana', val: stats.qWeek, req: 400 },
+
+        // Semanais (Tempo)
+        { t:'semanal', title:'Dedicação', desc:'Estude 300 min na semana', val: stats.timeWeek, req: 300 },
+        { t:'semanal', title:'Foco Total', desc:'Estude 600 min na semana', val: stats.timeWeek, req: 600 },
+        { t:'semanal', title:'Ultra Foco', desc:'Estude 900 min na semana', val: stats.timeWeek, req: 900 },
+        { t:'semanal', title:'Viciado em Estudar', desc:'Estude 1200 min na semana', val: stats.timeWeek, req: 1200 },
+
+        // Mensais (Questões)
+        { t:'mensal', title:'Mês Consistente', desc:'Faça 200 questões no mês', val: stats.qMonth, req: 200 },
+        { t:'mensal', title:'Evolução Clara', desc:'Faça 400 questões no mês', val: stats.qMonth, req: 400 },
+        { t:'mensal', title:'Mês de Ouro', desc:'Faça 600 questões no mês', val: stats.qMonth, req: 600 },
+        { t:'mensal', title:'Rumo à Aprovação', desc:'Faça 800 questões no mês', val: stats.qMonth, req: 800 },
+        { t:'mensal', title:'Mito do Enem', desc:'Faça 1000 questões no mês', val: stats.qMonth, req: 1000 },
+        { t:'mensal', title:'Lenda Viva', desc:'Faça 1500 questões no mês', val: stats.qMonth, req: 1500 },
+
+        // Mensais (Redação)
+        { t:'mensal', title:'Primeira Canetada', desc:'Faça 1 redação no mês', val: stats.redMonth, req: 1 },
+        { t:'mensal', title:'Escritor Júnior', desc:'Faça 2 redações no mês', val: stats.redMonth, req: 2 },
+        { t:'mensal', title:'O Padrão', desc:'Faça 4 redações no mês', val: stats.redMonth, req: 4 },
+        { t:'mensal', title:'Sede de Mil', desc:'Faça 6 redações no mês', val: stats.redMonth, req: 6 },
+        { t:'mensal', title:'Redator Chefe', desc:'Faça 8 redações no mês', val: stats.redMonth, req: 8 },
+
+        // Áreas - Vitalício
+        { t:'vitalicia', title:'Matemática I', desc:'100 questões de Mat', val: stats.matQ, req: 100 },
+        { t:'vitalicia', title:'Matemática II', desc:'300 questões de Mat', val: stats.matQ, req: 300 },
+        { t:'vitalicia', title:'Matemática III', desc:'500 questões de Mat', val: stats.matQ, req: 500 },
+
+        { t:'vitalicia', title:'Natureza I', desc:'100 questões de Natureza', val: stats.natQ, req: 100 },
+        { t:'vitalicia', title:'Natureza II', desc:'300 questões de Natureza', val: stats.natQ, req: 300 },
+        { t:'vitalicia', title:'Natureza III', desc:'500 questões de Natureza', val: stats.natQ, req: 500 },
+
+        { t:'vitalicia', title:'Humanas I', desc:'100 questões de Humanas', val: stats.humQ, req: 100 },
+        { t:'vitalicia', title:'Humanas II', desc:'300 questões de Humanas', val: stats.humQ, req: 300 },
+        { t:'vitalicia', title:'Humanas III', desc:'500 questões de Humanas', val: stats.humQ, req: 500 },
+
+        { t:'vitalicia', title:'Linguagens I', desc:'100 questões de Linguagens', val: stats.linQ, req: 100 },
+        { t:'vitalicia', title:'Linguagens II', desc:'300 questões de Linguagens', val: stats.linQ, req: 300 },
+        { t:'vitalicia', title:'Linguagens III', desc:'500 questões de Linguagens', val: stats.linQ, req: 500 },
+
+        // Dificuldades - Vitalício
+        { t:'vitalicia', title:'Iniciante', desc:'Acertar/Fazer 50 fáceis', val: stats.facilQ, req: 50 },
+        { t:'vitalicia', title:'Intermediário', desc:'Acertar/Fazer 100 médias', val: stats.medioQ, req: 100 },
+        { t:'vitalicia', title:'Avançado', desc:'Acertar/Fazer 50 difíceis', val: stats.dificilQ, req: 50 },
+        { t:'vitalicia', title:'Dominante', desc:'Acertar/Fazer 150 difíceis', val: stats.dificilQ, req: 150 },
+
+        // Questões Totais - Vitalício
+        { t:'vitalicia', title:'A Jornada Começa', desc:'250 questões totais', val: stats.totalQ, req: 250 },
+        { t:'vitalicia', title:'Focado', desc:'750 questões totais', val: stats.totalQ, req: 750 },
+        { t:'vitalicia', title:'Quase Lá', desc:'2000 questões totais', val: stats.totalQ, req: 2000 }
     ];
 
     const missContainer = document.getElementById('missions-container');
@@ -1063,7 +1135,7 @@ function renderConquistas() {
     missionDefs.forEach(m => {
         let pct = Math.min((m.val / m.req) * 100, 100);
         let completed = pct === 100;
-        let cName = completed ? 'var(--success)' : 'var(--primary)';
+        let cName = completed ? 'var(--success)' : (m.t === 'vitalicia' ? 'var(--success)' : 'var(--primary)');
         missHtml += `
             <div class="mission-item" style="border-color: ${completed ? 'var(--success)' : 'var(--border)'}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -1117,10 +1189,11 @@ function initCharts() {
         if(donutChart) donutChart.destroy(); if(dailyBarChart) dailyBarChart.destroy(); if(timePieChart) timePieChart.destroy(); if(qntPieChart) qntPieChart.destroy(); if(timeBarChart) timeBarChart.destroy(); if(qntBarChart) qntBarChart.destroy();   
         let totalHits = 0, totalErrors = 0, totalTime = 0; const dailyQuestions = {}; const timeData = {}; const qntData = {};
         filteredDoneTasks.forEach(t => {
-            const mat = t.materia; if(t.realTime) timeData[mat] = (timeData[mat] || 0) + t.realTime;
+            let matLida = t.materia === "Geral" ? "Questões" : t.materia;
+            if(t.realTime) timeData[matLida] = (timeData[matLida] || 0) + t.realTime;
             if((t.type === 'questoes' || t.type === 'simulado') && t.hits !== undefined && t.errors !== undefined) {
                 totalHits += t.hits; totalErrors += t.errors; if(t.realTime) totalTime += t.realTime;
-                dailyQuestions[t.date] = (dailyQuestions[t.date] || 0) + (t.hits + t.errors); qntData[mat] = (qntData[mat] || 0) + (t.hits + t.errors);
+                dailyQuestions[t.date] = (dailyQuestions[t.date] || 0) + (t.hits + t.errors); qntData[matLida] = (qntData[matLida] || 0) + (t.hits + t.errors);
             }
         });
         const totalQ = totalHits + totalErrors;
