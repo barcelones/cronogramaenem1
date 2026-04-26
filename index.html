@@ -43,7 +43,7 @@
         .calendar-wrapper::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
         .calendar-wrapper::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; padding: 15px; width: 100%; min-width: 800px; /* Força os quadrados a ficarem grandes no celular */ }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; padding: 15px; width: 100%; min-width: 800px; }
         
         .day-label { text-align: center; font-weight: 700; padding: 10px; color: var(--dim); text-transform: uppercase; font-size: 0.8rem; }
         .day-box { background: var(--bg); min-height: 120px; padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; flex-direction: column; }
@@ -51,7 +51,6 @@
         .day-box.today { border: 1px solid var(--accent); background: #1e293b; }
         .day-num { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
         
-        /* Tags atualizadas para não vazar texto */
         .tag { font-size: 0.75rem; font-weight: bold; padding: 5px 8px; border-radius: 4px; margin-bottom: 6px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); word-wrap: break-word; white-space: normal; line-height: 1.3; }
         .tag.aula { background: var(--primary); }
         .tag.questoes { background: var(--accent); }
@@ -88,6 +87,11 @@
         .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; }
         .gear-icon { position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; }
         .gear-icon:hover { opacity: 1; transform: rotate(45deg); }
+
+        /* Estilo da lista da Visão Diária */
+        .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; }
+        .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
+        .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
 
         @media (max-width: 900px) {
             #app { flex-direction: column; }
@@ -330,10 +334,21 @@
 
 <datalist id="topic-suggestions"></datalist>
 
+<div id="modal-daily" class="modal">
+    <div class="modal-content">
+        <h3 id="daily-date-label" style="color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Tarefas do Dia</h3>
+        
+        <div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+            </div>
+
+        <button class="btn-action" style="background: var(--success); color: #000;" onclick="openNewTaskModal()">+ Agendar Nova Tarefa</button>
+        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-daily')">Fechar Visão do Dia</button>
+    </div>
+</div>
+
 <div id="modal-task" class="modal">
     <div class="modal-content">
         <h3 id="modal-date-label" style="color: var(--primary); margin-bottom: 15px;">Agendar Estudo</h3>
-        
         <label style="font-size:0.85rem; color:var(--dim);">Tipo de Atividade</label>
         <select id="task-type" onchange="toggleTaskFields()">
             <option value="aula">Teoria / Aula</option>
@@ -597,6 +612,41 @@ function toggleTaskFields() {
     if(type === 'aula' || type === 'questoes') updateTopicDatalist();
 }
 
+function renderDailyTasks(dateStr) {
+    const list = document.getElementById('daily-tasks-list');
+    const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+    
+    if (dayTasks.length === 0) {
+        list.innerHTML = '<p style="color:var(--dim); text-align:center; padding: 20px 0;">Você tá livre hoje, uai! Nenhuma tarefa agendada.</p>';
+        return;
+    }
+
+    let html = '';
+    dayTasks.forEach(t => {
+        let cor = getColor(t.materia);
+        let contentDesc = t.content ? ` - ${t.content}` : '';
+        html += `
+            <div class="daily-task-item" style="border-left-color: ${cor}">
+                <div class="time">${t.startTime} às ${t.endTime}</div>
+                <div class="title">${t.materia} (${t.type.toUpperCase()})${contentDesc}</div>
+            </div>
+        `;
+    });
+    list.innerHTML = html;
+}
+
+function openNewTaskModal() {
+    editingTaskId = null;
+    document.getElementById('modal-date-label').innerText = `Agendar: ${selectedDate.split('-').reverse().join('/')}`;
+    document.getElementById('task-type').value = 'aula';
+    toggleTaskFields();
+    document.getElementById('task-start-time').value = '08:00';
+    document.getElementById('task-end-time').value = '09:00';
+    document.getElementById('repeat-container').style.display = 'flex';
+    closeModal('modal-daily'); // Fecha a visão do dia
+    document.getElementById('modal-task').style.display = 'flex'; // Abre para criar
+}
+
 function renderCalendar() {
     const month = parseInt(monthSelect.value);
     const year = parseInt(yearSelect.value);
@@ -616,16 +666,14 @@ function renderCalendar() {
         
         const dayDiv = document.createElement('div');
         dayDiv.className = `day-box ${isToday ? 'today' : ''}`;
+        
+        // MODIFICADO: Agora ao clicar no dia, abre a Visão do Dia
         dayDiv.onclick = () => {
-            editingTaskId = null;
             selectedDate = dateStr;
-            document.getElementById('modal-date-label').innerText = `Agendar: ${dateStr.split('-').reverse().join('/')}`;
-            document.getElementById('task-type').value = 'aula';
-            toggleTaskFields();
-            document.getElementById('task-start-time').value = '08:00';
-            document.getElementById('task-end-time').value = '09:00';
-            document.getElementById('repeat-container').style.display = 'flex';
-            document.getElementById('modal-task').style.display = 'flex';
+            const dateBR = dateStr.split('-').reverse().join('/');
+            document.getElementById('daily-date-label').innerText = `O que temos pra dia ${dateBR}?`;
+            renderDailyTasks(dateStr);
+            document.getElementById('modal-daily').style.display = 'flex';
         };
         
         let html = `<span class="day-num">${d}</span>`;
@@ -643,6 +691,13 @@ function renderCalendar() {
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+// Função auxiliar para converter "HH:MM" em minutos (ex: "08:30" vira 510)
+function timeToMins(timeStr) {
+    if(!timeStr) return 0;
+    let parts = timeStr.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
 async function handleSaveTask() {
     const type = document.getElementById('task-type').value;
     const materia = document.getElementById('task-materia').value;
@@ -658,10 +713,26 @@ async function handleSaveTask() {
         let end = new Date(`1970-01-01T${endTime}:00`);
         plannedTime = (end - start) / 60000;
         
-        // VALIDAÇÃO DE HORÁRIO INVERTIDO (A pedido do Aluno)
+        // VALIDAÇÃO 1: HORÁRIO INVERTIDO
         if (plannedTime <= 0) {
             alert("Opa, trem errado! O horário final precisa ser maior que o horário de início (se for de tarde, use formato 24h tipo 17:00, 18:00, etc). Arruma lá sô!");
             return;
+        }
+
+        // VALIDAÇÃO 2: TRAVA DE CONFLITO DE HORÁRIO (Vira-Tempo da Hermione)
+        const newStartMins = timeToMins(startTime);
+        const newEndMins = timeToMins(endTime);
+        const dayTasks = currentTasks.filter(t => t.date === selectedDate && t.id !== editingTaskId);
+        
+        for (let t of dayTasks) {
+            const existingStart = timeToMins(t.startTime);
+            const existingEnd = timeToMins(t.endTime);
+            
+            // Lógica: Se o novo começar antes do antigo acabar, E o novo acabar depois do antigo começar = Bateu!
+            if (newStartMins < existingEnd && newEndMins > existingStart) {
+                alert(`Opa, trem bão não! Você já tem '${t.materia}' agendado das ${t.startTime} às ${t.endTime}. Você não tem Vira-Tempo pra estudar duas coisas juntas sô! Escolha outro horário.`);
+                return;
+            }
         }
     }
     
@@ -766,7 +837,8 @@ function renderTaskList() {
                 <span style="font-size: 0.8rem; font-weight: bold; color: ${t.status === 'done' ? 'var(--success)' : (statusClass === 'incomplete' ? 'var(--danger)' : 'var(--dim)')}">${statusText}</span>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️ Editar</button>
+                <button class="btn-edit" onclick="openEditModal('${t.id}')">✏️</button>
+                <button class="btn-edit" style="color:var(--danger); border-color:var(--danger);" onclick="deleteTask('${t.id}')">🗑️</button>
                 ${t.status === 'pending' ? `<button onclick="openDoneModal('${t.id}')" style="background:var(--success); border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; color:#000;">Avaliar</button>` : ''}
             </div>
         `;
@@ -774,6 +846,12 @@ function renderTaskList() {
         if(t.type === 'redacao') redacaoList.appendChild(card);
         else list.appendChild(card);
     });
+}
+
+// FUNÇÃO PARA EXCLUIR TAREFAS DIRETAMENTE
+async function deleteTask(id) {
+    if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return;
+    await db.collection("tasks").doc(id).delete();
 }
 
 function openDoneModal(id) {
@@ -818,7 +896,6 @@ async function confirmTaskCompletion() {
             
             if(isNaN(hits) || isNaN(errs)) return alert("Preencha acertos e erros direito!");
             
-            // TRAVA DE SEGURANÇA DAS QUESTÕES (A pedido do aluno)
             if (activeTask.type === 'questoes' && activeTask.qnt > 0) {
                 if ((hits + errs) > activeTask.qnt) {
                     return alert(`Uai, conta errada sô! Você agendou fazer ${activeTask.qnt} questões no máximo. Você não pode colocar ${hits + errs} no total (Acertos + Erros). Arruma a soma aí!`);
