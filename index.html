@@ -35,7 +35,7 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Calendário (Atualizado com Rolagem Horizontal) */
+        /* Calendário */
         .cal-header { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
         .calendar-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; border-radius: 15px; background: var(--border); }
@@ -103,7 +103,6 @@
             .gear-icon { position: static; font-size: 1.6rem; margin-left: auto; }
             
             .nav-link { margin: 0; padding: 10px; flex: 1 1 auto; text-align: center; font-size: 0.85rem; }
-            .logout-btn { display: block; width: 100%; margin-top: 5px; flex: 1 1 100%; }
             
             .main { padding: 15px; }
             .perf-dashboard { grid-template-columns: 1fr; }
@@ -134,7 +133,6 @@
         <button class="nav-link" onclick="showPage('redacao', this)">✍️ Redações</button>
         <button class="nav-link" onclick="showPage('foco', this)">⏱️ Modo Foco</button>
         <button class="nav-link" onclick="showPage('desempenho', this)">📊 Desempenho</button>
-        <button class="logout-btn" onclick="logout()" style="margin-top:auto; width: 100%; background: #334155; color:var(--danger); border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight: bold;">Sair da Conta</button>
     </nav>
 
     <main class="main">
@@ -327,6 +325,9 @@
         <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button>
         
         <hr style="border:0; border-top:1px solid var(--border); margin: 25px 0;">
+        
+        <button class="btn-action" style="background: #334155; color: var(--danger); margin-bottom: 15px;" onclick="logout()">🚪 Sair da Conta</button>
+
         <h4 style="color: var(--danger); margin-bottom:10px;">Área de Perigo</h4>
         <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetPlatform()">Zerar Plataforma (Apagar Tudo)</button>
     </div>
@@ -554,7 +555,12 @@ monthSelect.value = now.getMonth();
 yearSelect.value = now.getFullYear();
 
 function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-function logout() { auth.signOut(); }
+
+// FUNÇÃO ATUALIZADA: FECHA O MODAL ANTES DE SAIR
+function logout() { 
+    closeModal('modal-settings');
+    auth.signOut(); 
+}
 
 auth.onAuthStateChanged(user => {
     if (user) {
@@ -650,7 +656,7 @@ function openNewTaskModal() {
     document.getElementById('task-start-time').value = '08:00';
     document.getElementById('task-end-time').value = '09:00';
     document.getElementById('repeat-container').style.display = 'flex';
-    document.getElementById('delete-task-container').style.display = 'none'; // Esconde botão de excluir ao criar
+    document.getElementById('delete-task-container').style.display = 'none'; 
     closeModal('modal-daily'); 
     document.getElementById('modal-task').style.display = 'flex'; 
 }
@@ -794,9 +800,9 @@ function openEditModal(id) {
     document.getElementById('task-end-time').value = task.endTime || '00:00';
     
     document.getElementById('repeat-container').style.display = 'none'; 
-    document.getElementById('delete-task-container').style.display = 'block'; // Mostra botão excluir ao editar
+    document.getElementById('delete-task-container').style.display = 'block'; 
     
-    closeModal('modal-daily'); // Fecha visão do dia se estiver aberta
+    closeModal('modal-daily'); 
     document.getElementById('modal-task').style.display = 'flex';
 }
 
@@ -833,7 +839,6 @@ function renderTaskList() {
         const card = document.createElement('div');
         card.className = `task-card ${statusClass}`;
         
-        // MODIFICADO: Removido o botão 🗑️ da lista principal. Só tem Editar e Avaliar.
         card.innerHTML = `
             <div style="flex:1;">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
@@ -855,7 +860,6 @@ function renderTaskList() {
     });
 }
 
-// NOVA FUNÇÃO: EXCLUIR TAREFA DE DENTRO DO MODAL DE EDIÇÃO
 async function deleteTaskFromModal() {
     if(!editingTaskId) return;
     if(!confirm("Deseja apagar essa tarefa pra valer, sô?")) return;
@@ -934,7 +938,6 @@ function resetTimer(type, defaultTime) { pauseTimer(type); timerObj[type].time =
 function startStopwatch() { clearInterval(timerObj.stop.int); let limit = document.getElementById('stopwatch-input').value * 60; timerObj.stop.int = setInterval(() => { if(timerObj.stop.time < limit) { timerObj.stop.time++; document.getElementById('stop-display').innerText = formatTime(timerObj.stop.time); } else { clearInterval(timerObj.stop.int); alert("Simulado Finalizado!"); } }, 1000); }
 function pauseStopwatch() { clearInterval(timerObj.stop.int); }
 function resetStopwatch() { pauseStopwatch(); timerObj.stop.time = 0; document.getElementById('stop-display').innerText = "00:00"; }
-
 
 // LÓGICA DE FILTROS E GRÁFICOS
 function toggleDashDates() {
