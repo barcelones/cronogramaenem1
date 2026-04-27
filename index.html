@@ -23,12 +23,13 @@
 
         #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; text-align: center; padding: 20px; }
         .btn-google { background: #fff; color: #000; padding: 14px 28px; border-radius: 12px; font-weight: bold; cursor: pointer; border: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; transition: 0.3s; }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
 
         #app { display: none; width: 100%; height: 100%; flex-direction: row; }
         .sidebar { width: 280px; background: #0b1120; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 20px; overflow-y: auto; }
-        .nav-link { background: none; border: none; color: var(--dim); padding: 14px; text-align: left; cursor: pointer; font-weight: 600; border-radius: 10px; margin-bottom: 8px; transition: 0.2s; font-size: 0.95rem; }
-        .nav-link.active { background: var(--primary); color: #0b1120; }
-        .nav-link:hover:not(.active) { background: var(--card); color: var(--text); }
+        .nav-link { background: none; border: none; color: var(--dim); padding: 14px; text-align: left; cursor: pointer; font-weight: 600; border-radius: 10px; margin-bottom: 8px; transition: all 0.3s ease; font-size: 0.95rem; }
+        .nav-link.active { background: var(--primary); color: #0b1120; box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2); }
+        .nav-link:hover:not(.active) { background: var(--card); color: var(--text); padding-left: 20px; }
         .main { flex: 1; padding: 40px; overflow-y: auto; position: relative; width: 100%; }
         
         .page { display: none; animation: fadeIn 0.4s ease; }
@@ -44,8 +45,8 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; padding: 15px; width: 100%; min-width: 800px; }
         .day-label { text-align: center; font-weight: 700; padding: 10px; color: var(--dim); text-transform: uppercase; font-size: 0.8rem; }
         .day-box { background: var(--bg); min-height: 120px; padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; flex-direction: column; }
-        .day-box:hover { border-color: var(--primary); background: #1e293b; }
-        .day-box.today { border: 1px solid var(--accent); background: #1e293b; }
+        .day-box:hover { border-color: var(--primary); background: #1e293b; transform: scale(1.02); }
+        .day-box.today { border: 1px solid var(--accent); background: #1e293b; box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1); }
         .day-num { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
         
         .tag { font-size: 0.75rem; font-weight: bold; padding: 5px 8px; border-radius: 4px; margin-bottom: 6px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); word-wrap: break-word; white-space: normal; line-height: 1.3; }
@@ -56,24 +57,33 @@
 
         /* Modais */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 20px; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 500px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 0.9rem; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 100%; max-width: 500px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; animation: scaleUp 0.3s ease; }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 0.9rem; transition: border-color 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
         input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-        /* Tarefas */
+        /* Tarefas e Cards Animações */
+        .task-card, .chart-card, .medal-card, .mission-item { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s; }
         .task-card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .task-card.incomplete { border-left-color: var(--danger); opacity: 0.8; }
         .task-card.done { border-left-color: var(--success); }
+        .task-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 10; position: relative; }
+        
         .badge-type { padding: 6px 12px; border-radius: 6px; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         .btn-edit { background: transparent; border: 1px solid var(--dim); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
-        .btn-edit:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-edit:hover { background: var(--primary); color: #000 !important; border-color: var(--primary); }
 
         /* Gamificação - Conquistas e Dificuldade */
-        .medal-card { background: var(--bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); text-align: center; transition: 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .medal-card { background: var(--bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .medal-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .medal-card.locked { opacity: 0.5; filter: grayscale(1); border-color: var(--border); }
         .medal-card.unlocked { border-color: var(--accent); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-        .medal-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        
+        @keyframes floatMedal { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+        .medal-icon { font-size: 3rem; margin-bottom: 10px; display: block; animation: floatMedal 3s ease-in-out infinite; }
         .medal-title { font-weight: bold; font-size: 1rem; color: var(--text); }
         .medal-desc { font-size: 0.8rem; color: var(--dim); margin-top: 5px; }
         
@@ -84,25 +94,31 @@
 
         /* Missões */
         .mission-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .mission-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(56,189,248,0.1); transform: translateY(-2px); }
         .mission-type { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; align-self: flex-start; }
         .mission-type.diaria { background: rgba(56, 189, 248, 0.2); color: var(--primary); }
         .mission-type.semanal { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
         .mission-type.mensal { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
         .mission-type.vitalicia { background: rgba(34, 197, 94, 0.2); color: var(--success); }
         .mission-progress-bg { background: var(--card); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-top: 5px; }
-        .mission-progress-fill { background: var(--success); height: 100%; transition: 0.4s; }
+        .mission-progress-fill { background: var(--success); height: 100%; transition: width 0.8s ease-out; }
 
-        /* Desempenho e Filtros */
+        /* Desempenho, Animação Timers e Filtros */
+        @keyframes pulseTimer { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); border-color: var(--primary); } 70% { box-shadow: 0 0 15px 10px rgba(56, 189, 248, 0); border-color: var(--primary); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); border-color: var(--primary); } }
+        .timer-active { animation: pulseTimer 2s infinite !important; }
+
         .dash-header { background: #1e293b; color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 20px; display:flex; align-items:center; gap:10px; border-left: 4px solid var(--primary); flex-wrap: wrap; }
         .filter-bar { display: flex; gap: 10px; align-items: center; background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); flex-wrap: wrap; }
         .perf-dashboard { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 20px; }
         .chart-card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
-        .chart-card.clickable:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .chart-card.clickable:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
         .stats-grid-small { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-mini-card { background: var(--bg); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+        .stat-mini-card { background: var(--bg); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
+        .stat-mini-card:hover { border-color: var(--primary); transform: scale(1.02); }
         .stat-val { font-size: 2.5rem; font-weight: 300; margin-bottom: 5px; }
         .stat-label { font-size: 0.85rem; color: var(--dim); }
-        .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; }
+        .editable { cursor: pointer; outline: none; border-bottom: 1px dashed var(--dim); display: inline-block; min-width: 50px; transition: 0.2s; }
+        .editable:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
         /* Perfil e Engrenagem + Sininho + Troféu */
         .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; padding-top: 15px; }
@@ -110,10 +126,11 @@
         .trophy-btn:hover { transform: scale(1.15) rotate(-5deg); opacity: 1; }
         .header-icons { position: absolute; top: 10px; right: 0px; display: flex; gap: 8px; z-index: 10; }
         .icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; opacity: 0.7; transition: 0.3s; position: relative; }
-        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        .icon-btn:hover { opacity: 1; transform: scale(1.1) rotate(5deg); }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: var(--danger); width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
-        .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; }
+        .daily-task-item { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; display: flex; flex-direction: column; gap: 5px; transition: 0.2s; }
+        .daily-task-item:hover { transform: translateX(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
         .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
         .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
@@ -137,7 +154,7 @@
 <body>
 
 <div id="login-screen">
-    <h1 style="font-size: 3rem; margin-bottom: 15px;">Projeto <span style="color:var(--primary)">800+</span></h1>
+    <h1 style="font-size: 3rem; margin-bottom: 15px; text-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);">Projeto <span style="color:var(--primary)">800+</span></h1>
     <p style="color: var(--dim); max-width: 450px; margin-bottom: 30px;">"A disciplina e os dados mostram o caminho. Sua aprovação te espera."</p>
     <button class="btn-google" onclick="loginGoogle()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
@@ -153,7 +170,7 @@
                 <button class="icon-btn" onclick="openNotifications()" title="Notificações">🔔<span id="notif-badge" class="notif-badge"></span></button>
                 <button class="icon-btn" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
             </div>
-            <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto;">
+            <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">
             <h3 id="user-name" style="margin-top:10px; font-size: 1.2rem;">Estudante</h3>
         </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
@@ -167,19 +184,19 @@
     <main class="main">
         <section id="inicio" class="page active">
             <div style="padding: 20px 0; text-align: center;">
-                <h1 style="font-size: 2.8rem; color: var(--primary);">Bora estudar!</h1>
+                <h1 style="font-size: 2.8rem; color: var(--primary); text-shadow: 0 4px 15px rgba(56,189,248,0.2);">Bora estudar!</h1>
                 <div style="margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px;">
-                    <div style="background:var(--card); padding:25px; border-radius:15px; border-bottom: 4px solid var(--primary);">
+                    <div class="chart-card" style="border-bottom: 4px solid var(--primary);">
                         <h3 style="color: var(--primary)">Meta</h3>
                         <p id="edit-meta" class="editable" contenteditable="true" onblur="saveEdits()" style="font-size: 1.5rem; font-weight: bold;">800+ Média Geral</p>
                     </div>
-                    <div style="background:var(--card); padding:25px; border-radius:15px; border-bottom: 4px solid var(--success);">
+                    <div class="chart-card" style="border-bottom: 4px solid var(--success);">
                         <h3 style="color: var(--success)">Ano Foco</h3>
                         <p id="edit-ano" class="editable" contenteditable="true" onblur="saveEdits()" style="font-size: 1.5rem; font-weight: bold;">ENEM 2026</p>
                     </div>
-                    <div style="background:var(--card); padding:25px; border-radius:15px; border-bottom: 4px solid var(--accent);">
+                    <div class="chart-card" style="border-bottom: 4px solid var(--accent);">
                         <h3 style="color: var(--accent)">Status (Faltam)</h3>
-                        <p id="countdown-days" style="font-size: 1.5rem; font-weight: bold;">190 dias</p>
+                        <p id="countdown-days" style="font-size: 1.5rem; font-weight: bold;">188 dias</p>
                     </div>
                 </div>
             </div>
@@ -195,17 +212,17 @@
                     <div style="font-size:0.85rem; color:var(--dim); text-transform:uppercase; font-weight:bold;">Total Geral</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--primary);" id="stats-total-q">0</div>
                 </div>
-                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('facil')">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer;" onclick="openDifficultyDetails('facil')">
                     <div style="font-size:0.85rem; color:var(--success); text-transform:uppercase; font-weight:bold;">Nível Fácil</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-facil-q">0</div>
                     <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
                 </div>
-                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('medio')">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer;" onclick="openDifficultyDetails('medio')">
                     <div style="font-size:0.85rem; color:var(--accent); text-transform:uppercase; font-weight:bold;">Nível Médio</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-medio-q">0</div>
                     <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
                 </div>
-                <div class="chart-card clickable" style="text-align:center; cursor: pointer; transition:0.2s;" onclick="openDifficultyDetails('dificil')">
+                <div class="chart-card clickable" style="text-align:center; cursor: pointer;" onclick="openDifficultyDetails('dificil')">
                     <div style="font-size:0.85rem; color:var(--danger); text-transform:uppercase; font-weight:bold;">Nível Difícil</div>
                     <div style="font-size:3rem; font-weight:800; color:var(--text);" id="stats-dificil-q">0</div>
                     <div style="font-size:0.75rem; color:var(--dim); margin-top:5px; text-decoration: underline;">Ver Questões ➔</div>
@@ -276,7 +293,7 @@
         <section id="foco" class="page">
             <h2 style="margin-bottom: 25px;">Modo Foco</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-                <div style="background: var(--card); padding: 40px 20px; border-radius: 20px; text-align: center; border-top: 4px solid var(--primary);">
+                <div id="pomo-card" style="background: var(--card); padding: 40px 20px; border-radius: 20px; text-align: center; border-top: 4px solid var(--primary); transition: 0.3s; border: 1px solid var(--border);">
                     <h3 style="color: var(--primary);">Pomodoro Flex</h3>
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
                         <select id="pomo-focus-time" style="width:120px;">
@@ -288,7 +305,7 @@
                             <option value="15">Pausa: 15m</option>
                         </select>
                     </div>
-                    <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums;" id="pomo-display">50:00</div>
+                    <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums; text-shadow: 0 4px 10px rgba(0,0,0,0.3);" id="pomo-display">50:00</div>
                     <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                         <button class="btn-action" style="width:auto; background:var(--success); color:#000;" onclick="startPomodoro()">Iniciar Foco</button>
                         <button class="btn-action" style="width:auto; background:var(--accent); color:#000;" onclick="startPomoBreak()">Iniciar Pausa</button>
@@ -296,13 +313,13 @@
                     </div>
                 </div>
                 
-                <div style="background: var(--card); padding: 40px 20px; border-radius: 20px; text-align: center; border-top: 4px solid var(--accent);">
+                <div id="stop-card" style="background: var(--card); padding: 40px 20px; border-radius: 20px; text-align: center; border-top: 4px solid var(--accent); transition: 0.3s; border: 1px solid var(--border);">
                     <h3 style="color: var(--accent);">Cronômetro Flexível</h3>
                     <select id="stopwatch-input" style="width:150px; margin: 10px auto;">
                         <option value="60">1 Hora</option><option value="120">2 Horas</option>
                         <option value="330" selected>5h 30m (ENEM)</option>
                     </select>
-                    <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums;" id="stop-display">00:00</div>
+                    <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums; text-shadow: 0 4px 10px rgba(0,0,0,0.3);" id="stop-display">00:00</div>
                     <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                         <button class="btn-action" style="width:auto; background:var(--success); color:#000;" onclick="startStopwatch()">Iniciar</button>
                         <button class="btn-action" style="width:auto; background:var(--primary); color:#000;" onclick="pauseStopwatch()">Pausar</button>
@@ -390,141 +407,17 @@
     </main>
 </div>
 
-<div id="modal-diff-details" class="modal">
-    <div class="modal-content">
-        <h3 id="diff-modal-title" style="margin-bottom: 15px;">Questões</h3>
-        <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Aqui estão as matérias e conteúdos que você avaliou com esse nível.</p>
-        <div id="diff-modal-list" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-diff-details')">Fechar Janela</button>
-    </div>
-</div>
-
-<div id="modal-improvement" class="modal">
-    <div class="modal-content">
-        <h3 style="color: var(--accent); margin-bottom: 15px;">📊 Pontos a Melhorar</h3>
-        <p style="font-size: 0.9rem; color: var(--dim); margin-bottom: 20px;">Balanço das suas avaliações e matérias que precisam de mais atenção.</p>
-        <div style="display:flex; justify-content:space-between; background:var(--bg); padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border);">
-            <div style="text-align:center;"><div style="font-size:1.5rem; color:var(--success); font-weight:bold;" id="imp-reviewed-count">0</div><div style="font-size:0.8rem; color:var(--dim);">Erros Avaliados</div></div>
-            <div style="text-align:center;"><div style="font-size:1.5rem; color:var(--danger); font-weight:bold;" id="imp-pending-count">0</div><div style="font-size:0.8rem; color:var(--dim);">Pendentes</div></div>
-        </div>
-        <h4 style="color:var(--text); margin-bottom:10px; font-size:1rem;">⚠️ Atenção nessas Matérias (< 70%)</h4>
-        <div id="improve-list" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom:20px;"></div>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-improvement')">Fechar Relatório</button>
-    </div>
-</div>
-
-<div id="modal-photo-view" class="modal">
-    <div class="modal-content" style="text-align:center;">
-        <h3 style="color: var(--purple); margin-bottom: 15px;">📷 Sua Redação</h3>
-        <img id="view-photo-img" src="" style="max-width:100%; max-height:60vh; border-radius:10px; border:2px solid var(--border); margin-bottom:15px; object-fit:contain;">
-        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-photo-view')">Fechar Imagem</button>
-    </div>
-</div>
-
-<div id="modal-notif" class="modal">
-    <div class="modal-content">
-        <h3 style="color: var(--accent); margin-bottom: 15px;">🔔 Mensagem do Sistema</h3>
-        <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Opa, tudo bão? Passando pra lembrar que você tem <strong>erros pendentes de revisão</strong> lá na aba de Desempenho.</p>
-        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-notif'); showPage('desempenho', document.querySelectorAll('.nav-link')[5])">Ir para Revisão</button>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-notif')">Fechar</button>
-    </div>
-</div>
-
-<div id="modal-settings" class="modal">
-    <div class="modal-content">
-        <h3 style="color: var(--primary); margin-bottom: 15px;">Personalizar Perfil</h3>
-        <label style="font-size: 0.85rem; color: var(--dim);">Como quer ser chamado?</label>
-        <input type="text" id="set-name" placeholder="Seu Nome">
-        <label style="font-size: 0.85rem; color: var(--dim);">Foto de Perfil (Link ou Galeria)</label>
-        <div style="display:flex; gap:10px; margin-bottom: 8px;">
-            <input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg" style="margin:0; flex:1;">
-            <input type="file" id="set-photo-file" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
-            <button class="btn-action" style="width:auto; margin:0; padding:10px 15px; background:var(--bg); border:1px solid var(--border); color:var(--text);" onclick="document.getElementById('set-photo-file').click()">📂</button>
-        </div>
-        <button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar Configurações</button>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button>
-        <hr style="border:0; border-top:1px solid var(--border); margin: 25px 0;">
-        <button class="btn-action" style="background: #334155; color: var(--danger); margin-bottom: 15px;" onclick="logout()">🚪 Sair da Conta</button>
-        <h4 style="color: var(--danger); margin-bottom:10px;">Área de Perigo</h4>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetPlatform()">Zerar Plataforma (Apagar Tudo)</button>
-    </div>
-</div>
-
-<div id="modal-success" class="modal">
-    <div class="modal-content" style="text-align: center;">
-        <h3 style="color: var(--success); margin-bottom: 15px; font-size: 1.8rem;">✅ Sucesso!</h3>
-        <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Seu agendamento foi salvo e está de acordo com as regras da plataforma. Bora pra cima desses 800+!</p>
-        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-success')">Continuar</button>
-    </div>
-</div>
-
-<div id="modal-alert" class="modal">
-    <div class="modal-content" style="text-align: center;">
-        <h3 style="color: var(--danger); margin-bottom: 15px; font-size: 1.5rem;">⚠️ Atenção</h3>
-        <p id="alert-message" style="color: var(--text); line-height: 1.5; margin-bottom: 20px;"></p>
-        <button class="btn-action" style="background: var(--card); border: 1px solid var(--danger); color: var(--danger);" onclick="closeModal('modal-alert')">Entendi</button>
-    </div>
-</div>
-
+<div id="modal-diff-details" class="modal"><div class="modal-content"><h3 id="diff-modal-title" style="margin-bottom: 15px;">Questões</h3><p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 15px;">Aqui estão as matérias e conteúdos que você avaliou com esse nível.</p><div id="diff-modal-list" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-diff-details')">Fechar Janela</button></div></div>
+<div id="modal-improvement" class="modal"><div class="modal-content"><h3 style="color: var(--accent); margin-bottom: 15px;">📊 Pontos a Melhorar</h3><p style="font-size: 0.9rem; color: var(--dim); margin-bottom: 20px;">Balanço das suas avaliações e matérias que precisam de mais atenção.</p><div style="display:flex; justify-content:space-between; background:var(--bg); padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border);"><div style="text-align:center;"><div style="font-size:1.5rem; color:var(--success); font-weight:bold;" id="imp-reviewed-count">0</div><div style="font-size:0.8rem; color:var(--dim);">Erros Avaliados</div></div><div style="text-align:center;"><div style="font-size:1.5rem; color:var(--danger); font-weight:bold;" id="imp-pending-count">0</div><div style="font-size:0.8rem; color:var(--dim);">Pendentes</div></div></div><h4 style="color:var(--text); margin-bottom:10px; font-size:1rem;">⚠️ Atenção nessas Matérias (< 70%)</h4><div id="improve-list" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom:20px;"></div><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-improvement')">Fechar Relatório</button></div></div>
+<div id="modal-photo-view" class="modal"><div class="modal-content" style="text-align:center;"><h3 style="color: var(--purple); margin-bottom: 15px;">📷 Sua Redação</h3><img id="view-photo-img" src="" style="max-width:100%; max-height:60vh; border-radius:10px; border:2px solid var(--border); margin-bottom:15px; object-fit:contain;"><button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-photo-view')">Fechar Imagem</button></div></div>
+<div id="modal-notif" class="modal"><div class="modal-content"><h3 style="color: var(--accent); margin-bottom: 15px;">🔔 Mensagem do Sistema</h3><p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Opa, tudo bão? Passando pra lembrar que você tem <strong>erros pendentes de revisão</strong> lá na aba de Desempenho.</p><button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-notif'); showPage('desempenho', document.querySelectorAll('.nav-link')[5])">Ir para Revisão</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-notif')">Fechar</button></div></div>
+<div id="modal-settings" class="modal"><div class="modal-content"><h3 style="color: var(--primary); margin-bottom: 15px;">Personalizar Perfil</h3><label style="font-size: 0.85rem; color: var(--dim);">Como quer ser chamado?</label><input type="text" id="set-name" placeholder="Seu Nome"><label style="font-size: 0.85rem; color: var(--dim);">Foto de Perfil (Link ou Galeria)</label><div style="display:flex; gap:10px; margin-bottom: 8px;"><input type="text" id="set-photo" placeholder="https://link-da-sua-foto.jpg" style="margin:0; flex:1;"><input type="file" id="set-photo-file" accept="image/*" style="display:none;" onchange="handleFileUpload(event)"><button class="btn-action" style="width:auto; margin:0; padding:10px 15px; background:var(--bg); border:1px solid var(--border); color:var(--text);" onclick="document.getElementById('set-photo-file').click()">📂</button></div><button class="btn-action" style="background: var(--success); color: #000;" onclick="saveSettings()">Salvar Configurações</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-settings')">Cancelar</button><hr style="border:0; border-top:1px solid var(--border); margin: 25px 0;"><button class="btn-action" style="background: #334155; color: var(--danger); margin-bottom: 15px;" onclick="logout()">🚪 Sair da Conta</button><h4 style="color: var(--danger); margin-bottom:10px;">Área de Perigo</h4><button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="resetPlatform()">Zerar Plataforma (Apagar Tudo)</button></div></div>
+<div id="modal-success" class="modal"><div class="modal-content" style="text-align: center;"><h3 style="color: var(--success); margin-bottom: 15px; font-size: 1.8rem;">✅ Sucesso!</h3><p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Seu agendamento foi salvo e está de acordo com as regras da plataforma. Bora pra cima desses 800+!</p><button class="btn-action" style="background: var(--primary); color: #000;" onclick="closeModal('modal-success')">Continuar</button></div></div>
+<div id="modal-alert" class="modal"><div class="modal-content" style="text-align: center;"><h3 style="color: var(--danger); margin-bottom: 15px; font-size: 1.5rem;">⚠️ Atenção</h3><p id="alert-message" style="color: var(--text); line-height: 1.5; margin-bottom: 20px;"></p><button class="btn-action" style="background: var(--card); border: 1px solid var(--danger); color: var(--danger);" onclick="closeModal('modal-alert')">Entendi</button></div></div>
 <datalist id="topic-suggestions"></datalist>
-
-<div id="modal-daily" class="modal">
-    <div class="modal-content">
-        <h3 id="daily-date-label" style="color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Tarefas do Dia</h3>
-        <div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div>
-        <button class="btn-action" style="background: var(--success); color: #000;" onclick="openNewTaskModal()">+ Agendar Nova Tarefa</button>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-daily')">Fechar Visão do Dia</button>
-    </div>
-</div>
-
-<div id="modal-task" class="modal">
-    <div class="modal-content">
-        <h3 id="modal-date-label" style="color: var(--primary); margin-bottom: 15px;">Agendar Estudo</h3>
-        <label style="font-size:0.85rem; color:var(--dim);">Tipo de Atividade</label>
-        <select id="task-type" onchange="toggleTaskFields()">
-            <option value="aula">Teoria / Aula</option>
-            <option value="questoes">Treino de Questões</option>
-            <option value="simulado">Simulado</option>
-            <option value="redacao">Redação</option>
-        </select>
-        <div id="dynamic-fields"></div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Início</label><input type="time" id="task-start-time" value="08:00"></div>
-            <div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Fim</label><input type="time" id="task-end-time" value="09:00"></div>
-        </div>
-        <div id="repeat-container" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
-            <input type="checkbox" id="task-repeat" style="width: 20px;">
-            <label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas</label>
-        </div>
-        <button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button>
-        <div id="delete-task-container" style="display: none; margin-top: 15px;">
-            <button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button>
-        </div>
-    </div>
-</div>
-
-<div id="modal-done" class="modal">
-    <div class="modal-content">
-        <h3 style="color: var(--success); margin-bottom: 15px;">Avaliar Conclusão</h3>
-        <p id="done-task-info" style="margin-bottom: 15px; font-size: 0.9rem; font-weight:bold;"></p>
-        
-        <div id="done-dynamic-fields"></div>
-
-        <div id="difficulty-selection" style="display:none; margin-top:15px; background:var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border);">
-            <label style="font-size:0.85rem; color:var(--dim); margin-bottom:8px; display:block;">Qual foi o nível de dificuldade?</label>
-            <div style="display:flex; gap:10px;">
-                <button id="btn-diff-facil" class="btn-action" style="margin:0; border:1px solid var(--success); color:var(--success); background:var(--bg);" onclick="setDifficulty('facil')">Fácil</button>
-                <button id="btn-diff-medio" class="btn-action" style="margin:0; border:1px solid var(--accent); color:var(--accent); background:var(--bg);" onclick="setDifficulty('medio')">Médio</button>
-                <button id="btn-diff-dificil" class="btn-action" style="margin:0; border:1px solid var(--danger); color:var(--danger); background:var(--bg);" onclick="setDifficulty('dificil')">Difícil</button>
-            </div>
-            <input type="hidden" id="task-difficulty-val">
-        </div>
-
-        <button class="btn-action" style="background: var(--success); color: #000; margin-top: 20px;" onclick="confirmTaskCompletion()">Salvar Progresso</button>
-        <button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-done')">Voltar</button>
-    </div>
-</div>
+<div id="modal-daily" class="modal"><div class="modal-content"><h3 id="daily-date-label" style="color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Tarefas do Dia</h3><div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div><button class="btn-action" style="background: var(--success); color: #000;" onclick="openNewTaskModal()">+ Agendar Nova Tarefa</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-daily')">Fechar Visão do Dia</button></div></div>
+<div id="modal-task" class="modal"><div class="modal-content"><h3 id="modal-date-label" style="color: var(--primary); margin-bottom: 15px;">Agendar Estudo</h3><label style="font-size:0.85rem; color:var(--dim);">Tipo de Atividade</label><select id="task-type" onchange="toggleTaskFields()"><option value="aula">Teoria / Aula</option><option value="questoes">Treino de Questões</option><option value="simulado">Simulado</option><option value="redacao">Redação</option></select><div id="dynamic-fields"></div><div style="display:flex; gap:10px; margin-top:10px;"><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Início</label><input type="time" id="task-start-time" value="08:00"></div><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Fim</label><input type="time" id="task-end-time" value="09:00"></div></div><div id="repeat-container" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;"><input type="checkbox" id="task-repeat" style="width: 20px;"><label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas</label></div><button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button><div id="delete-task-container" style="display: none; margin-top: 15px;"><button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button></div></div></div>
+<div id="modal-done" class="modal"><div class="modal-content"><h3 style="color: var(--success); margin-bottom: 15px;">Avaliar Conclusão</h3><p id="done-task-info" style="margin-bottom: 15px; font-size: 0.9rem; font-weight:bold;"></p><div id="done-dynamic-fields"></div><div id="difficulty-selection" style="display:none; margin-top:15px; background:var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border);"><label style="font-size:0.85rem; color:var(--dim); margin-bottom:8px; display:block;">Qual foi o nível de dificuldade?</label><div style="display:flex; gap:10px;"><button id="btn-diff-facil" class="btn-action" style="margin:0; border:1px solid var(--success); color:var(--success); background:var(--bg);" onclick="setDifficulty('facil')">Fácil</button><button id="btn-diff-medio" class="btn-action" style="margin:0; border:1px solid var(--accent); color:var(--accent); background:var(--bg);" onclick="setDifficulty('medio')">Médio</button><button id="btn-diff-dificil" class="btn-action" style="margin:0; border:1px solid var(--danger); color:var(--danger); background:var(--bg);" onclick="setDifficulty('dificil')">Difícil</button></div><input type="hidden" id="task-difficulty-val"></div><button class="btn-action" style="background: var(--success); color: #000; margin-top: 20px;" onclick="confirmTaskCompletion()">Salvar Progresso</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-done')">Voltar</button></div></div>
 
 <script>
 const firebaseConfig = {
@@ -598,11 +491,22 @@ async function resetPlatform() {
     } catch(e) { showAlert("Erro ao zerar: " + e.message); }
 }
 
+// NOVA LÓGICA DE COUNTDOWN (188 DIAS DIMINUINDO AUTOMATICAMENTE)
+function updateCountdown() {
+    // Definimos a data do ENEM como aprox 1 de Novembro de 2026
+    const targetDate = new Date('2026-11-01T00:00:00').getTime();
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+    let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days < 0) days = 0;
+    document.getElementById('countdown-days').innerText = days + " dias";
+}
+
 function loadEdits() {
     const meta = localStorage.getItem('enem_meta'), ano = localStorage.getItem('enem_ano');
     if(meta) document.getElementById('edit-meta').innerText = meta;
     if(ano) document.getElementById('edit-ano').innerText = ano;
-    document.getElementById('countdown-days').innerText = `${localStorage.getItem('enem_days') || 190} dias`;
+    updateCountdown(); // Atualiza a contagem dos dias reais
 }
 function saveEdits() { localStorage.setItem('enem_meta', document.getElementById('edit-meta').innerText); localStorage.setItem('enem_ano', document.getElementById('edit-ano').innerText); }
 
@@ -651,7 +555,9 @@ auth.onAuthStateChanged(user => {
         document.getElementById('login-screen').style.display = 'none'; document.getElementById('app').style.display = 'flex';
         document.getElementById('user-name').innerText = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
         document.getElementById('user-pic').src = localStorage.getItem('custom_profile_pic') || user.photoURL || 'https://via.placeholder.com/70';
-        loadEdits(); loadTasks();
+        loadEdits(); 
+        loadTasks();
+        restoreTimers(); // Restaura os cronometros se fechar a aba
     } else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
 });
 
@@ -1055,9 +961,7 @@ function renderConquistas() {
                 </div>`;
     }).join('');
 
-    // Array completo com as 50 missões diversificadas
     const missionDefs = [
-        // Diárias (Questões)
         { t:'diaria', title:'Aquecimento', desc:'Faça 5 questões hoje', val: stats.qToday, req: 5 },
         { t:'diaria', title:'Pegando o Ritmo', desc:'Faça 15 questões hoje', val: stats.qToday, req: 15 },
         { t:'diaria', title:'Foco Enem', desc:'Faça 30 questões hoje', val: stats.qToday, req: 30 },
@@ -1065,14 +969,12 @@ function renderConquistas() {
         { t:'diaria', title:'Guerreiro do Dia', desc:'Faça 60 questões hoje', val: stats.qToday, req: 60 },
         { t:'diaria', title:'Maratonista', desc:'Faça 90 questões hoje', val: stats.qToday, req: 90 },
 
-        // Diárias (Tempo)
         { t:'diaria', title:'Meia horinha', desc:'Estude 30 min hoje', val: stats.timeToday, req: 30 },
         { t:'diaria', title:'Uma horinha', desc:'Estude 60 min hoje', val: stats.timeToday, req: 60 },
         { t:'diaria', title:'Sessão Dupla', desc:'Estude 120 min hoje', val: stats.timeToday, req: 120 },
         { t:'diaria', title:'Hardcore', desc:'Estude 240 min hoje', val: stats.timeToday, req: 240 },
         { t:'diaria', title:'Nível Asiático', desc:'Estude 300 min hoje', val: stats.timeToday, req: 300 },
 
-        // Semanais (Questões)
         { t:'semanal', title:'Semana Start', desc:'Faça 50 questões na semana', val: stats.qWeek, req: 50 },
         { t:'semanal', title:'Constância', desc:'Faça 100 questões na semana', val: stats.qWeek, req: 100 },
         { t:'semanal', title:'Acelerando', desc:'Faça 150 questões na semana', val: stats.qWeek, req: 150 },
@@ -1080,13 +982,11 @@ function renderConquistas() {
         { t:'semanal', title:'Modo Máquina', desc:'Faça 300 questões na semana', val: stats.qWeek, req: 300 },
         { t:'semanal', title:'Imparável', desc:'Faça 400 questões na semana', val: stats.qWeek, req: 400 },
 
-        // Semanais (Tempo)
         { t:'semanal', title:'Dedicação', desc:'Estude 300 min na semana', val: stats.timeWeek, req: 300 },
         { t:'semanal', title:'Foco Total', desc:'Estude 600 min na semana', val: stats.timeWeek, req: 600 },
         { t:'semanal', title:'Ultra Foco', desc:'Estude 900 min na semana', val: stats.timeWeek, req: 900 },
         { t:'semanal', title:'Viciado em Estudar', desc:'Estude 1200 min na semana', val: stats.timeWeek, req: 1200 },
 
-        // Mensais (Questões)
         { t:'mensal', title:'Mês Consistente', desc:'Faça 200 questões no mês', val: stats.qMonth, req: 200 },
         { t:'mensal', title:'Evolução Clara', desc:'Faça 400 questões no mês', val: stats.qMonth, req: 400 },
         { t:'mensal', title:'Mês de Ouro', desc:'Faça 600 questões no mês', val: stats.qMonth, req: 600 },
@@ -1094,14 +994,12 @@ function renderConquistas() {
         { t:'mensal', title:'Mito do Enem', desc:'Faça 1000 questões no mês', val: stats.qMonth, req: 1000 },
         { t:'mensal', title:'Lenda Viva', desc:'Faça 1500 questões no mês', val: stats.qMonth, req: 1500 },
 
-        // Mensais (Redação)
         { t:'mensal', title:'Primeira Canetada', desc:'Faça 1 redação no mês', val: stats.redMonth, req: 1 },
         { t:'mensal', title:'Escritor Júnior', desc:'Faça 2 redações no mês', val: stats.redMonth, req: 2 },
         { t:'mensal', title:'O Padrão', desc:'Faça 4 redações no mês', val: stats.redMonth, req: 4 },
         { t:'mensal', title:'Sede de Mil', desc:'Faça 6 redações no mês', val: stats.redMonth, req: 6 },
         { t:'mensal', title:'Redator Chefe', desc:'Faça 8 redações no mês', val: stats.redMonth, req: 8 },
 
-        // Áreas - Vitalício
         { t:'vitalicia', title:'Matemática I', desc:'100 questões de Mat', val: stats.matQ, req: 100 },
         { t:'vitalicia', title:'Matemática II', desc:'300 questões de Mat', val: stats.matQ, req: 300 },
         { t:'vitalicia', title:'Matemática III', desc:'500 questões de Mat', val: stats.matQ, req: 500 },
@@ -1118,16 +1016,14 @@ function renderConquistas() {
         { t:'vitalicia', title:'Linguagens II', desc:'300 questões de Linguagens', val: stats.linQ, req: 300 },
         { t:'vitalicia', title:'Linguagens III', desc:'500 questões de Linguagens', val: stats.linQ, req: 500 },
 
-        // Dificuldades - Vitalício
         { t:'vitalicia', title:'Iniciante', desc:'Acertar/Fazer 50 fáceis', val: stats.facilQ, req: 50 },
         { t:'vitalicia', title:'Intermediário', desc:'Acertar/Fazer 100 médias', val: stats.medioQ, req: 100 },
         { t:'vitalicia', title:'Avançado', desc:'Acertar/Fazer 50 difíceis', val: stats.dificilQ, req: 50 },
         { t:'vitalicia', title:'Dominante', desc:'Acertar/Fazer 150 difíceis', val: stats.dificilQ, req: 150 },
 
-        // Questões Totais - Vitalício
-        { t:'vitalicia', title:'A Jornada Começa', desc:'250 questões totais', val: stats.totalQ, req: 250 },
-        { t:'vitalicia', title:'Focado', desc:'750 questões totais', val: stats.totalQ, req: 750 },
-        { t:'vitalicia', title:'Quase Lá', desc:'2000 questões totais', val: stats.totalQ, req: 2000 }
+        { t:'vitalicia', title:'A Jornada Começa', desc:'250 totais', val: stats.totalQ, req: 250 },
+        { t:'vitalicia', title:'Focado', desc:'750 totais', val: stats.totalQ, req: 750 },
+        { t:'vitalicia', title:'Quase Lá', desc:'2000 totais', val: stats.totalQ, req: 2000 }
     ];
 
     const missContainer = document.getElementById('missions-container');
@@ -1151,17 +1047,104 @@ function renderConquistas() {
     missContainer.innerHTML = missHtml;
 }
 
-// Lógica de Temporizadores e Gráficos
-let timerObj = { pomo: { int: null, time: 3000 }, stop: { int: null, time: 0 } };
+// ==========================================
+// NOVOS TEMPORIZADORES INTELIGENTES (BACKGROUND)
+// ==========================================
+let timerObj = { 
+    pomo: { int: null, time: 3000, target: null }, 
+    stop: { int: null, time: 0, start: null } 
+};
+
 function formatTime(s) { return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
-function startPomodoro() { let mins = document.getElementById('pomo-focus-time').value; resetTimer('pomo', mins * 60); startTimer('pomo'); }
-function startPomoBreak() { let mins = document.getElementById('pomo-break-time').value; resetTimer('pomo', mins * 60); startTimer('pomo'); }
-function startTimer(type) { clearInterval(timerObj[type].int); timerObj[type].int = setInterval(() => { if(timerObj[type].time > 0) { timerObj[type].time--; document.getElementById(`${type}-display`).innerText = formatTime(timerObj[type].time); } else { clearInterval(timerObj[type].int); showAlert("Tempo Esgotado!"); } }, 1000); }
-function pauseTimer(type) { clearInterval(timerObj[type].int); }
-function resetTimer(type, defaultTime) { pauseTimer(type); timerObj[type].time = defaultTime; document.getElementById(`${type}-display`).innerText = formatTime(defaultTime); }
-function startStopwatch() { clearInterval(timerObj.stop.int); let limit = document.getElementById('stopwatch-input').value * 60; timerObj.stop.int = setInterval(() => { if(timerObj.stop.time < limit) { timerObj.stop.time++; document.getElementById('stop-display').innerText = formatTime(timerObj.stop.time); } else { clearInterval(timerObj.stop.int); showAlert("Simulado Finalizado!"); } }, 1000); }
-function pauseStopwatch() { clearInterval(timerObj.stop.int); }
-function resetStopwatch() { pauseStopwatch(); timerObj.stop.time = 0; document.getElementById('stop-display').innerText = "00:00"; }
+
+function startPomodoro() { 
+    let mins = document.getElementById('pomo-focus-time').value; 
+    timerObj.pomo.time = mins * 60; 
+    startPomoReal(); 
+}
+
+function startPomoBreak() { 
+    let mins = document.getElementById('pomo-break-time').value; 
+    timerObj.pomo.time = mins * 60; 
+    startPomoReal(); 
+}
+
+function startPomoReal() {
+    clearInterval(timerObj.pomo.int);
+    timerObj.pomo.target = Date.now() + (timerObj.pomo.time * 1000);
+    localStorage.setItem('pomoTarget', timerObj.pomo.target);
+    document.getElementById('pomo-card').classList.add('timer-active');
+    
+    timerObj.pomo.int = setInterval(() => {
+        let remaining = Math.max(0, Math.floor((timerObj.pomo.target - Date.now()) / 1000));
+        timerObj.pomo.time = remaining;
+        document.getElementById('pomo-display').innerText = formatTime(remaining);
+        if (remaining <= 0) {
+            pauseTimer('pomo');
+            showAlert("Tempo do Pomodoro Esgotado!");
+            document.getElementById('pomo-card').classList.remove('timer-active');
+        }
+    }, 1000);
+}
+
+function pauseTimer(type) { 
+    clearInterval(timerObj[type].int); 
+    if(type === 'pomo') {
+        localStorage.removeItem('pomoTarget');
+        document.getElementById('pomo-card').classList.remove('timer-active');
+    }
+}
+
+function startStopwatch() { 
+    clearInterval(timerObj.stop.int); 
+    timerObj.stop.start = Date.now() - (timerObj.stop.time * 1000);
+    localStorage.setItem('stopStart', timerObj.stop.start);
+    document.getElementById('stop-card').classList.add('timer-active');
+    let limit = document.getElementById('stopwatch-input').value * 60; 
+    
+    timerObj.stop.int = setInterval(() => { 
+        let elapsed = Math.floor((Date.now() - timerObj.stop.start) / 1000);
+        if(elapsed <= limit) { 
+            timerObj.stop.time = elapsed;
+            document.getElementById('stop-display').innerText = formatTime(elapsed); 
+        } else { 
+            pauseStopwatch(); 
+            showAlert("Simulado Finalizado!"); 
+        } 
+    }, 1000); 
+}
+
+function pauseStopwatch() { 
+    clearInterval(timerObj.stop.int); 
+    localStorage.removeItem('stopStart');
+    document.getElementById('stop-card').classList.remove('timer-active');
+}
+
+function resetStopwatch() { 
+    pauseStopwatch(); 
+    timerObj.stop.time = 0; 
+    document.getElementById('stop-display').innerText = "00:00"; 
+}
+
+function restoreTimers() {
+    let pTarget = localStorage.getItem('pomoTarget');
+    if (pTarget) {
+        let remaining = Math.floor((pTarget - Date.now()) / 1000);
+        if (remaining > 0) {
+            timerObj.pomo.time = remaining;
+            startPomoReal();
+        } else {
+            localStorage.removeItem('pomoTarget');
+            document.getElementById('pomo-display').innerText = "00:00";
+        }
+    }
+    let sStart = localStorage.getItem('stopStart');
+    if (sStart) {
+        timerObj.stop.start = parseInt(sStart);
+        timerObj.stop.time = Math.floor((Date.now() - timerObj.stop.start) / 1000);
+        startStopwatch();
+    }
+}
 
 function toggleDashDates() { document.getElementById('custom-dates').style.display = (document.getElementById('dash-filter-type').value === 'custom') ? 'flex' : 'none'; }
 function getFilteredTasks() {
