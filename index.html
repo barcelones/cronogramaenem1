@@ -77,8 +77,8 @@
             background: radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.03) 0%, transparent 40%);
         }
 
-        .page { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-width: 1200px; margin: 0 auto; }
-        .page.active { display: block; }
+        .page { display: none !important; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; }
+        .page.active { display: block !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Componentes de UI */
@@ -136,9 +136,19 @@
         /* Mobile */
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 1000; }
-            .main { padding: 20px; height: auto; }
-            .nav-link { font-size: 0.8rem; padding: 8px; margin-bottom: 0; }
+            .sidebar { 
+                width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); 
+                padding: 10px; position: sticky; top: 0; z-index: 1000; 
+                flex-direction: row; align-items: center; justify-content: flex-start;
+                overflow-x: auto; /* Permite rolar os ícones no mobile */
+                gap: 10px;
+            }
+            .sidebar-header { display: none; } /* Esconde o perfil gigante no topo do mobile para ganhar espaço */
+            .main { padding: 15px; height: auto; width: 100%; }
+            .nav-link { 
+                font-size: 0.8rem; padding: 10px 15px; margin-bottom: 0; 
+                white-space: nowrap; flex-shrink: 0;
+            }
         }
     </style>
 
