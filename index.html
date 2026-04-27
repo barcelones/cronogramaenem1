@@ -170,7 +170,7 @@
                 <button class="icon-btn" onclick="openNotifications()" title="Notificações">🔔<span id="notif-badge" class="notif-badge"></span></button>
                 <button class="icon-btn" onclick="openSettings()" title="Personalizar Perfil">⚙️</button>
             </div>
-            <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">
+            <img id="user-pic" src="https://via.placeholder.com/70?text=..." style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">
             <h3 id="user-name" style="margin-top:10px; font-size: 1.2rem;">Estudante</h3>
         </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
@@ -416,7 +416,7 @@
 <div id="modal-alert" class="modal"><div class="modal-content" style="text-align: center;"><h3 style="color: var(--danger); margin-bottom: 15px; font-size: 1.5rem;">⚠️ Atenção</h3><p id="alert-message" style="color: var(--text); line-height: 1.5; margin-bottom: 20px;"></p><button class="btn-action" style="background: var(--card); border: 1px solid var(--danger); color: var(--danger);" onclick="closeModal('modal-alert')">Entendi</button></div></div>
 <datalist id="topic-suggestions"></datalist>
 <div id="modal-daily" class="modal"><div class="modal-content"><h3 id="daily-date-label" style="color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Tarefas do Dia</h3><div id="daily-tasks-list" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div><button class="btn-action" style="background: var(--success); color: #000;" onclick="openNewTaskModal()">+ Agendar Nova Tarefa</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-daily')">Fechar Visão do Dia</button></div></div>
-<div id="modal-task" class="modal"><div class="modal-content"><h3 id="modal-date-label" style="color: var(--primary); margin-bottom: 15px;">Agendar Estudo</h3><label style="font-size:0.85rem; color:var(--dim);">Tipo de Atividade</label><select id="task-type" onchange="toggleTaskFields()"><option value="aula">Aula</option><option value="questoes">Questões</option><option value="simulado">Simulado</option><option value="redacao">Redação</option></select><div id="dynamic-fields"></div><div style="display:flex; gap:10px; margin-top:10px;"><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Início</label><input type="time" id="task-start-time" value="08:00"></div><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Fim</label><input type="time" id="task-end-time" value="09:00"></div></div><div id="repeat-container" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;"><input type="checkbox" id="task-repeat" style="width: 20px;"><label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas</label></div><button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button><div id="delete-task-container" style="display: none; margin-top: 15px;"><button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button></div></div></div>
+<div id="modal-task" class="modal"><div class="modal-content"><h3 id="modal-date-label" style="color: var(--primary); margin-bottom: 15px;">Agendar Estudo</h3><label style="font-size:0.85rem; color:var(--dim);">Tipo de Atividade</label><select id="task-type" onchange="toggleTaskFields()"><option value="aula">Teoria / Aula</option><option value="questoes">Treino de Questões</option><option value="simulado">Simulado</option><option value="redacao">Redação</option></select><div id="dynamic-fields"></div><div style="display:flex; gap:10px; margin-top:10px;"><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Início</label><input type="time" id="task-start-time" value="08:00"></div><div style="flex:1;"><label style="font-size:0.8rem; color:var(--dim);">Fim</label><input type="time" id="task-end-time" value="09:00"></div></div><div id="repeat-container" style="display: flex; align-items: center; gap: 10px; margin: 15px 0;"><input type="checkbox" id="task-repeat" style="width: 20px;"><label for="task-repeat" style="font-size: 0.85rem;">Repetir por 3 semanas</label></div><button class="btn-action" style="background: var(--primary); color: #000;" onclick="handleSaveTask()">Salvar Tarefa</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-task')">Cancelar</button><div id="delete-task-container" style="display: none; margin-top: 15px;"><button class="btn-action" style="background: transparent; border: 1px solid var(--danger); color: var(--danger);" onclick="deleteTaskFromModal()">🗑️ Apagar Tarefa</button></div></div></div>
 <div id="modal-done" class="modal"><div class="modal-content"><h3 style="color: var(--success); margin-bottom: 15px;">Avaliar Conclusão</h3><p id="done-task-info" style="margin-bottom: 15px; font-size: 0.9rem; font-weight:bold;"></p><div id="done-dynamic-fields"></div><div id="difficulty-selection" style="display:none; margin-top:15px; background:var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border);"><label style="font-size:0.85rem; color:var(--dim); margin-bottom:8px; display:block;">Qual foi o nível de dificuldade?</label><div style="display:flex; gap:10px;"><button id="btn-diff-facil" class="btn-action" style="margin:0; border:1px solid var(--success); color:var(--success); background:var(--bg);" onclick="setDifficulty('facil')">Fácil</button><button id="btn-diff-medio" class="btn-action" style="margin:0; border:1px solid var(--accent); color:var(--accent); background:var(--bg);" onclick="setDifficulty('medio')">Médio</button><button id="btn-diff-dificil" class="btn-action" style="margin:0; border:1px solid var(--danger); color:var(--danger); background:var(--bg);" onclick="setDifficulty('dificil')">Difícil</button></div><input type="hidden" id="task-difficulty-val"></div><button class="btn-action" style="background: var(--success); color: #000; margin-top: 20px;" onclick="confirmTaskCompletion()">Salvar Progresso</button><button class="btn-action" style="background: transparent; border: 1px solid var(--border); color: var(--text);" onclick="closeModal('modal-done')">Voltar</button></div></div>
 
 <script>
@@ -491,10 +491,14 @@ async function resetPlatform() {
     } catch(e) { showAlert("Erro ao zerar: " + e.message); }
 }
 
-// NOVA LÓGICA DE COUNTDOWN (188 DIAS DIMINUINDO AUTOMATICAMENTE)
+// NOVA LÓGICA DE COUNTDOWN DINÂMICO
 function updateCountdown() {
-    // Definimos a data do ENEM como aprox 1 de Novembro de 2026
-    const targetDate = new Date('2026-11-01T00:00:00').getTime();
+    const anoTexto = document.getElementById('edit-ano').innerText;
+    const match = anoTexto.match(/\d{4}/);
+    const targetYear = match ? parseInt(match[0]) : 2026;
+    
+    // Definimos a data do ENEM como aprox 1 de Novembro do ano selecionado
+    const targetDate = new Date(`${targetYear}-11-01T00:00:00`).getTime();
     const now = new Date().getTime();
     const diff = targetDate - now;
     let days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -502,13 +506,35 @@ function updateCountdown() {
     document.getElementById('countdown-days').innerText = days + " dias";
 }
 
-function loadEdits() {
-    const meta = localStorage.getItem('enem_meta'), ano = localStorage.getItem('enem_ano');
-    if(meta) document.getElementById('edit-meta').innerText = meta;
-    if(ano) document.getElementById('edit-ano').innerText = ano;
-    updateCountdown(); // Atualiza a contagem dos dias reais
+async function loadEdits() {
+    // Tenta carregar do Firestore primeiro
+    if (auth.currentUser) {
+        const doc = await db.collection("users").doc(auth.currentUser.uid).get();
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.meta) document.getElementById('edit-meta').innerText = data.meta;
+            if (data.ano) document.getElementById('edit-ano').innerText = data.ano;
+        } else {
+            // Fallback para localStorage se não houver no Firestore
+            const meta = localStorage.getItem('enem_meta'), ano = localStorage.getItem('enem_ano');
+            if(meta) document.getElementById('edit-meta').innerText = meta;
+            if(ano) document.getElementById('edit-ano').innerText = ano;
+        }
+    }
+    updateCountdown(); 
 }
-function saveEdits() { localStorage.setItem('enem_meta', document.getElementById('edit-meta').innerText); localStorage.setItem('enem_ano', document.getElementById('edit-ano').innerText); }
+
+async function saveEdits() { 
+    const meta = document.getElementById('edit-meta').innerText;
+    const ano = document.getElementById('edit-ano').innerText;
+    localStorage.setItem('enem_meta', meta); 
+    localStorage.setItem('enem_ano', ano);
+    
+    if (auth.currentUser) {
+        await db.collection("users").doc(auth.currentUser.uid).set({ meta, ano }, { merge: true });
+    }
+    updateCountdown();
+}
 
 function handleFileUpload(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { uploadedImageBase64 = e.target.result; document.getElementById('set-photo').value = "Imagem carregada"; document.getElementById('set-photo').disabled = true; }; reader.readAsDataURL(file); }
 function handleRedacaoPhotoUpload(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { tempRedacaoPhoto = e.target.result; }; reader.readAsDataURL(file); }
@@ -651,7 +677,19 @@ async function handleSaveTask() {
     let contentVal = contentElem ? contentElem.value : '';
     if((type === 'aula' || type === 'questoes') && contentVal) saveCustomTopic(materia, contentVal);
 
-    const taskData = { userId: auth.currentUser.uid, type, materia, status: 'pending', content: contentVal, qnt: qntElem ? parseInt(qntElem.value) : 0, startTime, endTime, plannedTime, reviewed: false, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+    const taskData = { 
+        userId: auth.currentUser.uid, 
+        type, 
+        materia, 
+        status: 'pending', 
+        content: contentVal, 
+        qnt: qntElem ? parseInt(qntElem.value) : 0, 
+        startTime, 
+        endTime, 
+        plannedTime, 
+        reviewed: false 
+    };
+
     if (type === 'redacao' && metaRedacaoElem && !editingTaskId) { taskData.metaRedacao = parseInt(metaRedacaoElem.value) || 0; } 
 
     if(editingTaskId) {
@@ -659,6 +697,7 @@ async function handleSaveTask() {
         if(oldTask && oldTask.reviewed !== undefined) taskData.reviewed = oldTask.reviewed;
         if(oldTask && oldTask.type === 'redacao' && oldTask.metaRedacao) taskData.metaRedacao = oldTask.metaRedacao; 
         taskData.date = selectedDate; 
+        // Não sobrescreve createdAt em edições
         await db.collection("tasks").doc(editingTaskId).update(taskData);
         closeModal('modal-task');
         loadTasks();
@@ -666,6 +705,7 @@ async function handleSaveTask() {
         return;
     }
 
+    taskData.createdAt = firebase.firestore.FieldValue.serverTimestamp(); // Só adiciona em novas tarefas
     const repeat = document.getElementById('task-repeat').checked, baseDate = new Date(selectedDate + 'T12:00:00');
     for(let i = 0; i < (repeat ? 3 : 1); i++) {
         const d = new Date(baseDate); d.setDate(d.getDate() + (i * 7));
@@ -883,7 +923,6 @@ async function confirmTaskCompletion() {
             
             if(isNaN(hits) || isNaN(errs)) return showAlert("Preencha a quantidade de acertos e erros.");
             if(!diff) return showAlert("Não se esqueça de marcar a dificuldade da questão.");
-            if ((activeTask.type === 'questoes' || activeTask.type === 'simulado') && activeTask.qnt > 0) { if ((hits + errs) > activeTask.qnt) return showAlert(`A soma de acertos e erros não pode ser maior que a meta cadastrada.`); }
             
             updateData.hits = hits; updateData.errors = errs; updateData.difficulty = diff;
         }
@@ -928,8 +967,8 @@ function renderConquistas() {
 
         let matLida = q.materia === "Geral" ? "Questões" : q.materia;
         if (matLida === 'Matemática') stats.matQ += qs;
-        else if (['Biologia', 'Física', 'Química'].includes(matLida)) stats.natQ += qs;
-        else if (['História', 'Geografia', 'Filosofia', 'Sociologia'].includes(matLida)) stats.humQ += qs;
+        else if (['Biologia', 'Física', 'Química', '2º Dia (Mat/Natureza)'].includes(matLida)) stats.natQ += qs;
+        else if (['História', 'Geografia', 'Filosofia', 'Sociologia', '1º Dia (Ling/Humanas)'].includes(matLida)) stats.humQ += qs;
         else if (matLida === 'Linguagens') stats.linQ += qs;
     });
 
