@@ -502,38 +502,223 @@ let uploadedImageBase64 = "", tempRedacaoPhoto = "", activeTaskFilter = 'all';
 // ==========================================
 // ADICIONADO: LÓGICA DO MAPA DO PDF COM ABAS
 // ==========================================
+// ==========================================
+// LÓGICA DO MAPA DO PDF COMPLETO (EXTRAÇÃO TOTAL)
+// ==========================================
 const mapaData = [
-    // ABA 1: SIMPLIFICADO (Sem menção de vídeos do Assaad)
-    { id: 1, tab: "simplificado", area: "Matemática", topico: "Matemática Básica" },
-    { id: 2, tab: "simplificado", area: "Matemática", topico: "Estatística e Gráficos" },
-    { id: 3, tab: "simplificado", area: "Matemática", topico: "Geometria Plana e Espacial" },
-    { id: 4, tab: "simplificado", area: "Biologia", topico: "Ecologia e Sustentabilidade" },
-    { id: 5, tab: "simplificado", area: "Biologia", topico: "Citologia e Membrana" },
-    { id: 6, tab: "simplificado", area: "Física", topico: "Mecânica (Cinemática e Dinâmica)" },
-    { id: 7, tab: "simplificado", area: "Química", topico: "Estequiometria e Soluções" },
-    { id: 8, tab: "simplificado", area: "História", topico: "Era Vargas e Ditadura Militar" },
-    
-    // ABA 2: INTENSIVO
-    { id: 201, tab: "intensivo", area: "Nivelamento", topico: "Operações Básicas e Sinais" },
-    { id: 202, tab: "intensivo", area: "Básico I", topico: "Razão, Proporção e Escala" },
-    { id: 203, tab: "intensivo", area: "Básico II", topico: "Funções de 1º e 2º Grau" },
-    { id: 204, tab: "intensivo", area: "Construção", topico: "Fisiologia Humana Completa" },
-    { id: 205, tab: "intensivo", area: "Ataque", topico: "Questões Alta Complexidade" },
-    
+    // -----------------------------------------------------
+    // ABA 1: CHECKLIST SIMPLIFICADO
+    // -----------------------------------------------------
+    // MATEMÁTICA
+    { id: 101, tab: "simplificado", area: "Matemática", topico: "Fundamentos da Matemática (Operações básicas)" },
+    { id: 102, tab: "simplificado", area: "Matemática", topico: "Frações" },
+    { id: 103, tab: "simplificado", area: "Matemática", topico: "MMC e MDC" },
+    { id: 104, tab: "simplificado", area: "Matemática", topico: "Potenciação e Radiciação" },
+    { id: 105, tab: "simplificado", area: "Matemática", topico: "Razão, Proporção e Regra de 3" },
+    { id: 106, tab: "simplificado", area: "Matemática", topico: "Porcentagem" },
+    { id: 107, tab: "simplificado", area: "Matemática", topico: "Notação Científica" },
+    { id: 108, tab: "simplificado", area: "Matemática", topico: "Unidades de Medida e suas Conversões" },
+    { id: 109, tab: "simplificado", area: "Matemática", topico: "Vazão" },
+    { id: 110, tab: "simplificado", area: "Matemática", topico: "Escalas" },
+    { id: 111, tab: "simplificado", area: "Matemática", topico: "Treinamento Prático de Gráficos e Tabelas" },
+    { id: 112, tab: "simplificado", area: "Matemática", topico: "Matemática Financeira Básica" },
+    { id: 113, tab: "simplificado", area: "Matemática", topico: "Fundamentos da Álgebra" },
+    { id: 114, tab: "simplificado", area: "Matemática", topico: "Sistemas e Equações" },
+    { id: 115, tab: "simplificado", area: "Matemática", topico: "Conjuntos" },
+    { id: 116, tab: "simplificado", area: "Matemática", topico: "Estatística" },
+    { id: 117, tab: "simplificado", area: "Matemática", topico: "Função do Primeiro Grau" },
+    { id: 118, tab: "simplificado", area: "Matemática", topico: "Progressão Aritmética" },
+    { id: 119, tab: "simplificado", area: "Matemática", topico: "Função do Segundo Grau" },
+    { id: 120, tab: "simplificado", area: "Matemática", topico: "Geometria Plana" },
+    { id: 121, tab: "simplificado", area: "Matemática", topico: "Trigonometria" },
+    { id: 122, tab: "simplificado", area: "Matemática", topico: "Geometria Espacial" },
+    { id: 123, tab: "simplificado", area: "Matemática", topico: "Projeção Ortogonal" },
+    { id: 124, tab: "simplificado", area: "Matemática", topico: "Análise Combinatória" },
+    { id: 125, tab: "simplificado", area: "Matemática", topico: "Probabilidade" },
+    { id: 126, tab: "simplificado", area: "Matemática", topico: "Geometria Analítica" },
+    { id: 127, tab: "simplificado", area: "Matemática", topico: "Logaritmo" },
+    { id: 128, tab: "simplificado", area: "Matemática", topico: "Matemática Financeira Avançada" },
+    { id: 129, tab: "simplificado", area: "Matemática", topico: "Função Trigonométrica" },
+    { id: 130, tab: "simplificado", area: "Matemática", topico: "Função Exponencial" },
+    { id: 131, tab: "simplificado", area: "Matemática", topico: "Função Logarítmica" },
+    { id: 132, tab: "simplificado", area: "Matemática", topico: "Matrizes" },
+
+    // BIOLOGIA
+    { id: 201, tab: "simplificado", area: "Biologia", topico: "Citologia e Moléculas da vida" },
+    { id: 202, tab: "simplificado", area: "Biologia", topico: "Metabolismo Energético" },
+    { id: 203, tab: "simplificado", area: "Biologia", topico: "Biologia Molecular e Biotecnologia" },
+    { id: 204, tab: "simplificado", area: "Biologia", topico: "Evolução, Forma e Função dos Seres Vivos" },
+    { id: 205, tab: "simplificado", area: "Biologia", topico: "Ecologia" },
+    { id: 206, tab: "simplificado", area: "Biologia", topico: "Impactos e Problemas Ambientais" },
+    { id: 207, tab: "simplificado", area: "Biologia", topico: "Fisiologia Humana" },
+    { id: 208, tab: "simplificado", area: "Biologia", topico: "Classificação dos Seres Vivos e Taxonomia" },
+    { id: 209, tab: "simplificado", area: "Biologia", topico: "Fisiomorfologia Comparada" },
+    { id: 210, tab: "simplificado", area: "Biologia", topico: "Botânica" },
+    { id: 211, tab: "simplificado", area: "Biologia", topico: "Genética" },
+    { id: 212, tab: "simplificado", area: "Biologia", topico: "Doenças" },
+
+    // FÍSICA
+    { id: 301, tab: "simplificado", area: "Física", topico: "Energia e suas Transformações" },
+    { id: 302, tab: "simplificado", area: "Física", topico: "Ondulatória" },
+    { id: 303, tab: "simplificado", area: "Física", topico: "Termologia I" },
+    { id: 304, tab: "simplificado", area: "Física", topico: "Vetores" },
+    { id: 305, tab: "simplificado", area: "Física", topico: "Cinemática I" },
+    { id: 306, tab: "simplificado", area: "Física", topico: "Dinâmica I" },
+    { id: 307, tab: "simplificado", area: "Física", topico: "Cinemática II" },
+    { id: 308, tab: "simplificado", area: "Física", topico: "Eletrostática" },
+    { id: 309, tab: "simplificado", area: "Física", topico: "Eletrodinâmica I" },
+    { id: 310, tab: "simplificado", area: "Física", topico: "Termologia II" },
+    { id: 311, tab: "simplificado", area: "Física", topico: "Eletrodinâmica II" },
+    { id: 312, tab: "simplificado", area: "Física", topico: "Dinâmica II" },
+    { id: 313, tab: "simplificado", area: "Física", topico: "Dinâmica III" },
+    { id: 314, tab: "simplificado", area: "Física", topico: "Potência e Eficiência" },
+    { id: 315, tab: "simplificado", area: "Física", topico: "Estática" },
+    { id: 316, tab: "simplificado", area: "Física", topico: "Gravitação" },
+    { id: 317, tab: "simplificado", area: "Física", topico: "Hidrostática" },
+    { id: 318, tab: "simplificado", area: "Física", topico: "Magnetismo e Eletromagnetismo" },
+    { id: 319, tab: "simplificado", area: "Física", topico: "Óptica Geométrica" },
+
+    // QUÍMICA
+    { id: 401, tab: "simplificado", area: "Química", topico: "Propriedades da Matéria" },
+    { id: 402, tab: "simplificado", area: "Química", topico: "Processos de Separação de Misturas" },
+    { id: 403, tab: "simplificado", area: "Química", topico: "Atomística" },
+    { id: 404, tab: "simplificado", area: "Química", topico: "Tabela Periódica e suas Propriedades" },
+    { id: 405, tab: "simplificado", area: "Química", topico: "Ligações Químicas e Polaridade" },
+    { id: 406, tab: "simplificado", area: "Química", topico: "Química Inorgânica" },
+    { id: 407, tab: "simplificado", area: "Química", topico: "Estequiometria" },
+    { id: 408, tab: "simplificado", area: "Química", topico: "Radioatividade" },
+    { id: 409, tab: "simplificado", area: "Química", topico: "Química Orgânica I" },
+    { id: 410, tab: "simplificado", area: "Química", topico: "Termoquímica" },
+    { id: 411, tab: "simplificado", area: "Química", topico: "Gases" },
+    { id: 412, tab: "simplificado", area: "Química", topico: "Propriedades Coligativas" },
+    { id: 413, tab: "simplificado", area: "Química", topico: "Soluções" },
+    { id: 414, tab: "simplificado", area: "Química", topico: "Equilíbrio Químico" },
+    { id: 415, tab: "simplificado", area: "Química", topico: "Cinética Química" },
+    { id: 416, tab: "simplificado", area: "Química", topico: "Reações Químicas" },
+    { id: 417, tab: "simplificado", area: "Química", topico: "Eletroquímica" },
+    { id: 418, tab: "simplificado", area: "Química", topico: "Química Orgânica II" },
+    { id: 419, tab: "simplificado", area: "Química", topico: "Polímeros" },
+
+    // LINGUAGENS E HUMANAS
+    { id: 501, tab: "simplificado", area: "Linguagens", topico: "Funções da linguagem" },
+    { id: 502, tab: "simplificado", area: "Linguagens", topico: "Figuras de Linguagem" },
+    { id: 503, tab: "simplificado", area: "Linguagens", topico: "Campanhas Publicitárias e Anúncios" },
+    { id: 504, tab: "simplificado", area: "Linguagens", topico: "Literatura" },
+    { id: 505, tab: "simplificado", area: "Linguagens", topico: "Lirismo" },
+    { id: 506, tab: "simplificado", area: "Linguagens", topico: "Crítica Social, Cultural e Artística" },
+    { id: 507, tab: "simplificado", area: "Linguagens", topico: "Progressão temática e organização textual" },
+    { id: 508, tab: "simplificado", area: "Linguagens", topico: "Gêneros Textuais" },
+    { id: 601, tab: "simplificado", area: "História", topico: "Idade Antiga" },
+    { id: 602, tab: "simplificado", area: "História", topico: "Expansão Marítima e Brasil Colônia" },
+    { id: 603, tab: "simplificado", area: "História", topico: "Idade Média" },
+    { id: 604, tab: "simplificado", area: "História", topico: "Idade Moderna" },
+    { id: 605, tab: "simplificado", area: "História", topico: "Brasil Império" },
+    { id: 606, tab: "simplificado", area: "História", topico: "Idade Contemporânea" },
+    { id: 607, tab: "simplificado", area: "História", topico: "Século XX na Europa" },
+    { id: 701, tab: "simplificado", area: "Geografia", topico: "Geografia Econômica" },
+    { id: 702, tab: "simplificado", area: "Geografia", topico: "Geografia Urbana e Demografia" },
+    { id: 703, tab: "simplificado", area: "Geografia", topico: "Geografia Física" },
+    { id: 704, tab: "simplificado", area: "Geografia", topico: "Hidrografia" },
+    { id: 705, tab: "simplificado", area: "Geografia", topico: "Climatologia" },
+    { id: 706, tab: "simplificado", area: "Geografia", topico: "Geopolítica" },
+    { id: 707, tab: "simplificado", area: "Geografia", topico: "Geografia Agrária" },
+    { id: 801, tab: "simplificado", area: "Filosofia", topico: "Filosofia Pré-Socrática" },
+    { id: 802, tab: "simplificado", area: "Filosofia", topico: "Filósofos Clássicos (Sócrates, Platão, Aristóteles)" },
+    { id: 803, tab: "simplificado", area: "Filosofia", topico: "Helenismo" },
+    { id: 804, tab: "simplificado", area: "Filosofia", topico: "Filosofia Religiosa" },
+    { id: 805, tab: "simplificado", area: "Filosofia", topico: "Filosofia Política" },
+    { id: 806, tab: "simplificado", area: "Filosofia", topico: "Filosofia Moderna e Contemporânea" },
+    { id: 807, tab: "simplificado", area: "Sociologia", topico: "Sociólogos Clássicos (Comte, Durkheim, Weber, Marx)" },
+    { id: 808, tab: "simplificado", area: "Sociologia", topico: "Sociologia do Trabalho e Democracia" },
+    { id: 809, tab: "simplificado", area: "Sociologia", topico: "Cultura, Movimentos Sociais e Indústria Cultural" },
+
+    // -----------------------------------------------------
+    // ABA 2: CHECKLIST INTENSIVO (Detalhado por Níveis)
+    // -----------------------------------------------------
+    { id: 1001, tab: "intensivo", area: "Nivelamento", topico: "Fundamentos da Matemática e Frações" },
+    { id: 1002, tab: "intensivo", area: "Nivelamento", topico: "MMC, MDC, Potenciação e Radiciação" },
+    { id: 1003, tab: "intensivo", area: "Nivelamento", topico: "Citologia e Moléculas da Vida" },
+    { id: 1004, tab: "intensivo", area: "Nivelamento", topico: "Energia, Trabalho e Propriedades da Matéria" },
+    { id: 1005, tab: "intensivo", area: "Nivelamento", topico: "Funções da Linguagem" },
+    { id: 1006, tab: "intensivo", area: "Nivelamento", topico: "Geografia Econômica" },
+
+    { id: 1010, tab: "intensivo", area: "Básico I", topico: "Razão, Proporção, Regra de 3 e Porcentagem" },
+    { id: 1011, tab: "intensivo", area: "Básico I", topico: "Notação Científica, Unidades e Escalas" },
+    { id: 1012, tab: "intensivo", area: "Básico I", topico: "Gráficos, Tabelas e Mat. Financeira Básica" },
+    { id: 1013, tab: "intensivo", area: "Básico I", topico: "Metabolismo Energético e Biotecnologia" },
+    { id: 1014, tab: "intensivo", area: "Básico I", topico: "Evolução e Diversidade" },
+    { id: 1015, tab: "intensivo", area: "Básico I", topico: "Ondulatória I, Acústica e Termologia I" },
+    { id: 1016, tab: "intensivo", area: "Básico I", topico: "Vetores, Cinemática I e Dinâmica I" },
+    { id: 1017, tab: "intensivo", area: "Básico I", topico: "Processos de Separação e Atomística" },
+    { id: 1018, tab: "intensivo", area: "Básico I", topico: "Tabela Periódica, Ligações e Polaridade" },
+    { id: 1019, tab: "intensivo", area: "Básico I", topico: "História: Idade Antiga e Brasil Colônia" },
+    { id: 1020, tab: "intensivo", area: "Básico I", topico: "Linguagens: Literatura e Figuras de Linguagem" },
+
+    { id: 1030, tab: "intensivo", area: "Básico II", topico: "Fundamentos da Álgebra e Sistemas" },
+    { id: 1031, tab: "intensivo", area: "Básico II", topico: "Estatística e Conjuntos" },
+    { id: 1032, tab: "intensivo", area: "Básico II", topico: "Função do 1º e 2º Grau e Progressão Aritmética" },
+    { id: 1033, tab: "intensivo", area: "Básico II", topico: "Ecologia e Impactos Ambientais" },
+    { id: 1034, tab: "intensivo", area: "Básico II", topico: "Fisiologia Humana (Sist. Digestório, Endócrino, etc)" },
+    { id: 1035, tab: "intensivo", area: "Básico II", topico: "Cinemática II e Eletrostática" },
+    { id: 1036, tab: "intensivo", area: "Básico II", topico: "Eletrodinâmica I" },
+    { id: 1037, tab: "intensivo", area: "Básico II", topico: "Química Inorgânica (Ácidos, Bases, Sais, Óxidos)" },
+    { id: 1038, tab: "intensivo", area: "Básico II", topico: "Estequiometria e Radioatividade" },
+    { id: 1039, tab: "intensivo", area: "Básico II", topico: "História: Idade Moderna ao Brasil Império" },
+    { id: 1040, tab: "intensivo", area: "Básico II", topico: "Geografia Física, Hidrografia e Climatologia" },
+
+    { id: 1050, tab: "intensivo", area: "Construção", topico: "Geometria Plana e Trigonometria" },
+    { id: 1051, tab: "intensivo", area: "Construção", topico: "Aprofundamento de Fisiologia e Botânica" },
+    { id: 1052, tab: "intensivo", area: "Construção", topico: "Termologia II e Eletrodinâmica II" },
+    { id: 1053, tab: "intensivo", area: "Construção", topico: "Química Orgânica I e Termoquímica" },
+
+    { id: 1060, tab: "intensivo", area: "Ataque", topico: "Geometria Analítica e Espacial" },
+    { id: 1061, tab: "intensivo", area: "Ataque", topico: "Análise Combinatória e Probabilidade" },
+    { id: 1062, tab: "intensivo", area: "Ataque", topico: "Genética e Doenças" },
+    { id: 1063, tab: "intensivo", area: "Ataque", topico: "Eletromagnetismo e Física Moderna" },
+    { id: 1064, tab: "intensivo", area: "Ataque", topico: "Equilíbrio Químico, Cinética e Eletroquímica" },
+
+    // -----------------------------------------------------
     // ABA 3: REDAÇÃO
-    { id: 301, tab: "redacao_mapa", area: "Competências", topico: "Estrutura do Texto Dissertativo" },
-    { id: 302, tab: "redacao_mapa", area: "Competências", topico: "Repertório Sociocultural Produtivo" },
-    { id: 303, tab: "redacao_mapa", area: "Competências", topico: "Proposta de Intervenção (5 elementos)" },
-    
-    // ABA 4: PROVAS ANTIGAS
-    { id: 401, tab: "provas", area: "ENEM Padrão", topico: "ENEM 2018 a 2019" },
-    { id: 402, tab: "provas", area: "ENEM PPL", topico: "ENEM 2018 a 2019 PPL" },
-    { id: 403, tab: "provas", area: "ENEM Padrão", topico: "ENEM 2020 a 2024" },
-    
-    // ABA 5: SIMULADOS (Adicionado os da sua preferência)
-    { id: 501, tab: "simulados_mapa", area: "Simulados Plataforma", topico: "Simulado Diagnóstico Assaad" },
-    { id: 502, tab: "simulados_mapa", area: "Simulados Presenciais", topico: "Simulado Presencial Chromos BH" },
-    { id: 503, tab: "simulados_mapa", area: "Simulados Externos", topico: "Simulado SAS / Bernoulli" }
+    // -----------------------------------------------------
+    { id: 2001, tab: "redacao_mapa", area: "Redação", topico: "Estrutura do Enem" },
+    { id: 2002, tab: "redacao_mapa", area: "Redação", topico: "Proposta de Redação" },
+    { id: 2003, tab: "redacao_mapa", area: "Redação", topico: "Planejamento Textual" },
+    { id: 2004, tab: "redacao_mapa", area: "Redação", topico: "Coesão e Clareza" },
+    { id: 2005, tab: "redacao_mapa", area: "Redação", topico: "Gramática e Vocabulário" },
+    { id: 2006, tab: "redacao_mapa", area: "Redação", topico: "Engenharia Argumentativa" },
+    { id: 2007, tab: "redacao_mapa", area: "Redação", topico: "Intervenção (5 elementos)" },
+    { id: 2008, tab: "redacao_mapa", area: "Redação", topico: "Autonomia e Autocorreção" },
+
+    // -----------------------------------------------------
+    // ABA 4: PROVAS ANTIGAS DO ENEM
+    // -----------------------------------------------------
+    { id: 3001, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2018" },
+    { id: 3002, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2018 PPL" },
+    { id: 3003, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2019" },
+    { id: 3004, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2019 PPL" },
+    { id: 3005, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020" },
+    { id: 3006, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020 DIGITAL" },
+    { id: 3007, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020 PPL" },
+    { id: 3008, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021" },
+    { id: 3009, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021 DIGITAL" },
+    { id: 3010, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021 PPL" },
+    { id: 3011, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022" },
+    { id: 3012, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022 DIGITAL" },
+    { id: 3013, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022 PPL" },
+    { id: 3014, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2023" },
+    { id: 3015, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2023 PPL" },
+    { id: 3016, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2024" },
+    { id: 3017, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2024 PPL" },
+
+    // -----------------------------------------------------
+    // ABA 5: SIMULADOS (Plataformas, Presencial e Externos)
+    // -----------------------------------------------------
+    { id: 4001, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Diagnóstico Assaad" },
+    { id: 4002, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Presencial Chromos BH" },
+    { id: 4003, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Bernoulli" },
+    { id: 4004, tab: "simulados_mapa", area: "Simulados", topico: "Simulado SAS" },
+    { id: 4005, tab: "simulados_mapa", area: "Simulados", topico: "Simulado SOMOS" },
+    { id: 4006, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Evolucional" }
 ];
 
 let userMapProgresso = { xp: 0, checks: {} };
