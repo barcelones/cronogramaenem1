@@ -136,8 +136,18 @@
         .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
 
         /* ==========================================
-           ADICIONADO: ESTILOS MAPA DO PDF
+           ADICIONADO: ESTILOS MAPA DO PDF E ABAS
         ========================================== */
+        .mapa-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .mapa-tabs::-webkit-scrollbar { height: 6px; }
+        .mapa-tabs::-webkit-scrollbar-track { background: var(--bg); }
+        .mapa-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .mapa-tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--dim); padding: 12px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-weight: 600; font-size: 0.9rem; }
+        .mapa-tab-btn:hover { background: var(--border); color: var(--text); }
+        .mapa-tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 4px 10px rgba(56,189,248,0.2); }
+        .mapa-content { display: none; }
+        .mapa-content.active { display: block; animation: fadeIn 0.4s ease; }
+
         .progress-table { width: 100%; background: var(--card); border-radius: 12px; border: 1px solid var(--border); border-collapse: collapse; overflow: hidden; margin-bottom: 30px; }
         .progress-table th, .progress-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
         .progress-table th { background: #1c263b; color: var(--dim); font-size: 0.8rem; text-transform: uppercase; }
@@ -229,22 +239,35 @@
         </section>
 
         <section id="mapa_pdf" class="page">
-            <h2 style="margin-bottom: 10px;">🗺️ Mapa de Progresso Competitivo</h2>
-            <p style="color:var(--dim); margin-bottom:25px;">Domine toda a matéria, tópico por tópico. Marque para ganhar XP!</p>
+            <h2 style="margin-bottom: 10px;">🗺️ Mapa de Progresso</h2>
+            <p style="color:var(--dim); margin-bottom:20px;">Domine toda a matéria, tópico por tópico. Marque para ganhar XP!</p>
             
-            <table class="progress-table">
-                <thead>
-                    <tr>
-                        <th>Conteúdo e Tópicos</th>
-                        <th class="col-check">Teoria</th>
-                        <th class="col-check">Prática</th>
-                        <th class="col-check">Domínio</th>
-                    </tr>
-                </thead>
-                <tbody id="mapa-tbody">
-                    </tbody>
-            </table>
+            <div class="mapa-tabs">
+                <button class="mapa-tab-btn active" onclick="switchMapaTab('simplificado', this)">Checklist Simplificado</button>
+                <button class="mapa-tab-btn" onclick="switchMapaTab('intensivo', this)">Checklist Intensivo</button>
+                <button class="mapa-tab-btn" onclick="switchMapaTab('redacao_mapa', this)">Redação</button>
+                <button class="mapa-tab-btn" onclick="switchMapaTab('provas', this)">Provas Antigas</button>
+                <button class="mapa-tab-btn" onclick="switchMapaTab('simulados_mapa', this)">Simulados</button>
+            </div>
+            
+            <div id="mapa_simplificado" class="mapa-content active">
+                <table class="progress-table"><thead><tr><th>Conteúdo Simplificado</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-simplificado"></tbody></table>
+            </div>
+            <div id="mapa_intensivo" class="mapa-content">
+                <table class="progress-table"><thead><tr><th>Conteúdo Intensivo</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-intensivo"></tbody></table>
+            </div>
+            <div id="mapa_redacao_mapa" class="mapa-content">
+                <table class="progress-table"><thead><tr><th>Estrutura da Redação</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-redacao_mapa"></tbody></table>
+            </div>
+            <div id="mapa_provas" class="mapa-content">
+                <div style="background: var(--card); border-left: 4px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 8px;"><strong>Dica:</strong> Nas provas, as colunas são: <strong>Realizada</strong> (Teoria), <strong>Corrigida</strong> (Prática) e <strong>Revisada</strong> (Domínio).</div>
+                <table class="progress-table"><thead><tr><th>Edições do ENEM</th><th class="col-check">Feita</th><th class="col-check">Correção</th><th class="col-check">Revisada</th></tr></thead><tbody id="tbody-provas"></tbody></table>
+            </div>
+            <div id="mapa_simulados_mapa" class="mapa-content">
+                <table class="progress-table"><thead><tr><th>Simulados</th><th class="col-check">Feito</th><th class="col-check">Correção</th><th class="col-check">Revisado</th></tr></thead><tbody id="tbody-simulados_mapa"></tbody></table>
+            </div>
         </section>
+
         <section id="conquistas" class="page">
             <h2 style="margin-bottom: 10px;">🏆 Suas Conquistas e Missões</h2>
             <p style="color:var(--dim); margin-bottom:30px;">Cumpra as missões diárias, semanais e mensais para garantir os 800+!</p>
@@ -477,25 +500,40 @@ let currentTasks = [], selectedDate = null, activeTask = null, editingTaskId = n
 let uploadedImageBase64 = "", tempRedacaoPhoto = "", activeTaskFilter = 'all';
 
 // ==========================================
-// ADICIONADO: LÓGICA DO MAPA DO PDF E XP
+// ADICIONADO: LÓGICA DO MAPA DO PDF COM ABAS
 // ==========================================
 const mapaData = [
-    { area: "Nivelamento", topico: "Operações Básicas e Sinais" },
-    { area: "Nivelamento", topico: "Fração e Decimais" },
-    { area: "Matemática", topico: "Razão, Proporção e Escala" },
-    { area: "Matemática", topico: "Porcentagem e Juros" },
-    { area: "Matemática", topico: "Funções de 1º e 2º Grau" },
-    { area: "Matemática", topico: "Geometria Plana e Espacial" },
-    { area: "Matemática", topico: "Estatística e Probabilidade" },
-    { area: "Biologia", topico: "Citologia e Membrana" },
-    { area: "Biologia", topico: "Fisiologia Humana" },
-    { area: "Física", topico: "Cinemática e Dinâmica" },
-    { area: "Física", topico: "Eletrodinâmica" },
-    { area: "Química", topico: "Estequiometria" },
-    { area: "Química", topico: "Química Orgânica" },
-    { area: "Linguagens", topico: "Interpretação de Texto" },
-    { area: "Humanas", topico: "História do Brasil Império" },
-    { area: "Humanas", topico: "Geografia Agrária e Meio Ambiente" }
+    // ABA 1: SIMPLIFICADO (Sem menção de vídeos do Assaad)
+    { id: 1, tab: "simplificado", area: "Matemática", topico: "Matemática Básica" },
+    { id: 2, tab: "simplificado", area: "Matemática", topico: "Estatística e Gráficos" },
+    { id: 3, tab: "simplificado", area: "Matemática", topico: "Geometria Plana e Espacial" },
+    { id: 4, tab: "simplificado", area: "Biologia", topico: "Ecologia e Sustentabilidade" },
+    { id: 5, tab: "simplificado", area: "Biologia", topico: "Citologia e Membrana" },
+    { id: 6, tab: "simplificado", area: "Física", topico: "Mecânica (Cinemática e Dinâmica)" },
+    { id: 7, tab: "simplificado", area: "Química", topico: "Estequiometria e Soluções" },
+    { id: 8, tab: "simplificado", area: "História", topico: "Era Vargas e Ditadura Militar" },
+    
+    // ABA 2: INTENSIVO
+    { id: 201, tab: "intensivo", area: "Nivelamento", topico: "Operações Básicas e Sinais" },
+    { id: 202, tab: "intensivo", area: "Básico I", topico: "Razão, Proporção e Escala" },
+    { id: 203, tab: "intensivo", area: "Básico II", topico: "Funções de 1º e 2º Grau" },
+    { id: 204, tab: "intensivo", area: "Construção", topico: "Fisiologia Humana Completa" },
+    { id: 205, tab: "intensivo", area: "Ataque", topico: "Questões Alta Complexidade" },
+    
+    // ABA 3: REDAÇÃO
+    { id: 301, tab: "redacao_mapa", area: "Competências", topico: "Estrutura do Texto Dissertativo" },
+    { id: 302, tab: "redacao_mapa", area: "Competências", topico: "Repertório Sociocultural Produtivo" },
+    { id: 303, tab: "redacao_mapa", area: "Competências", topico: "Proposta de Intervenção (5 elementos)" },
+    
+    // ABA 4: PROVAS ANTIGAS
+    { id: 401, tab: "provas", area: "ENEM Padrão", topico: "ENEM 2018 a 2019" },
+    { id: 402, tab: "provas", area: "ENEM PPL", topico: "ENEM 2018 a 2019 PPL" },
+    { id: 403, tab: "provas", area: "ENEM Padrão", topico: "ENEM 2020 a 2024" },
+    
+    // ABA 5: SIMULADOS (Adicionado os da sua preferência)
+    { id: 501, tab: "simulados_mapa", area: "Simulados Plataforma", topico: "Simulado Diagnóstico Assaad" },
+    { id: 502, tab: "simulados_mapa", area: "Simulados Presenciais", topico: "Simulado Presencial Chromos BH" },
+    { id: 503, tab: "simulados_mapa", area: "Simulados Externos", topico: "Simulado SAS / Bernoulli" }
 ];
 
 let userMapProgresso = { xp: 0, checks: {} };
@@ -522,30 +560,38 @@ async function saveMapaData() {
     } catch(e) { console.error("Erro ao salvar mapa:", e); }
 }
 
+function switchMapaTab(tabId, btn) {
+    document.querySelectorAll('.mapa-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mapa-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('mapa_' + tabId).classList.add('active');
+}
+
 function renderMapa() {
-    const tbody = document.getElementById('mapa-tbody');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    
-    mapaData.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        const prog = userMapProgresso.checks[index] || { t: false, p: false, d: false };
-        
-        tr.innerHTML = `
-            <td><span style="font-size:0.75rem; color:var(--primary); font-weight:bold;">${item.area}</span><br><span style="font-size:0.95rem;">${item.topico}</span></td>
-            <td class="col-check"><div class="cb-container ${prog.t ? 'active-t' : ''}" onclick="toggleMapaCheck(${index}, 't')"></div></td>
-            <td class="col-check"><div class="cb-container ${prog.p ? 'active-p' : ''}" onclick="toggleMapaCheck(${index}, 'p')"></div></td>
-            <td class="col-check"><div class="cb-container ${prog.d ? 'active-d' : ''}" onclick="toggleMapaCheck(${index}, 'd')"></div></td>
-        `;
-        tbody.appendChild(tr);
+    const abas = ['simplificado', 'intensivo', 'redacao_mapa', 'provas', 'simulados_mapa'];
+    abas.forEach(tab => {
+        const tbody = document.getElementById('tbody-' + tab);
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        mapaData.filter(item => item.tab === tab).forEach(item => {
+            const tr = document.createElement('tr');
+            const prog = userMapProgresso.checks[item.id] || { t: false, p: false, d: false };
+            tr.innerHTML = `
+                <td><span style="font-size:0.75rem; color:var(--primary); font-weight:bold;">${item.area}</span><br><span style="font-size:0.95rem;">${item.topico}</span></td>
+                <td class="col-check"><div class="cb-container ${prog.t ? 'active-t' : ''}" onclick="toggleMapaCheck(${item.id}, 't')"></div></td>
+                <td class="col-check"><div class="cb-container ${prog.p ? 'active-p' : ''}" onclick="toggleMapaCheck(${item.id}, 'p')"></div></td>
+                <td class="col-check"><div class="cb-container ${prog.d ? 'active-d' : ''}" onclick="toggleMapaCheck(${item.id}, 'd')"></div></td>
+            `;
+            tbody.appendChild(tr);
+        });
     });
 }
 
-function toggleMapaCheck(index, type) {
-    if (!userMapProgresso.checks[index]) userMapProgresso.checks[index] = { t: false, p: false, d: false };
+function toggleMapaCheck(id, type) {
+    if (!userMapProgresso.checks[id]) userMapProgresso.checks[id] = { t: false, p: false, d: false };
     
-    let currentState = userMapProgresso.checks[index][type];
-    userMapProgresso.checks[index][type] = !currentState;
+    let currentState = userMapProgresso.checks[id][type];
+    userMapProgresso.checks[id][type] = !currentState;
     
     // Ganho de XP: Teoria 50, Prática 100, Domínio 200
     let xpVal = type === 't' ? 50 : (type === 'p' ? 100 : 200);
@@ -575,8 +621,9 @@ function updateXpUI() {
     if(fillBar) fillBar.style.width = `${progressPercent}%`;
     if(textBadge) textBadge.innerText = `${currentXP} / ${xpBaseLevel} XP`;
 }
+
 // ==========================================
-// FIM ADICIONADO: LÓGICA DO MAPA DO PDF
+// FUNÇÕES DA PLATAFORMA QUE JÁ ESTAVAM AÍ
 // ==========================================
 
 function showAlert(msg) {
@@ -701,7 +748,7 @@ auth.onAuthStateChanged(user => {
         document.getElementById('user-pic').src = localStorage.getItem('custom_profile_pic') || user.photoURL || 'https://via.placeholder.com/70';
         loadEdits(); 
         loadTasks();
-        loadMapaData(user.uid); // ADICIONADO: CARREGA O MAPA DE XP
+        loadMapaData(user.uid); 
         restoreTimers(); 
     } else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
 });
@@ -839,14 +886,6 @@ function openEditModal(id) {
     document.getElementById('task-start-time').value = task.startTime || '00:00'; document.getElementById('task-end-time').value = task.endTime || '00:00';
     document.getElementById('repeat-container').style.display = 'none'; document.getElementById('delete-task-container').style.display = 'block'; 
     closeModal('modal-daily'); document.getElementById('modal-task').style.display = 'flex';
-}
-
-function loadTasks() {
-    db.collection("tasks").where("userId", "==", auth.currentUser.uid).onSnapshot(snap => {
-        currentTasks = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-        renderCalendar(); renderTaskList(); renderReviewSection(); checkNotifications(); renderConquistas();
-        if(document.getElementById('desempenho').classList.contains('active')) initCharts();
-    });
 }
 
 function renderCard(t, statusClass, statusText) {
