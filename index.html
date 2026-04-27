@@ -121,7 +121,7 @@
         .editable:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
         /* Perfil e Engrenagem + Sininho + Troféu */
-        .sidebar-header { text-align: center; margin-bottom: 10px; width: 100%; position: relative; padding-top: 15px; }
+        .sidebar-header { text-align: center; margin-bottom: 30px; width: 100%; position: relative; padding-top: 15px; }
         .trophy-btn { position: absolute; left: 0px; top: 10px; font-size: 1.6rem; background: none; border: none; cursor: pointer; transition: 0.3s; opacity: 0.8; z-index: 10; }
         .trophy-btn:hover { transform: scale(1.15) rotate(-5deg); opacity: 1; }
         .header-icons { position: absolute; top: 10px; right: 0px; display: flex; gap: 8px; z-index: 10; }
@@ -134,28 +134,6 @@
         .daily-task-item .time { font-size: 0.85rem; color: var(--dim); font-weight: bold; }
         .daily-task-item .title { font-size: 1rem; color: #fff; font-weight: 600; }
         .redacao-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-
-        /* ==========================================
-           ADICIONADO: ESTILOS MAPA DO PDF E ABAS
-        ========================================== */
-        .mapa-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-        .mapa-tabs::-webkit-scrollbar { height: 6px; }
-        .mapa-tabs::-webkit-scrollbar-track { background: var(--bg); }
-        .mapa-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        .mapa-tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--dim); padding: 12px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-weight: 600; font-size: 0.9rem; }
-        .mapa-tab-btn:hover { background: var(--border); color: var(--text); }
-        .mapa-tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 4px 10px rgba(56,189,248,0.2); }
-        .mapa-content { display: none; }
-        .mapa-content.active { display: block; animation: fadeIn 0.4s ease; }
-
-        .progress-table { width: 100%; background: var(--card); border-radius: 12px; border: 1px solid var(--border); border-collapse: collapse; overflow: hidden; margin-bottom: 30px; }
-        .progress-table th, .progress-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
-        .progress-table th { background: #1c263b; color: var(--dim); font-size: 0.8rem; text-transform: uppercase; }
-        .col-check { width: 90px; text-align: center !important; }
-        .cb-container { display: inline-block; width: 24px; height: 24px; background: var(--bg); border: 2px solid var(--border); border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .cb-container.active-t { background: var(--success); border-color: var(--success); }
-        .cb-container.active-p { background: var(--primary); border-color: var(--primary); }
-        .cb-container.active-d { background: var(--purple); border-color: var(--purple); }
 
         @media (max-width: 900px) {
             body { height: auto; overflow-y: auto; display: block; }
@@ -170,8 +148,6 @@
             .main { overflow-y: visible; padding: 15px; height: auto; }
             .perf-dashboard { grid-template-columns: 1fr; }
             .redacao-grid { grid-template-columns: 1fr; }
-            .progress-table th, .progress-table td { padding: 10px; font-size: 0.85rem; }
-            .col-check { width: 60px; }
         }
     </style>
 </head>
@@ -196,22 +172,10 @@
             </div>
             <img id="user-pic" src="" style="width:70px; height:70px; object-fit:cover; border-radius:50%; border:3px solid var(--primary); padding: 3px; display: block; margin: 0 auto; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">
             <h3 id="user-name" style="margin-top:10px; font-size: 1.2rem;">Estudante</h3>
-            
-            <div style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.85rem;">
-                    <span id="xp-level-badge" style="color:var(--primary); font-weight:bold;">Lvl 1</span>
-                    <span id="xp-text-badge" style="color:var(--dim);">0 / 1000 XP</span>
-                </div>
-                <div style="width:100%; height:8px; background:var(--bg); border-radius:4px; overflow:hidden;">
-                    <div id="xp-fill-bar" style="height:100%; width:0%; background:linear-gradient(90deg, var(--primary), var(--purple)); transition:0.5s;"></div>
-                </div>
-            </div>
-            </div>
-        
+        </div>
         <button class="nav-link active" onclick="showPage('inicio', this)">🏠 Início</button>
         <button class="nav-link" onclick="showPage('calendario', this)">📅 Calendário</button>
         <button class="nav-link" onclick="showPage('tarefas', this)">📝 Tarefas</button>
-        <button class="nav-link" onclick="showPage('mapa_pdf', this)">🗺️ Mapa do PDF</button>
         <button class="nav-link" onclick="showPage('redacao', this)">✍️ Redações</button>
         <button class="nav-link" onclick="showPage('foco', this)">⏱️ Modo Foco</button>
         <button class="nav-link" onclick="showPage('desempenho', this)">📊 Desempenho</button>
@@ -235,36 +199,6 @@
                         <p id="countdown-days" style="font-size: 1.5rem; font-weight: bold;">188 dias</p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="mapa_pdf" class="page">
-            <h2 style="margin-bottom: 10px;">🗺️ Mapa de Progresso</h2>
-            <p style="color:var(--dim); margin-bottom:20px;">Domine toda a matéria, tópico por tópico. Marque para ganhar XP!</p>
-            
-            <div class="mapa-tabs">
-                <button class="mapa-tab-btn active" onclick="switchMapaTab('simplificado', this)">Checklist Simplificado</button>
-                <button class="mapa-tab-btn" onclick="switchMapaTab('intensivo', this)">Checklist Intensivo</button>
-                <button class="mapa-tab-btn" onclick="switchMapaTab('redacao_mapa', this)">Redação</button>
-                <button class="mapa-tab-btn" onclick="switchMapaTab('provas', this)">Provas Antigas</button>
-                <button class="mapa-tab-btn" onclick="switchMapaTab('simulados_mapa', this)">Simulados</button>
-            </div>
-            
-            <div id="mapa_simplificado" class="mapa-content active">
-                <table class="progress-table"><thead><tr><th>Conteúdo Simplificado</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-simplificado"></tbody></table>
-            </div>
-            <div id="mapa_intensivo" class="mapa-content">
-                <table class="progress-table"><thead><tr><th>Conteúdo Intensivo</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-intensivo"></tbody></table>
-            </div>
-            <div id="mapa_redacao_mapa" class="mapa-content">
-                <table class="progress-table"><thead><tr><th>Estrutura da Redação</th><th class="col-check">Teoria</th><th class="col-check">Prática</th><th class="col-check">Domínio</th></tr></thead><tbody id="tbody-redacao_mapa"></tbody></table>
-            </div>
-            <div id="mapa_provas" class="mapa-content">
-                <div style="background: var(--card); border-left: 4px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 8px;"><strong>Dica:</strong> Nas provas, as colunas são: <strong>Realizada</strong> (Teoria), <strong>Corrigida</strong> (Prática) e <strong>Revisada</strong> (Domínio).</div>
-                <table class="progress-table"><thead><tr><th>Edições do ENEM</th><th class="col-check">Feita</th><th class="col-check">Correção</th><th class="col-check">Revisada</th></tr></thead><tbody id="tbody-provas"></tbody></table>
-            </div>
-            <div id="mapa_simulados_mapa" class="mapa-content">
-                <table class="progress-table"><thead><tr><th>Simulados</th><th class="col-check">Feito</th><th class="col-check">Correção</th><th class="col-check">Revisado</th></tr></thead><tbody id="tbody-simulados_mapa"></tbody></table>
             </div>
         </section>
 
@@ -499,318 +433,6 @@ const db = firebase.firestore();
 let currentTasks = [], selectedDate = null, activeTask = null, editingTaskId = null;
 let uploadedImageBase64 = "", tempRedacaoPhoto = "", activeTaskFilter = 'all';
 
-// ==========================================
-// ADICIONADO: LÓGICA DO MAPA DO PDF COM ABAS
-// ==========================================
-// ==========================================
-// LÓGICA DO MAPA DO PDF COMPLETO (EXTRAÇÃO TOTAL)
-// ==========================================
-const mapaData = [
-    // -----------------------------------------------------
-    // ABA 1: CHECKLIST SIMPLIFICADO
-    // -----------------------------------------------------
-    // MATEMÁTICA
-    { id: 101, tab: "simplificado", area: "Matemática", topico: "Fundamentos da Matemática (Operações básicas)" },
-    { id: 102, tab: "simplificado", area: "Matemática", topico: "Frações" },
-    { id: 103, tab: "simplificado", area: "Matemática", topico: "MMC e MDC" },
-    { id: 104, tab: "simplificado", area: "Matemática", topico: "Potenciação e Radiciação" },
-    { id: 105, tab: "simplificado", area: "Matemática", topico: "Razão, Proporção e Regra de 3" },
-    { id: 106, tab: "simplificado", area: "Matemática", topico: "Porcentagem" },
-    { id: 107, tab: "simplificado", area: "Matemática", topico: "Notação Científica" },
-    { id: 108, tab: "simplificado", area: "Matemática", topico: "Unidades de Medida e suas Conversões" },
-    { id: 109, tab: "simplificado", area: "Matemática", topico: "Vazão" },
-    { id: 110, tab: "simplificado", area: "Matemática", topico: "Escalas" },
-    { id: 111, tab: "simplificado", area: "Matemática", topico: "Treinamento Prático de Gráficos e Tabelas" },
-    { id: 112, tab: "simplificado", area: "Matemática", topico: "Matemática Financeira Básica" },
-    { id: 113, tab: "simplificado", area: "Matemática", topico: "Fundamentos da Álgebra" },
-    { id: 114, tab: "simplificado", area: "Matemática", topico: "Sistemas e Equações" },
-    { id: 115, tab: "simplificado", area: "Matemática", topico: "Conjuntos" },
-    { id: 116, tab: "simplificado", area: "Matemática", topico: "Estatística" },
-    { id: 117, tab: "simplificado", area: "Matemática", topico: "Função do Primeiro Grau" },
-    { id: 118, tab: "simplificado", area: "Matemática", topico: "Progressão Aritmética" },
-    { id: 119, tab: "simplificado", area: "Matemática", topico: "Função do Segundo Grau" },
-    { id: 120, tab: "simplificado", area: "Matemática", topico: "Geometria Plana" },
-    { id: 121, tab: "simplificado", area: "Matemática", topico: "Trigonometria" },
-    { id: 122, tab: "simplificado", area: "Matemática", topico: "Geometria Espacial" },
-    { id: 123, tab: "simplificado", area: "Matemática", topico: "Projeção Ortogonal" },
-    { id: 124, tab: "simplificado", area: "Matemática", topico: "Análise Combinatória" },
-    { id: 125, tab: "simplificado", area: "Matemática", topico: "Probabilidade" },
-    { id: 126, tab: "simplificado", area: "Matemática", topico: "Geometria Analítica" },
-    { id: 127, tab: "simplificado", area: "Matemática", topico: "Logaritmo" },
-    { id: 128, tab: "simplificado", area: "Matemática", topico: "Matemática Financeira Avançada" },
-    { id: 129, tab: "simplificado", area: "Matemática", topico: "Função Trigonométrica" },
-    { id: 130, tab: "simplificado", area: "Matemática", topico: "Função Exponencial" },
-    { id: 131, tab: "simplificado", area: "Matemática", topico: "Função Logarítmica" },
-    { id: 132, tab: "simplificado", area: "Matemática", topico: "Matrizes" },
-
-    // BIOLOGIA
-    { id: 201, tab: "simplificado", area: "Biologia", topico: "Citologia e Moléculas da vida" },
-    { id: 202, tab: "simplificado", area: "Biologia", topico: "Metabolismo Energético" },
-    { id: 203, tab: "simplificado", area: "Biologia", topico: "Biologia Molecular e Biotecnologia" },
-    { id: 204, tab: "simplificado", area: "Biologia", topico: "Evolução, Forma e Função dos Seres Vivos" },
-    { id: 205, tab: "simplificado", area: "Biologia", topico: "Ecologia" },
-    { id: 206, tab: "simplificado", area: "Biologia", topico: "Impactos e Problemas Ambientais" },
-    { id: 207, tab: "simplificado", area: "Biologia", topico: "Fisiologia Humana" },
-    { id: 208, tab: "simplificado", area: "Biologia", topico: "Classificação dos Seres Vivos e Taxonomia" },
-    { id: 209, tab: "simplificado", area: "Biologia", topico: "Fisiomorfologia Comparada" },
-    { id: 210, tab: "simplificado", area: "Biologia", topico: "Botânica" },
-    { id: 211, tab: "simplificado", area: "Biologia", topico: "Genética" },
-    { id: 212, tab: "simplificado", area: "Biologia", topico: "Doenças" },
-
-    // FÍSICA
-    { id: 301, tab: "simplificado", area: "Física", topico: "Energia e suas Transformações" },
-    { id: 302, tab: "simplificado", area: "Física", topico: "Ondulatória" },
-    { id: 303, tab: "simplificado", area: "Física", topico: "Termologia I" },
-    { id: 304, tab: "simplificado", area: "Física", topico: "Vetores" },
-    { id: 305, tab: "simplificado", area: "Física", topico: "Cinemática I" },
-    { id: 306, tab: "simplificado", area: "Física", topico: "Dinâmica I" },
-    { id: 307, tab: "simplificado", area: "Física", topico: "Cinemática II" },
-    { id: 308, tab: "simplificado", area: "Física", topico: "Eletrostática" },
-    { id: 309, tab: "simplificado", area: "Física", topico: "Eletrodinâmica I" },
-    { id: 310, tab: "simplificado", area: "Física", topico: "Termologia II" },
-    { id: 311, tab: "simplificado", area: "Física", topico: "Eletrodinâmica II" },
-    { id: 312, tab: "simplificado", area: "Física", topico: "Dinâmica II" },
-    { id: 313, tab: "simplificado", area: "Física", topico: "Dinâmica III" },
-    { id: 314, tab: "simplificado", area: "Física", topico: "Potência e Eficiência" },
-    { id: 315, tab: "simplificado", area: "Física", topico: "Estática" },
-    { id: 316, tab: "simplificado", area: "Física", topico: "Gravitação" },
-    { id: 317, tab: "simplificado", area: "Física", topico: "Hidrostática" },
-    { id: 318, tab: "simplificado", area: "Física", topico: "Magnetismo e Eletromagnetismo" },
-    { id: 319, tab: "simplificado", area: "Física", topico: "Óptica Geométrica" },
-
-    // QUÍMICA
-    { id: 401, tab: "simplificado", area: "Química", topico: "Propriedades da Matéria" },
-    { id: 402, tab: "simplificado", area: "Química", topico: "Processos de Separação de Misturas" },
-    { id: 403, tab: "simplificado", area: "Química", topico: "Atomística" },
-    { id: 404, tab: "simplificado", area: "Química", topico: "Tabela Periódica e suas Propriedades" },
-    { id: 405, tab: "simplificado", area: "Química", topico: "Ligações Químicas e Polaridade" },
-    { id: 406, tab: "simplificado", area: "Química", topico: "Química Inorgânica" },
-    { id: 407, tab: "simplificado", area: "Química", topico: "Estequiometria" },
-    { id: 408, tab: "simplificado", area: "Química", topico: "Radioatividade" },
-    { id: 409, tab: "simplificado", area: "Química", topico: "Química Orgânica I" },
-    { id: 410, tab: "simplificado", area: "Química", topico: "Termoquímica" },
-    { id: 411, tab: "simplificado", area: "Química", topico: "Gases" },
-    { id: 412, tab: "simplificado", area: "Química", topico: "Propriedades Coligativas" },
-    { id: 413, tab: "simplificado", area: "Química", topico: "Soluções" },
-    { id: 414, tab: "simplificado", area: "Química", topico: "Equilíbrio Químico" },
-    { id: 415, tab: "simplificado", area: "Química", topico: "Cinética Química" },
-    { id: 416, tab: "simplificado", area: "Química", topico: "Reações Químicas" },
-    { id: 417, tab: "simplificado", area: "Química", topico: "Eletroquímica" },
-    { id: 418, tab: "simplificado", area: "Química", topico: "Química Orgânica II" },
-    { id: 419, tab: "simplificado", area: "Química", topico: "Polímeros" },
-
-    // LINGUAGENS E HUMANAS
-    { id: 501, tab: "simplificado", area: "Linguagens", topico: "Funções da linguagem" },
-    { id: 502, tab: "simplificado", area: "Linguagens", topico: "Figuras de Linguagem" },
-    { id: 503, tab: "simplificado", area: "Linguagens", topico: "Campanhas Publicitárias e Anúncios" },
-    { id: 504, tab: "simplificado", area: "Linguagens", topico: "Literatura" },
-    { id: 505, tab: "simplificado", area: "Linguagens", topico: "Lirismo" },
-    { id: 506, tab: "simplificado", area: "Linguagens", topico: "Crítica Social, Cultural e Artística" },
-    { id: 507, tab: "simplificado", area: "Linguagens", topico: "Progressão temática e organização textual" },
-    { id: 508, tab: "simplificado", area: "Linguagens", topico: "Gêneros Textuais" },
-    { id: 601, tab: "simplificado", area: "História", topico: "Idade Antiga" },
-    { id: 602, tab: "simplificado", area: "História", topico: "Expansão Marítima e Brasil Colônia" },
-    { id: 603, tab: "simplificado", area: "História", topico: "Idade Média" },
-    { id: 604, tab: "simplificado", area: "História", topico: "Idade Moderna" },
-    { id: 605, tab: "simplificado", area: "História", topico: "Brasil Império" },
-    { id: 606, tab: "simplificado", area: "História", topico: "Idade Contemporânea" },
-    { id: 607, tab: "simplificado", area: "História", topico: "Século XX na Europa" },
-    { id: 701, tab: "simplificado", area: "Geografia", topico: "Geografia Econômica" },
-    { id: 702, tab: "simplificado", area: "Geografia", topico: "Geografia Urbana e Demografia" },
-    { id: 703, tab: "simplificado", area: "Geografia", topico: "Geografia Física" },
-    { id: 704, tab: "simplificado", area: "Geografia", topico: "Hidrografia" },
-    { id: 705, tab: "simplificado", area: "Geografia", topico: "Climatologia" },
-    { id: 706, tab: "simplificado", area: "Geografia", topico: "Geopolítica" },
-    { id: 707, tab: "simplificado", area: "Geografia", topico: "Geografia Agrária" },
-    { id: 801, tab: "simplificado", area: "Filosofia", topico: "Filosofia Pré-Socrática" },
-    { id: 802, tab: "simplificado", area: "Filosofia", topico: "Filósofos Clássicos (Sócrates, Platão, Aristóteles)" },
-    { id: 803, tab: "simplificado", area: "Filosofia", topico: "Helenismo" },
-    { id: 804, tab: "simplificado", area: "Filosofia", topico: "Filosofia Religiosa" },
-    { id: 805, tab: "simplificado", area: "Filosofia", topico: "Filosofia Política" },
-    { id: 806, tab: "simplificado", area: "Filosofia", topico: "Filosofia Moderna e Contemporânea" },
-    { id: 807, tab: "simplificado", area: "Sociologia", topico: "Sociólogos Clássicos (Comte, Durkheim, Weber, Marx)" },
-    { id: 808, tab: "simplificado", area: "Sociologia", topico: "Sociologia do Trabalho e Democracia" },
-    { id: 809, tab: "simplificado", area: "Sociologia", topico: "Cultura, Movimentos Sociais e Indústria Cultural" },
-
-    // -----------------------------------------------------
-    // ABA 2: CHECKLIST INTENSIVO (Detalhado por Níveis)
-    // -----------------------------------------------------
-    { id: 1001, tab: "intensivo", area: "Nivelamento", topico: "Fundamentos da Matemática e Frações" },
-    { id: 1002, tab: "intensivo", area: "Nivelamento", topico: "MMC, MDC, Potenciação e Radiciação" },
-    { id: 1003, tab: "intensivo", area: "Nivelamento", topico: "Citologia e Moléculas da Vida" },
-    { id: 1004, tab: "intensivo", area: "Nivelamento", topico: "Energia, Trabalho e Propriedades da Matéria" },
-    { id: 1005, tab: "intensivo", area: "Nivelamento", topico: "Funções da Linguagem" },
-    { id: 1006, tab: "intensivo", area: "Nivelamento", topico: "Geografia Econômica" },
-
-    { id: 1010, tab: "intensivo", area: "Básico I", topico: "Razão, Proporção, Regra de 3 e Porcentagem" },
-    { id: 1011, tab: "intensivo", area: "Básico I", topico: "Notação Científica, Unidades e Escalas" },
-    { id: 1012, tab: "intensivo", area: "Básico I", topico: "Gráficos, Tabelas e Mat. Financeira Básica" },
-    { id: 1013, tab: "intensivo", area: "Básico I", topico: "Metabolismo Energético e Biotecnologia" },
-    { id: 1014, tab: "intensivo", area: "Básico I", topico: "Evolução e Diversidade" },
-    { id: 1015, tab: "intensivo", area: "Básico I", topico: "Ondulatória I, Acústica e Termologia I" },
-    { id: 1016, tab: "intensivo", area: "Básico I", topico: "Vetores, Cinemática I e Dinâmica I" },
-    { id: 1017, tab: "intensivo", area: "Básico I", topico: "Processos de Separação e Atomística" },
-    { id: 1018, tab: "intensivo", area: "Básico I", topico: "Tabela Periódica, Ligações e Polaridade" },
-    { id: 1019, tab: "intensivo", area: "Básico I", topico: "História: Idade Antiga e Brasil Colônia" },
-    { id: 1020, tab: "intensivo", area: "Básico I", topico: "Linguagens: Literatura e Figuras de Linguagem" },
-
-    { id: 1030, tab: "intensivo", area: "Básico II", topico: "Fundamentos da Álgebra e Sistemas" },
-    { id: 1031, tab: "intensivo", area: "Básico II", topico: "Estatística e Conjuntos" },
-    { id: 1032, tab: "intensivo", area: "Básico II", topico: "Função do 1º e 2º Grau e Progressão Aritmética" },
-    { id: 1033, tab: "intensivo", area: "Básico II", topico: "Ecologia e Impactos Ambientais" },
-    { id: 1034, tab: "intensivo", area: "Básico II", topico: "Fisiologia Humana (Sist. Digestório, Endócrino, etc)" },
-    { id: 1035, tab: "intensivo", area: "Básico II", topico: "Cinemática II e Eletrostática" },
-    { id: 1036, tab: "intensivo", area: "Básico II", topico: "Eletrodinâmica I" },
-    { id: 1037, tab: "intensivo", area: "Básico II", topico: "Química Inorgânica (Ácidos, Bases, Sais, Óxidos)" },
-    { id: 1038, tab: "intensivo", area: "Básico II", topico: "Estequiometria e Radioatividade" },
-    { id: 1039, tab: "intensivo", area: "Básico II", topico: "História: Idade Moderna ao Brasil Império" },
-    { id: 1040, tab: "intensivo", area: "Básico II", topico: "Geografia Física, Hidrografia e Climatologia" },
-
-    { id: 1050, tab: "intensivo", area: "Construção", topico: "Geometria Plana e Trigonometria" },
-    { id: 1051, tab: "intensivo", area: "Construção", topico: "Aprofundamento de Fisiologia e Botânica" },
-    { id: 1052, tab: "intensivo", area: "Construção", topico: "Termologia II e Eletrodinâmica II" },
-    { id: 1053, tab: "intensivo", area: "Construção", topico: "Química Orgânica I e Termoquímica" },
-
-    { id: 1060, tab: "intensivo", area: "Ataque", topico: "Geometria Analítica e Espacial" },
-    { id: 1061, tab: "intensivo", area: "Ataque", topico: "Análise Combinatória e Probabilidade" },
-    { id: 1062, tab: "intensivo", area: "Ataque", topico: "Genética e Doenças" },
-    { id: 1063, tab: "intensivo", area: "Ataque", topico: "Eletromagnetismo e Física Moderna" },
-    { id: 1064, tab: "intensivo", area: "Ataque", topico: "Equilíbrio Químico, Cinética e Eletroquímica" },
-
-    // -----------------------------------------------------
-    // ABA 3: REDAÇÃO
-    // -----------------------------------------------------
-    { id: 2001, tab: "redacao_mapa", area: "Redação", topico: "Estrutura do Enem" },
-    { id: 2002, tab: "redacao_mapa", area: "Redação", topico: "Proposta de Redação" },
-    { id: 2003, tab: "redacao_mapa", area: "Redação", topico: "Planejamento Textual" },
-    { id: 2004, tab: "redacao_mapa", area: "Redação", topico: "Coesão e Clareza" },
-    { id: 2005, tab: "redacao_mapa", area: "Redação", topico: "Gramática e Vocabulário" },
-    { id: 2006, tab: "redacao_mapa", area: "Redação", topico: "Engenharia Argumentativa" },
-    { id: 2007, tab: "redacao_mapa", area: "Redação", topico: "Intervenção (5 elementos)" },
-    { id: 2008, tab: "redacao_mapa", area: "Redação", topico: "Autonomia e Autocorreção" },
-
-    // -----------------------------------------------------
-    // ABA 4: PROVAS ANTIGAS DO ENEM
-    // -----------------------------------------------------
-    { id: 3001, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2018" },
-    { id: 3002, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2018 PPL" },
-    { id: 3003, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2019" },
-    { id: 3004, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2019 PPL" },
-    { id: 3005, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020" },
-    { id: 3006, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020 DIGITAL" },
-    { id: 3007, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2020 PPL" },
-    { id: 3008, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021" },
-    { id: 3009, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021 DIGITAL" },
-    { id: 3010, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2021 PPL" },
-    { id: 3011, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022" },
-    { id: 3012, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022 DIGITAL" },
-    { id: 3013, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2022 PPL" },
-    { id: 3014, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2023" },
-    { id: 3015, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2023 PPL" },
-    { id: 3016, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2024" },
-    { id: 3017, tab: "provas", area: "Provas Anteriores", topico: "ENEM 2024 PPL" },
-
-    // -----------------------------------------------------
-    // ABA 5: SIMULADOS (Plataformas, Presencial e Externos)
-    // -----------------------------------------------------
-    { id: 4001, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Diagnóstico Assaad" },
-    { id: 4002, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Presencial Chromos BH" },
-    { id: 4003, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Bernoulli" },
-    { id: 4004, tab: "simulados_mapa", area: "Simulados", topico: "Simulado SAS" },
-    { id: 4005, tab: "simulados_mapa", area: "Simulados", topico: "Simulado SOMOS" },
-    { id: 4006, tab: "simulados_mapa", area: "Simulados", topico: "Simulado Evolucional" }
-];
-
-let userMapProgresso = { xp: 0, checks: {} };
-
-async function loadMapaData(uid) {
-    try {
-        const doc = await db.collection("user_progress_map").doc(uid).get();
-        if (doc.exists) {
-            userMapProgresso.xp = doc.data().xp || 0;
-            userMapProgresso.checks = doc.data().checks || {};
-        }
-        renderMapa();
-        updateXpUI();
-    } catch(e) { console.error("Erro ao carregar mapa:", e); }
-}
-
-async function saveMapaData() {
-    if(!auth.currentUser) return;
-    try {
-        await db.collection("user_progress_map").doc(auth.currentUser.uid).set({
-            xp: userMapProgresso.xp,
-            checks: userMapProgresso.checks
-        }, {merge: true});
-    } catch(e) { console.error("Erro ao salvar mapa:", e); }
-}
-
-function switchMapaTab(tabId, btn) {
-    document.querySelectorAll('.mapa-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.mapa-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('mapa_' + tabId).classList.add('active');
-}
-
-function renderMapa() {
-    const abas = ['simplificado', 'intensivo', 'redacao_mapa', 'provas', 'simulados_mapa'];
-    abas.forEach(tab => {
-        const tbody = document.getElementById('tbody-' + tab);
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        mapaData.filter(item => item.tab === tab).forEach(item => {
-            const tr = document.createElement('tr');
-            const prog = userMapProgresso.checks[item.id] || { t: false, p: false, d: false };
-            tr.innerHTML = `
-                <td><span style="font-size:0.75rem; color:var(--primary); font-weight:bold;">${item.area}</span><br><span style="font-size:0.95rem;">${item.topico}</span></td>
-                <td class="col-check"><div class="cb-container ${prog.t ? 'active-t' : ''}" onclick="toggleMapaCheck(${item.id}, 't')"></div></td>
-                <td class="col-check"><div class="cb-container ${prog.p ? 'active-p' : ''}" onclick="toggleMapaCheck(${item.id}, 'p')"></div></td>
-                <td class="col-check"><div class="cb-container ${prog.d ? 'active-d' : ''}" onclick="toggleMapaCheck(${item.id}, 'd')"></div></td>
-            `;
-            tbody.appendChild(tr);
-        });
-    });
-}
-
-function toggleMapaCheck(id, type) {
-    if (!userMapProgresso.checks[id]) userMapProgresso.checks[id] = { t: false, p: false, d: false };
-    
-    let currentState = userMapProgresso.checks[id][type];
-    userMapProgresso.checks[id][type] = !currentState;
-    
-    // Ganho de XP: Teoria 50, Prática 100, Domínio 200
-    let xpVal = type === 't' ? 50 : (type === 'p' ? 100 : 200);
-    
-    if (!currentState) {
-        userMapProgresso.xp += xpVal;
-    } else {
-        userMapProgresso.xp = Math.max(0, userMapProgresso.xp - xpVal);
-    }
-
-    renderMapa();
-    updateXpUI();
-    saveMapaData();
-}
-
-function updateXpUI() {
-    const xpBaseLevel = 1000;
-    const level = Math.floor(userMapProgresso.xp / xpBaseLevel) + 1;
-    const currentXP = userMapProgresso.xp % xpBaseLevel;
-    const progressPercent = (currentXP / xpBaseLevel) * 100;
-
-    const levelBadge = document.getElementById('xp-level-badge');
-    const fillBar = document.getElementById('xp-fill-bar');
-    const textBadge = document.getElementById('xp-text-badge');
-    
-    if(levelBadge) levelBadge.innerText = `Lvl ${level}`;
-    if(fillBar) fillBar.style.width = `${progressPercent}%`;
-    if(textBadge) textBadge.innerText = `${currentXP} / ${xpBaseLevel} XP`;
-}
-
-// ==========================================
-// FUNÇÕES DA PLATAFORMA QUE JÁ ESTAVAM AÍ
-// ==========================================
-
 function showAlert(msg) {
     document.getElementById('alert-message').innerText = msg;
     document.getElementById('modal-alert').style.display = 'flex';
@@ -869,7 +491,9 @@ async function resetPlatform() {
     } catch(e) { showAlert("Erro ao zerar: " + e.message); }
 }
 
+// NOVA LÓGICA DE COUNTDOWN (188 DIAS DIMINUINDO AUTOMATICAMENTE)
 function updateCountdown() {
+    // Definimos a data do ENEM como aprox 1 de Novembro de 2026
     const targetDate = new Date('2026-11-01T00:00:00').getTime();
     const now = new Date().getTime();
     const diff = targetDate - now;
@@ -882,7 +506,7 @@ function loadEdits() {
     const meta = localStorage.getItem('enem_meta'), ano = localStorage.getItem('enem_ano');
     if(meta) document.getElementById('edit-meta').innerText = meta;
     if(ano) document.getElementById('edit-ano').innerText = ano;
-    updateCountdown(); 
+    updateCountdown(); // Atualiza a contagem dos dias reais
 }
 function saveEdits() { localStorage.setItem('enem_meta', document.getElementById('edit-meta').innerText); localStorage.setItem('enem_ano', document.getElementById('edit-ano').innerText); }
 
@@ -933,8 +557,7 @@ auth.onAuthStateChanged(user => {
         document.getElementById('user-pic').src = localStorage.getItem('custom_profile_pic') || user.photoURL || 'https://via.placeholder.com/70';
         loadEdits(); 
         loadTasks();
-        loadMapaData(user.uid); 
-        restoreTimers(); 
+        restoreTimers(); // Restaura os cronometros se fechar a aba
     } else { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
 });
 
@@ -1071,6 +694,14 @@ function openEditModal(id) {
     document.getElementById('task-start-time').value = task.startTime || '00:00'; document.getElementById('task-end-time').value = task.endTime || '00:00';
     document.getElementById('repeat-container').style.display = 'none'; document.getElementById('delete-task-container').style.display = 'block'; 
     closeModal('modal-daily'); document.getElementById('modal-task').style.display = 'flex';
+}
+
+function loadTasks() {
+    db.collection("tasks").where("userId", "==", auth.currentUser.uid).onSnapshot(snap => {
+        currentTasks = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        renderCalendar(); renderTaskList(); renderReviewSection(); checkNotifications(); renderConquistas();
+        if(document.getElementById('desempenho').classList.contains('active')) initCharts();
+    });
 }
 
 function renderCard(t, statusClass, statusText) {
