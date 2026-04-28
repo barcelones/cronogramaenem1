@@ -297,12 +297,19 @@
                     <h3 style="color: var(--primary);">Pomodoro Flex</h3>
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
                         <select id="pomo-focus-time" style="width:120px;">
-                            <option value="40">Foco: 40m</option><option value="50" selected>Foco: 50m</option>
-                            <option value="60">Foco: 60m</option><option value="90">Foco: 90m</option>
+                            <option value="40">Foco: 40m</option>
+                            <option value="50" selected>Foco: 50m</option>
+                            <option value="60">Foco: 60m</option>
+                            <option value="90">Foco: 90m</option>
+                            <option value="120">Foco: 120m</option>
+                            <option value="180">Foco: 180m</option>
+                            <option value="240">Foco: 240m</option>
+                            <option value="300">Foco: 300m</option>
                         </select>
                         <select id="pomo-break-time" style="width:120px;">
-                            <option value="5">Pausa: 5m</option><option value="10">Pausa: 10m</option>
-                            <option value="15">Pausa: 15m</option>
+                            <option value="10">Pausa: 10m</option>
+                            <option value="15" selected>Pausa: 15m</option>
+                            <option value="20">Pausa: 20m</option>
                         </select>
                     </div>
                     <div style="font-size: 5rem; font-weight: 800; margin: 20px 0; font-variant-numeric: tabular-nums; text-shadow: 0 4px 10px rgba(0,0,0,0.3);" id="pomo-display">50:00</div>
@@ -670,8 +677,7 @@ async function handleSaveTask() {
     if(startTime && endTime) {
         plannedTime = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
         if (plannedTime <= 0) return showAlert("O horário final precisa ser maior que o de início.");
-        const dayTasks = currentTasks.filter(t => t.date === selectedDate && t.id !== editingTaskId);
-        for (let t of dayTasks) { if (timeToMins(startTime) < timeToMins(t.endTime) && timeToMins(endTime) > timeToMins(t.startTime)) { return showAlert(`Choque de horário com a matéria '${t.materia}'. Verifique sua agenda.`); } }
+        // A trava de choque de horários foi removida aqui conforme solicitado.
     }
     
     let contentVal = contentElem ? contentElem.value : '';
