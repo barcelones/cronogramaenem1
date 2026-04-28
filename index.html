@@ -1006,6 +1006,7 @@
             <button class="nav-link" onclick="showPage('redacao', this)">✍️ Redações</button>
             <button class="nav-link" onclick="showPage('foco', this)">⏱️ Modo Foco</button>
             <button class="nav-link" onclick="showPage('desempenho', this)">📊 Desempenho</button>
+            <button class="nav-link" onclick="showPage('agente-ia', this)" style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(56,189,248,0.15)); border:1px solid rgba(168,85,247,0.3); color:var(--purple);">🤖 Cronograma IA</button>
         </nav>
 
         <main class="main">
@@ -1375,9 +1376,50 @@
                 </div>
             </section>
 
+            <!-- IA AGENT PAGE -->
+            <section id="agente-ia" class="page">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <h2 style="background:linear-gradient(135deg,var(--purple),var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">🤖 Agente IA — Cronograma Medicina</h2>
+                        <p style="color:var(--dim); font-size:0.9rem; margin-top:4px;">Responda 10 perguntas e receba um cronograma semanal personalizado para passar em Medicina na Federal.</p>
+                    </div>
+                    <button onclick="openApiKeyModal()" style="background:transparent; border:1px solid var(--purple); color:var(--purple); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">🔑 Chave API Gemini</button>
+                </div>
+
+                <!-- CHAT BOX -->
+                <div id="ia-chat-container" style="background:var(--card); border-radius:16px; border:1px solid var(--border); overflow:hidden; display:flex; flex-direction:column; height:520px;">
+                    <div id="ia-messages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px;"></div>
+                    <div id="ia-input-area" style="border-top:1px solid var(--border); padding:14px; display:flex; gap:10px; align-items:flex-end;">
+                        <textarea id="ia-input" rows="2" placeholder="Digite sua resposta aqui..." style="flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:10px; font-size:0.95rem; resize:none; font-family:inherit;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendIaAnswer();}"></textarea>
+                        <button onclick="sendIaAnswer()" style="background:linear-gradient(135deg,var(--purple),var(--primary)); border:none; color:#fff; padding:12px 20px; border-radius:10px; cursor:pointer; font-weight:700; font-size:1rem; white-space:nowrap;">Enviar ➤</button>
+                    </div>
+                    <div id="ia-quick-btns" style="padding:0 14px 14px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+                </div>
+
+                <!-- RESULT BOX -->
+                <div id="ia-result-box" style="display:none; margin-top:24px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h3 style="color:var(--success);">✅ Seu Cronograma Personalizado</h3>
+                        <button onclick="restartIaChat()" style="background:transparent; border:1px solid var(--border); color:var(--dim); padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem;">🔄 Refazer</button>
+                    </div>
+                    <div id="ia-schedule-output" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; line-height:1.8; color:var(--text); white-space:pre-wrap; font-size:0.95rem;"></div>
+                </div>
+            </section>
+
             <footer style="margin-top: 50px; text-align: center; color: var(--dim); font-size: 0.85rem;">Criado pelo
                 <strong>Grupo Conexão</strong></footer>
         </main>
+    </div>
+
+    <!-- MODAL: Chave API -->
+    <div id="modal-apikey" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--purple); margin-bottom:10px;">🔑 Chave da API Gemini</h3>
+            <p style="color:var(--dim); font-size:0.85rem; margin-bottom:15px;">Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--primary);">aistudio.google.com</a> para gerar sua chave gratuita.</p>
+            <input type="password" id="api-key-input" placeholder="Cole aqui sua chave: AIza...">
+            <button class="btn-action" style="background:var(--purple); color:#fff;" onclick="saveApiKey()">Salvar Chave</button>
+            <button class="btn-action" style="background:transparent; border:1px solid var(--border); color:var(--text);" onclick="closeModal('modal-apikey')">Cancelar</button>
+        </div>
     </div>
 
     <div id="modal-diff-details" class="modal">
@@ -2464,6 +2506,177 @@
                 timeBarChart = new Chart(document.getElementById('timeBarChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(timeData), datasets: [{ label: 'Minutos Estudados', data: Object.values(timeData), backgroundColor: Object.keys(timeData).map(getColor), borderRadius: 4 }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Minutos', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }, y: { ticks: { color: '#94a3b8' } } } } });
                 qntPieChart = new Chart(document.getElementById('qntPieChart').getContext('2d'), { type: 'pie', data: { labels: Object.keys(qntData), datasets: [{ data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderWidth: 0 }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#f1f5f9' } } } } });
                 qntBarChart = new Chart(document.getElementById('qntBarChart').getContext('2d'), { type: 'bar', data: { labels: Object.keys(qntData), datasets: [{ label: 'Quantidade de Questões', data: Object.values(qntData), backgroundColor: Object.keys(qntData).map(getColor), borderRadius: 4 }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Questões Feitas', color: '#94a3b8' }, ticks: { color: '#94a3b8', stepSize: 1 } }, y: { ticks: { color: '#94a3b8' } } } } });
+            }
+        }
+
+        // ===== AGENTE IA =====
+        const iaQuestions = [
+            { id: 'q1', text: '👋 Olá! Sou o agente IA do Grupo Conexão. Vou montar o cronograma perfeito para você passar em Medicina na Federal!\n\nPrimeiro: qual é o seu nome?', quick: [] },
+            { id: 'q2', text: '📅 Quantas horas por dia você consegue estudar nos **dias úteis** (segunda a sexta)?', quick: ['1-2 horas','3-4 horas','5-6 horas','7+ horas'] },
+            { id: 'q3', text: '📅 E nos **fins de semana** (sábado e domingo), quantas horas você reserva para estudar?', quick: ['1-2 horas','3-5 horas','6-8 horas','Estudo pouco no FDS'] },
+            { id: 'q4', text: '💼 Você trabalha, faz cursinho ou tem outros compromissos fixos? Se sim, quantas horas por dia eles ocupam?', quick: ['Não tenho compromissos','Cursinho ~4h/dia','Trabalho ~6h/dia','Cursinho + trabalho'] },
+            { id: 'q5', text: '📊 Como você avalia seu nível atual em **Matemática e Física**? (1 = muito fraco, 5 = muito forte)', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
+            { id: 'q6', text: '🧬 E em **Biologia e Química**? Essas matérias são essenciais para Medicina!', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
+            { id: 'q7', text: '📜 Como está seu desempenho em **Ciências Humanas** (História, Geo, Filosofia, Sociologia)?', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
+            { id: 'q8', text: '✍️ Com que frequência você pratica **redação**? A redação vale muito nas federais!', quick: ['Nunca faço','1 vez por mês','1 por semana','2+ por semana'] },
+            { id: 'q9', text: '🎯 Qual é a sua **maior dificuldade** hoje nos estudos? Seja honesto(a)!', quick: ['Foco e concentração','Falta de tempo','Entender o conteúdo','Medo de provas','Procrastinação'] },
+            { id: 'q10', text: '⏱️ Qual estilo de estudo você prefere?', quick: ['Sessões longas (2-3h seguidas)','Sessões curtas e múltiplas (Pomodoro)','Estudo pela manhã','Estudo à noite','Mistura dos dois'] }
+        ];
+
+        let iaStep = 0, iaAnswers = {}, iaUserName = '';
+
+        function openApiKeyModal() {
+            const saved = localStorage.getItem('gemini_api_key') || '';
+            document.getElementById('api-key-input').value = saved;
+            document.getElementById('modal-apikey').style.display = 'flex';
+        }
+        function saveApiKey() {
+            const k = document.getElementById('api-key-input').value.trim();
+            if (!k) return showAlert('Cole uma chave válida!');
+            localStorage.setItem('gemini_api_key', k);
+            closeModal('modal-apikey');
+            showAlert('Chave salva! Agora pode usar o agente IA.');
+        }
+
+        function addIaMessage(text, role) {
+            const box = document.getElementById('ia-messages');
+            const div = document.createElement('div');
+            const isBot = role === 'bot';
+            div.style.cssText = `display:flex; gap:10px; align-items:flex-start; ${isBot ? '' : 'flex-direction:row-reverse;'}`;
+            const avatar = isBot ? '🤖' : '🎓';
+            // Convert **bold** markdown
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            div.innerHTML = `
+                <div style="font-size:1.5rem; flex-shrink:0; margin-top:2px;">${avatar}</div>
+                <div style="background:${isBot ? 'var(--card)' : 'linear-gradient(135deg,var(--purple),var(--primary))'}; color:${isBot ? 'var(--text)' : '#fff'}; padding:12px 16px; border-radius:${isBot ? '4px 14px 14px 14px' : '14px 4px 14px 14px'}; max-width:80%; font-size:0.95rem; line-height:1.6; border:1px solid ${isBot ? 'var(--border)' : 'transparent'};">${formatted}</div>
+            `;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function setIaQuickBtns(options) {
+            const area = document.getElementById('ia-quick-btns');
+            area.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.style.cssText = 'background:var(--bg); border:1px solid var(--border); color:var(--text); padding:7px 12px; border-radius:8px; cursor:pointer; font-size:0.82rem; transition:0.2s;';
+                btn.onmouseover = () => { btn.style.borderColor = 'var(--purple)'; btn.style.color = 'var(--purple)'; };
+                btn.onmouseout = () => { btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text)'; };
+                btn.onclick = () => { document.getElementById('ia-input').value = opt; sendIaAnswer(); };
+                area.appendChild(btn);
+            });
+        }
+
+        function startIaChat() {
+            iaStep = 0; iaAnswers = {}; iaUserName = '';
+            document.getElementById('ia-messages').innerHTML = '';
+            document.getElementById('ia-quick-btns').innerHTML = '';
+            document.getElementById('ia-result-box').style.display = 'none';
+            document.getElementById('ia-chat-container').style.display = 'flex';
+            setTimeout(() => {
+                addIaMessage(iaQuestions[0].text, 'bot');
+                setIaQuickBtns([]);
+            }, 300);
+        }
+
+        function sendIaAnswer() {
+            const input = document.getElementById('ia-input');
+            const answer = input.value.trim();
+            if (!answer) return;
+            addIaMessage(answer, 'user');
+            iaAnswers[iaQuestions[iaStep].id] = answer;
+            if (iaStep === 0) iaUserName = answer.split(' ')[0];
+            input.value = '';
+            document.getElementById('ia-quick-btns').innerHTML = '';
+            iaStep++;
+            if (iaStep < iaQuestions.length) {
+                setTimeout(() => {
+                    let q = iaQuestions[iaStep].text;
+                    if (iaStep === 1) q = `Ótimo, ${iaUserName}! 😊 ` + q;
+                    addIaMessage(q, 'bot');
+                    setIaQuickBtns(iaQuestions[iaStep].quick || []);
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    addIaMessage(`Perfeito, ${iaUserName}! 🚀 Recebi todas as suas respostas. Aguarda um momento enquanto o Gemini monta seu cronograma personalizado...`, 'bot');
+                    setIaQuickBtns([]);
+                    document.getElementById('ia-input-area').style.display = 'none';
+                    generateScheduleWithGemini();
+                }, 600);
+            }
+        }
+
+        // Chave Gemini padrão
+        if (!localStorage.getItem('gemini_api_key')) {
+            localStorage.setItem('gemini_api_key', 'AIzaSyBGxdWz7EPGIA07nYsbmCnqUQ1bIdpBST8');
+        }
+
+        async function generateScheduleWithGemini() {
+            const apiKey = localStorage.getItem('gemini_api_key') || 'AIzaSyBGxdWz7EPGIA07nYsbmCnqUQ1bIdpBST8';
+            if (!apiKey) {
+                addIaMessage('⚠️ Você ainda não configurou a chave da API Gemini! Clique em "🔑 Chave API Gemini" no topo da página.', 'bot');
+                document.getElementById('ia-input-area').style.display = 'flex';
+                return;
+            }
+            const prompt = `Você é um especialista em preparação para o ENEM com foco em Medicina nas federais mais concorridas do Brasil (USP, UNICAMP, UFMG, UFRJ, etc.).
+
+Com base nas respostas abaixo de um estudante, crie um CRONOGRAMA SEMANAL DETALHADO e PERSONALIZADO em português do Brasil:
+
+Nome: ${iaAnswers.q1}
+Horas de estudo dias úteis: ${iaAnswers.q2}
+Horas de estudo fim de semana: ${iaAnswers.q3}
+Compromisos fixos: ${iaAnswers.q4}
+Nível em Matemática/Física: ${iaAnswers.q5}
+Nível em Biologia/Química: ${iaAnswers.q6}
+Nível em Humanas: ${iaAnswers.q7}
+Frequência de Redação: ${iaAnswers.q8}
+Maior dificuldade: ${iaAnswers.q9}
+Estilo de estudo preferido: ${iaAnswers.q10}
+
+IMPORTANTE:
+- Distribua as matérias de forma estratégica priorizando pontos fracos
+- Inclua sessões de questões e revisão
+- Inclua pelo menos 2 redações por semana (essencial para medicina)
+- Adicione dicas motivacionais e de técnica de estudo
+- Formate com emojis, tabela semanal (Segunda a Domingo) e dicas finais
+- Seja específico com horários e quantidade de questões
+- Lembre que Medicina nas federais exige nota altíssima no ENEM`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Não foi possível gerar o cronograma.';
+                addIaMessage('✅ Pronto! Seu cronograma está abaixo. Boa sorte na jornada para Medicina! 🩺', 'bot');
+                document.getElementById('ia-result-box').style.display = 'block';
+                // Render markdown-like bold/headers
+                let formatted = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/^## (.+)$/gm, '<h3 style="color:var(--primary);margin:16px 0 6px;">$1</h3>')
+                    .replace(/^# (.+)$/gm, '<h2 style="color:var(--purple);margin:20px 0 8px;">$1</h2>')
+                    .replace(/^- (.+)$/gm, '• $1')
+                    .replace(/\n/g, '<br>');
+                document.getElementById('ia-schedule-output').innerHTML = formatted;
+                document.getElementById('ia-result-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (e) {
+                addIaMessage(`❌ Erro ao chamar Gemini: ${e.message}. Verifique sua chave API.`, 'bot');
+                document.getElementById('ia-input-area').style.display = 'flex';
+            }
+        }
+
+        function restartIaChat() { startIaChat(); }
+
+        // Iniciar chat quando entrar na página IA
+        const _origShowPage = showPage;
+        function showPage(id, btn) {
+            _origShowPage(id, btn);
+            if (id === 'agente-ia' && document.getElementById('ia-messages').children.length === 0) {
+                startIaChat();
             }
         }
     </script>
