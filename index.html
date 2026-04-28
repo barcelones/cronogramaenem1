@@ -153,6 +153,7 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
+
         .cal-tab {
             background: var(--card);
             border: 1px solid var(--border);
@@ -164,18 +165,26 @@
             font-size: 0.9rem;
             transition: all 0.25s;
         }
+
         .cal-tab.active {
             background: var(--primary);
             color: #0b1120;
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(56,189,248,0.25);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
         }
+
         .cal-tab:hover:not(.active) {
             border-color: var(--primary);
             color: var(--text);
         }
-        .cal-view { display: none; }
-        .cal-view.active { display: block; }
+
+        .cal-view {
+            display: none;
+        }
+
+        .cal-view.active {
+            display: block;
+        }
 
         .cal-header {
             display: flex;
@@ -291,6 +300,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
         }
+
         .week-day-col {
             background: var(--card);
             border-radius: 12px;
@@ -302,22 +312,45 @@
             gap: 6px;
             transition: 0.2s;
         }
-        .week-day-col.today { border-color: var(--accent); box-shadow: inset 0 0 12px rgba(245,158,11,0.08); }
-        .week-day-col:hover { border-color: var(--primary); transform: translateY(-2px); }
-        .week-day-header { text-align: center; font-weight: 700; margin-bottom: 6px; }
-        .week-day-header .wday-name { font-size: 0.75rem; color: var(--dim); text-transform: uppercase; }
-        .week-day-header .wday-num { font-size: 1.4rem; }
+
+        .week-day-col.today {
+            border-color: var(--accent);
+            box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.08);
+        }
+
+        .week-day-col:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .week-day-header {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .week-day-header .wday-name {
+            font-size: 0.75rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .week-day-header .wday-num {
+            font-size: 1.4rem;
+        }
+
         .week-tag {
             font-size: 0.72rem;
             font-weight: bold;
             padding: 4px 7px;
             border-radius: 5px;
             color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
             word-break: break-word;
             line-height: 1.3;
             cursor: pointer;
         }
+
         .week-add-btn {
             margin-top: auto;
             background: transparent;
@@ -329,14 +362,51 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .week-add-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .week-add-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
         /* 3 Meses */
-        .tri-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-        @media (max-width: 900px) { .tri-grid { grid-template-columns: 1fr; } .week-grid { grid-template-columns: repeat(7,1fr); } }
-        .mini-cal-title { font-weight: 700; color: var(--primary); margin-bottom: 10px; font-size: 1rem; }
-        .mini-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
-        .mini-day-label { font-size: 0.6rem; text-align: center; color: var(--dim); font-weight: 700; text-transform: uppercase; padding: 2px 0; }
+        .tri-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .tri-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .week-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .mini-cal-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .mini-cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .mini-day-label {
+            font-size: 0.6rem;
+            text-align: center;
+            color: var(--dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 0;
+        }
+
         .mini-day-box {
             aspect-ratio: 1;
             display: flex;
@@ -349,19 +419,78 @@
             transition: 0.15s;
             position: relative;
         }
-        .mini-day-box:hover { background: var(--card); transform: scale(1.1); }
-        .mini-day-box.today-mini { background: var(--accent); color: #000; }
-        .mini-day-box.has-tasks { outline: 2px solid var(--primary); outline-offset: 1px; }
-        .mini-dot-container { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); display:flex; gap:2px; }
-        .mini-dot { width:4px; height:4px; border-radius:50%; }
+
+        .mini-day-box:hover {
+            background: var(--card);
+            transform: scale(1.1);
+        }
+
+        .mini-day-box.today-mini {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .mini-day-box.has-tasks {
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
+        }
+
+        .mini-dot-container {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2px;
+        }
+
+        .mini-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
 
         /* Anual */
-        .year-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
-        @media (max-width: 900px) { .year-grid { grid-template-columns: repeat(2,1fr); } }
-        .year-month-card { background: var(--card); border-radius: 12px; padding: 14px; border: 1px solid var(--border); }
-        .year-month-title { font-size: 0.85rem; font-weight: 700; color: var(--dim); margin-bottom: 8px; text-transform: uppercase; }
-        .year-mini-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-        .year-mini-label { font-size: 0.5rem; text-align: center; color: var(--border); font-weight: 700; }
+        .year-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .year-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .year-month-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .year-month-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .year-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .year-mini-label {
+            font-size: 0.5rem;
+            text-align: center;
+            color: var(--border);
+            font-weight: 700;
+        }
+
         .year-mini-cell {
             aspect-ratio: 1;
             border-radius: 3px;
@@ -369,12 +498,31 @@
             cursor: pointer;
             transition: 0.15s;
         }
-        .year-mini-cell:hover { outline: 1px solid var(--primary); transform: scale(1.15); }
-        .year-mini-cell.today-year { outline: 2px solid var(--accent); }
-        .year-mini-cell.heat-1 { background: rgba(56,189,248,0.2); }
-        .year-mini-cell.heat-2 { background: rgba(56,189,248,0.45); }
-        .year-mini-cell.heat-3 { background: rgba(56,189,248,0.7); }
-        .year-mini-cell.heat-done { background: rgba(34,197,94,0.5); }
+
+        .year-mini-cell:hover {
+            outline: 1px solid var(--primary);
+            transform: scale(1.15);
+        }
+
+        .year-mini-cell.today-year {
+            outline: 2px solid var(--accent);
+        }
+
+        .year-mini-cell.heat-1 {
+            background: rgba(56, 189, 248, 0.2);
+        }
+
+        .year-mini-cell.heat-2 {
+            background: rgba(56, 189, 248, 0.45);
+        }
+
+        .year-mini-cell.heat-3 {
+            background: rgba(56, 189, 248, 0.7);
+        }
+
+        .year-mini-cell.heat-done {
+            background: rgba(34, 197, 94, 0.5);
+        }
 
         /* Modais */
         .modal {
@@ -1006,7 +1154,9 @@
             <button class="nav-link" onclick="showPage('redacao', this)">✍️ Redações</button>
             <button class="nav-link" onclick="showPage('foco', this)">⏱️ Modo Foco</button>
             <button class="nav-link" onclick="showPage('desempenho', this)">📊 Desempenho</button>
-            <button class="nav-link" onclick="showPage('agente-ia', this)" style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(56,189,248,0.15)); border:1px solid rgba(168,85,247,0.3); color:var(--purple);">🤖 Cronograma IA</button>
+            <button class="nav-link" onclick="showPage('agente-ia', this)"
+                style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(56,189,248,0.15)); border:1px solid rgba(168,85,247,0.3); color:var(--purple);">🤖
+                Cronograma IA</button>
         </nav>
 
         <main class="main">
@@ -1118,11 +1268,14 @@
                 <div class="cal-view" id="view-semanal">
                     <div class="cal-header" style="justify-content:space-between;">
                         <div style="display:flex;gap:10px;align-items:center;">
-                            <button onclick="shiftWeek(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:1rem;">◀</button>
+                            <button onclick="shiftWeek(-1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:1rem;">◀</button>
                             <span id="week-label" style="font-weight:700; font-size:1rem;"></span>
-                            <button onclick="shiftWeek(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:1rem;">▶</button>
+                            <button onclick="shiftWeek(1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:1rem;">▶</button>
                         </div>
-                        <button onclick="goToCurrentWeek()" style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Hoje</button>
+                        <button onclick="goToCurrentWeek()"
+                            style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Hoje</button>
                     </div>
                     <div class="week-grid" id="week-body"></div>
                 </div>
@@ -1131,11 +1284,15 @@
                 <div class="cal-view" id="view-trimestral">
                     <div class="cal-header" style="justify-content:space-between;">
                         <div style="display:flex;gap:10px;align-items:center;">
-                            <button onclick="shiftTrimester(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">◀</button>
+                            <button onclick="shiftTrimester(-1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">◀</button>
                             <span id="tri-label" style="font-weight:700;"></span>
-                            <button onclick="shiftTrimester(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">▶</button>
+                            <button onclick="shiftTrimester(1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">▶</button>
                         </div>
-                        <button onclick="goToCurrentTrimester()" style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Mês Atual</button>
+                        <button onclick="goToCurrentTrimester()"
+                            style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Mês
+                            Atual</button>
                     </div>
                     <div class="tri-grid" id="tri-body"></div>
                 </div>
@@ -1144,13 +1301,19 @@
                 <div class="cal-view" id="view-anual">
                     <div class="cal-header" style="justify-content:space-between;">
                         <div style="display:flex;gap:10px;align-items:center;">
-                            <button onclick="shiftYear(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">◀</button>
+                            <button onclick="shiftYear(-1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">◀</button>
                             <span id="year-label" style="font-weight:700; font-size:1.1rem;"></span>
-                            <button onclick="shiftYear(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">▶</button>
+                            <button onclick="shiftYear(1)"
+                                style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;">▶</button>
                         </div>
                         <div style="display:flex;gap:10px;align-items:center;font-size:0.8rem;color:var(--dim);">
-                            <span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(56,189,248,0.2);display:inline-block;"></span> Tarefa</span>
-                            <span style="display:flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(34,197,94,0.5);display:inline-block;"></span> Concluída</span>
+                            <span style="display:flex;align-items:center;gap:4px;"><span
+                                    style="width:12px;height:12px;border-radius:3px;background:rgba(56,189,248,0.2);display:inline-block;"></span>
+                                Tarefa</span>
+                            <span style="display:flex;align-items:center;gap:4px;"><span
+                                    style="width:12px;height:12px;border-radius:3px;background:rgba(34,197,94,0.5);display:inline-block;"></span>
+                                Concluída</span>
                         </div>
                     </div>
                     <div class="year-grid" id="year-body"></div>
@@ -1376,22 +1539,22 @@
                 </div>
             </section>
 
-            <!-- IA AGENT PAGE -->
+            <!-- MENTOR 800+ PAGE -->
             <section id="agente-ia" class="page">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                     <div>
-                        <h2 style="background:linear-gradient(135deg,var(--purple),var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">🤖 Agente IA — Cronograma Medicina</h2>
-                        <p style="color:var(--dim); font-size:0.9rem; margin-top:4px;">Responda 10 perguntas e receba um cronograma semanal personalizado para passar em Medicina na Federal.</p>
+                        <h2 style="background:linear-gradient(135deg,var(--accent),var(--danger),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-size:1.8rem;">🧠 Mentor 800+ — IA Oficial</h2>
+                        <p style="color:var(--dim); font-size:0.9rem; margin-top:4px;">Filosofia <strong style="color:var(--accent);">Mente Blindada</strong>. Estude certo, meça o desempenho, alcance os 800+.</p>
                     </div>
-                    <button onclick="openApiKeyModal()" style="background:transparent; border:1px solid var(--purple); color:var(--purple); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">🔑 Chave API Gemini</button>
+                    <button onclick="openApiKeyModal()" style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;">🔑 API</button>
                 </div>
 
                 <!-- CHAT BOX -->
-                <div id="ia-chat-container" style="background:var(--card); border-radius:16px; border:1px solid var(--border); overflow:hidden; display:flex; flex-direction:column; height:520px;">
+                <div id="ia-chat-container" style="background:var(--card); border-radius:16px; border:1px solid var(--border); overflow:hidden; display:flex; flex-direction:column; height:560px;">
                     <div id="ia-messages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px;"></div>
                     <div id="ia-input-area" style="border-top:1px solid var(--border); padding:14px; display:flex; gap:10px; align-items:flex-end;">
-                        <textarea id="ia-input" rows="2" placeholder="Digite sua resposta aqui..." style="flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:10px; font-size:0.95rem; resize:none; font-family:inherit;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendIaAnswer();}"></textarea>
-                        <button onclick="sendIaAnswer()" style="background:linear-gradient(135deg,var(--purple),var(--primary)); border:none; color:#fff; padding:12px 20px; border-radius:10px; cursor:pointer; font-weight:700; font-size:1rem; white-space:nowrap;">Enviar ➤</button>
+                        <textarea id="ia-input" rows="2" placeholder="Sua resposta aqui... (Enter para enviar)" style="flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:10px; font-size:0.95rem; resize:none; font-family:inherit;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendIaAnswer();}"></textarea>
+                        <button onclick="sendIaAnswer()" style="background:linear-gradient(135deg,var(--accent),var(--danger)); border:none; color:#000; padding:12px 20px; border-radius:10px; cursor:pointer; font-weight:800; font-size:1rem; white-space:nowrap;">Enviar ➤</button>
                     </div>
                     <div id="ia-quick-btns" style="padding:0 14px 14px; display:flex; gap:8px; flex-wrap:wrap;"></div>
                 </div>
@@ -1399,15 +1562,16 @@
                 <!-- RESULT BOX -->
                 <div id="ia-result-box" style="display:none; margin-top:24px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <h3 style="color:var(--success);">✅ Seu Cronograma Personalizado</h3>
+                        <h3 style="color:var(--accent);">🏆 Plano de Ataque — Mentor 800+</h3>
                         <button onclick="restartIaChat()" style="background:transparent; border:1px solid var(--border); color:var(--dim); padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem;">🔄 Refazer</button>
                     </div>
-                    <div id="ia-schedule-output" style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; line-height:1.8; color:var(--text); white-space:pre-wrap; font-size:0.95rem;"></div>
+                    <div id="ia-schedule-output" style="background:var(--card); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:14px; padding:24px; line-height:1.9; color:var(--text); font-size:0.95rem;"></div>
                 </div>
             </section>
 
             <footer style="margin-top: 50px; text-align: center; color: var(--dim); font-size: 0.85rem;">Criado pelo
-                <strong>Grupo Conexão</strong></footer>
+                <strong>Grupo Conexão</strong>
+            </footer>
         </main>
     </div>
 
@@ -1415,10 +1579,15 @@
     <div id="modal-apikey" class="modal">
         <div class="modal-content">
             <h3 style="color:var(--purple); margin-bottom:10px;">🔑 Chave da API Gemini</h3>
-            <p style="color:var(--dim); font-size:0.85rem; margin-bottom:15px;">Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--primary);">aistudio.google.com</a> para gerar sua chave gratuita.</p>
+            <p style="color:var(--dim); font-size:0.85rem; margin-bottom:15px;">Acesse <a
+                    href="https://aistudio.google.com/app/apikey" target="_blank"
+                    style="color:var(--primary);">aistudio.google.com</a> para gerar sua chave gratuita.</p>
             <input type="password" id="api-key-input" placeholder="Cole aqui sua chave: AIza...">
-            <button class="btn-action" style="background:var(--purple); color:#fff;" onclick="saveApiKey()">Salvar Chave</button>
-            <button class="btn-action" style="background:transparent; border:1px solid var(--border); color:var(--text);" onclick="closeModal('modal-apikey')">Cancelar</button>
+            <button class="btn-action" style="background:var(--purple); color:#fff;" onclick="saveApiKey()">Salvar
+                Chave</button>
+            <button class="btn-action"
+                style="background:transparent; border:1px solid var(--border); color:var(--text);"
+                onclick="closeModal('modal-apikey')">Cancelar</button>
         </div>
     </div>
 
@@ -1467,7 +1636,7 @@
     <div id="modal-notif" class="modal">
         <div class="modal-content">
             <h3 style="color: var(--accent); margin-bottom: 15px;">🔔 Mensagem do Sistema</h3>
-            <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Opa, tudo bão? Passando pra lembrar
+            <p style="color: var(--text); line-height: 1.5; margin-bottom: 20px;">Opa! Passando pra lembrar
                 que você tem <strong>erros pendentes de revisão</strong> lá na aba de Desempenho.</p><button
                 class="btn-action" style="background: var(--primary); color: #000;"
                 onclick="closeModal('modal-notif'); showPage('desempenho', document.querySelectorAll('.nav-link')[5])">Ir
@@ -1747,30 +1916,30 @@
         // ===== VISÃO SEMANAL =====
         let weekOffset = 0;
         function getWeekStart(offset) {
-            const d = new Date(); d.setDate(d.getDate() - d.getDay() + offset * 7); d.setHours(0,0,0,0); return d;
+            const d = new Date(); d.setDate(d.getDate() - d.getDay() + offset * 7); d.setHours(0, 0, 0, 0); return d;
         }
         function goToCurrentWeek() { weekOffset = 0; renderWeekView(); }
         function shiftWeek(dir) { weekOffset += dir; renderWeekView(); }
         function renderWeekView() {
             const start = getWeekStart(weekOffset);
             const todayStr = new Date().toISOString().split('T')[0];
-            const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
             const end = new Date(start); end.setDate(start.getDate() + 6);
-            const fmt = d => d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+            const fmt = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
             document.getElementById('week-label').innerText = `${fmt(start)} – ${fmt(end)}`;
             const body = document.getElementById('week-body'); body.innerHTML = '';
             for (let i = 0; i < 7; i++) {
                 const day = new Date(start); day.setDate(start.getDate() + i);
                 const dateStr = day.toISOString().split('T')[0];
-                const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a,b) => (a.startTime||'00:00').localeCompare(b.startTime||'00:00'));
+                const dayTasks = currentTasks.filter(t => t.date === dateStr).sort((a, b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
                 const col = document.createElement('div');
                 col.className = 'week-day-col' + (dateStr === todayStr ? ' today' : '');
-                let html = `<div class="week-day-header"><div class="wday-name">${dayNames[i]}</div><div class="wday-num" style="color:${dateStr===todayStr?'var(--accent)':'var(--text)'}">${day.getDate()}</div></div>`;
-                const typeColors = {aula:'var(--primary)',questoes:'var(--accent)',simulado:'var(--danger)',redacao:'var(--purple)'};
+                let html = `<div class="week-day-header"><div class="wday-name">${dayNames[i]}</div><div class="wday-num" style="color:${dateStr === todayStr ? 'var(--accent)' : 'var(--text)'}">${day.getDate()}</div></div>`;
+                const typeColors = { aula: 'var(--primary)', questoes: 'var(--accent)', simulado: 'var(--danger)', redacao: 'var(--purple)' };
                 dayTasks.forEach(t => {
                     let color = typeColors[t.type] || 'var(--dim)';
                     let done = t.status === 'done' ? 'opacity:0.55;text-decoration:line-through;' : '';
-                    html += `<div class="week-tag" style="background:${color};${done}" onclick="selectedDate='${dateStr}';document.getElementById('daily-date-label').innerText='Dia ${dateStr.split('-').reverse().join('/')}';renderDailyTasks('${dateStr}');document.getElementById('modal-daily').style.display='flex';">${t.startTime?t.startTime+' ':''}${t.materia}</div>`;
+                    html += `<div class="week-tag" style="background:${color};${done}" onclick="selectedDate='${dateStr}';document.getElementById('daily-date-label').innerText='Dia ${dateStr.split('-').reverse().join('/')}';renderDailyTasks('${dateStr}');document.getElementById('modal-daily').style.display='flex';">${t.startTime ? t.startTime + ' ' : ''}${t.materia}</div>`;
                 });
                 if (dayTasks.length === 0) html += `<div style="font-size:0.75rem;color:var(--border);text-align:center;margin-top:10px;">Livre</div>`;
                 html += `<button class="week-add-btn" onclick="selectedDate='${dateStr}';document.getElementById('daily-date-label').innerText='Dia ${dateStr.split('-').reverse().join('/')}';renderDailyTasks('${dateStr}');document.getElementById('modal-daily').style.display='flex';">+ Adicionar</button>`;
@@ -1787,7 +1956,7 @@
             baseDate.setMonth(baseDate.getMonth() + triOffset);
             const todayStr = new Date().toISOString().split('T')[0];
             const body = document.getElementById('tri-body'); body.innerHTML = '';
-            document.getElementById('tri-label').innerText = `${months[baseDate.getMonth()]} – ${months[(baseDate.getMonth()+2)%12]} ${baseDate.getFullYear()}`;
+            document.getElementById('tri-label').innerText = `${months[baseDate.getMonth()]} – ${months[(baseDate.getMonth() + 2) % 12]} ${baseDate.getFullYear()}`;
             for (let m = 0; m < 3; m++) {
                 const refDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + m, 1);
                 const month = refDate.getMonth(), year = refDate.getFullYear();
@@ -1796,16 +1965,16 @@
                 const wrap = document.createElement('div');
                 wrap.style.cssText = 'background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);';
                 let html = `<div class="mini-cal-title">${months[month]} ${year}</div><div class="mini-cal-grid">`;
-                ['D','S','T','Q','Q','S','S'].forEach(d => html += `<div class="mini-day-label">${d}</div>`);
-                for (let i=0;i<firstDay;i++) html += '<div></div>';
-                for (let d=1;d<=daysInMonth;d++) {
-                    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    const dt = currentTasks.filter(t=>t.date===ds);
+                ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(d => html += `<div class="mini-day-label">${d}</div>`);
+                for (let i = 0; i < firstDay; i++) html += '<div></div>';
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const dt = currentTasks.filter(t => t.date === ds);
                     const hasTasks = dt.length > 0;
                     const isToday = ds === todayStr;
-                    const typeColors = {aula:'var(--primary)',questoes:'var(--accent)',simulado:'var(--danger)',redacao:'var(--purple)'};
-                    let dots = dt.slice(0,3).map(t=>`<span class="mini-dot" style="background:${typeColors[t.type]||'var(--dim)'}"></span>`).join('');
-                    html += `<div class="mini-day-box ${isToday?'today-mini':''} ${hasTasks?'has-tasks':''}" onclick="selectedDate='${ds}';document.getElementById('daily-date-label').innerText='Dia ${ds.split('-').reverse().join('/')}';renderDailyTasks('${ds}');document.getElementById('modal-daily').style.display='flex';" title="${ds}">${d}${hasTasks?`<span class="mini-dot-container">${dots}</span>`:''}</div>`;
+                    const typeColors = { aula: 'var(--primary)', questoes: 'var(--accent)', simulado: 'var(--danger)', redacao: 'var(--purple)' };
+                    let dots = dt.slice(0, 3).map(t => `<span class="mini-dot" style="background:${typeColors[t.type] || 'var(--dim)'}"></span>`).join('');
+                    html += `<div class="mini-day-box ${isToday ? 'today-mini' : ''} ${hasTasks ? 'has-tasks' : ''}" onclick="selectedDate='${ds}';document.getElementById('daily-date-label').innerText='Dia ${ds.split('-').reverse().join('/')}';renderDailyTasks('${ds}');document.getElementById('modal-daily').style.display='flex';" title="${ds}">${d}${hasTasks ? `<span class="mini-dot-container">${dots}</span>` : ''}</div>`;
                 }
                 html += '</div>';
                 wrap.innerHTML = html; body.appendChild(wrap);
@@ -1820,24 +1989,24 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const body = document.getElementById('year-body'); body.innerHTML = '';
             for (let m = 0; m < 12; m++) {
-                const daysInMonth = new Date(yearViewYear, m+1, 0).getDate();
+                const daysInMonth = new Date(yearViewYear, m + 1, 0).getDate();
                 const firstDay = new Date(yearViewYear, m, 1).getDay();
                 const card = document.createElement('div'); card.className = 'year-month-card';
                 let html = `<div class="year-month-title">${months[m]}</div><div class="year-mini-grid">`;
-                ['D','S','T','Q','Q','S','S'].forEach(d => html+=`<div class="year-mini-label">${d}</div>`);
-                for (let i=0;i<firstDay;i++) html+='<div></div>';
-                for (let d=1;d<=daysInMonth;d++) {
-                    const ds=`${yearViewYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    const dt=currentTasks.filter(t=>t.date===ds);
-                    const hasDone=dt.some(t=>t.status==='done');
-                    const hasPending=dt.some(t=>t.status==='pending');
-                    const count=dt.length;
-                    let heatClass = count===0?'':(hasDone?'heat-done':(count>=3?'heat-3':count===2?'heat-2':'heat-1'));
-                    const isToday = ds===todayStr;
-                    html+=`<div class="year-mini-cell ${heatClass} ${isToday?'today-year':''}" title="${ds}: ${count} tarefa(s)" onclick="selectedDate='${ds}';document.getElementById('daily-date-label').innerText='Dia ${ds.split('-').reverse().join('/')}';renderDailyTasks('${ds}');document.getElementById('modal-daily').style.display='flex';"></div>`;
+                ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(d => html += `<div class="year-mini-label">${d}</div>`);
+                for (let i = 0; i < firstDay; i++) html += '<div></div>';
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const ds = `${yearViewYear}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const dt = currentTasks.filter(t => t.date === ds);
+                    const hasDone = dt.some(t => t.status === 'done');
+                    const hasPending = dt.some(t => t.status === 'pending');
+                    const count = dt.length;
+                    let heatClass = count === 0 ? '' : (hasDone ? 'heat-done' : (count >= 3 ? 'heat-3' : count === 2 ? 'heat-2' : 'heat-1'));
+                    const isToday = ds === todayStr;
+                    html += `<div class="year-mini-cell ${heatClass} ${isToday ? 'today-year' : ''}" title="${ds}: ${count} tarefa(s)" onclick="selectedDate='${ds}';document.getElementById('daily-date-label').innerText='Dia ${ds.split('-').reverse().join('/')}';renderDailyTasks('${ds}');document.getElementById('modal-daily').style.display='flex';"></div>`;
                 }
-                html+='</div>';
-                card.innerHTML=html; body.appendChild(card);
+                html += '</div>';
+                card.innerHTML = html; body.appendChild(card);
             }
         }
 
@@ -2509,18 +2678,18 @@
             }
         }
 
-        // ===== AGENTE IA =====
+        // ===== MENTOR 800+ =====
         const iaQuestions = [
-            { id: 'q1', text: '👋 Olá! Sou o agente IA do Grupo Conexão. Vou montar o cronograma perfeito para você passar em Medicina na Federal!\n\nPrimeiro: qual é o seu nome?', quick: [] },
-            { id: 'q2', text: '📅 Quantas horas por dia você consegue estudar nos **dias úteis** (segunda a sexta)?', quick: ['1-2 horas','3-4 horas','5-6 horas','7+ horas'] },
-            { id: 'q3', text: '📅 E nos **fins de semana** (sábado e domingo), quantas horas você reserva para estudar?', quick: ['1-2 horas','3-5 horas','6-8 horas','Estudo pouco no FDS'] },
-            { id: 'q4', text: '💼 Você trabalha, faz cursinho ou tem outros compromissos fixos? Se sim, quantas horas por dia eles ocupam?', quick: ['Não tenho compromissos','Cursinho ~4h/dia','Trabalho ~6h/dia','Cursinho + trabalho'] },
-            { id: 'q5', text: '📊 Como você avalia seu nível atual em **Matemática e Física**? (1 = muito fraco, 5 = muito forte)', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
-            { id: 'q6', text: '🧬 E em **Biologia e Química**? Essas matérias são essenciais para Medicina!', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
-            { id: 'q7', text: '📜 Como está seu desempenho em **Ciências Humanas** (História, Geo, Filosofia, Sociologia)?', quick: ['1 — Muito fraco','2 — Fraco','3 — Médio','4 — Bom','5 — Muito bom'] },
-            { id: 'q8', text: '✍️ Com que frequência você pratica **redação**? A redação vale muito nas federais!', quick: ['Nunca faço','1 vez por mês','1 por semana','2+ por semana'] },
-            { id: 'q9', text: '🎯 Qual é a sua **maior dificuldade** hoje nos estudos? Seja honesto(a)!', quick: ['Foco e concentração','Falta de tempo','Entender o conteúdo','Medo de provas','Procrastinação'] },
-            { id: 'q10', text: '⏱️ Qual estilo de estudo você prefere?', quick: ['Sessões longas (2-3h seguidas)','Sessões curtas e múltiplas (Pomodoro)','Estudo pela manhã','Estudo à noite','Mistura dos dois'] }
+            { id: 'q1', text: '🧠 **MENTOR 800+** — IA Oficial da Plataforma Conexão.\n\nNão estou aqui pra te dar conforto. Estou aqui pra te dar **resultado**.\n\nPrimeiro passo: como você se chama, atleta?', quick: [] },
+            { id: 'q2', text: '⏰ Quantas horas por dia você consegue dedicar ao estudo nos **dias úteis**?\n\nSeja honesto. Plano irreal = resultado zero.', quick: ['1-2 horas','3-4 horas','5-6 horas','7+ horas'] },
+            { id: 'q3', text: '📅 E no **fim de semana**? Sábado e domingo são seus maiores aliados — ou seus maiores desperdiçadores de tempo.', quick: ['Descanso total','1-3 horas','4-6 horas','Estudo como dia útil'] },
+            { id: 'q4', text: '💼 Você tem **compromissos fixos** que disputam seu tempo? (trabalho, cursinho, escola, etc.)', quick: ['Não tenho — estudo integral','Cursinho ~4h/dia','Escola período integral','Trabalho ~6h/dia','Cursinho + trabalho'] },
+            { id: 'q5', text: '📐 **Matemática e Física** — qual seu nível real?\n\nLembre: a TRI pune quem chuta. Se está fraco, priorizamos as fáceis e médias primeiro.', quick: ['Muito fraco — fujo dessas','Fraco — acerto menos de 50%','Médio — acerto metade','Bom — acerto 70%+','Forte — ponto do cronograma'] },
+            { id: 'q6', text: '🧬 **Biologia e Química** — o coração do ENEM para quem mira Medicina.\n\nComo está seu domínio nessas áreas?', quick: ['Muito fraco','Fraco — conteúdo difuso','Médio — entendo a base','Bom — preciso só de revisão','Forte — aqui é lucro'] },
+            { id: 'q7', text: '🌍 **Ciências Humanas** (História, Geografia, Filosofia, Sociologia) — muita gente subestima. Elas fazem a diferença na nota final.\n\nSeu nível:', quick: ['Muito fraco','Fraco','Médio','Bom','Forte'] },
+            { id: 'q8', text: '✍️ **Redação** — na nota de Medicina, ela é decisiva. Uma nota 960+ na redação eleva sua média bruta consideravelmente.\n\nCom que frequência você pratica?', quick: ['Nunca fiz uma sequer','Raramente — 1 por mês','Semanalmente','2x por semana','Já tenho rotina sólida'] },
+            { id: 'q9', text: '🎯 Seja **brutalmente honesto**: qual é o seu maior inimigo hoje?\n\nNão tem resposta errada. Só tem diagnóstico real ou plano de mentira.', quick: ['Procrastinação — começo e paro','Falta de foco na hora H','Não consigo memorizar conteúdo','Ansiedade e medo de prova','Falta de tempo real','Não sei por onde começar'] },
+            { id: 'q10', text: '⚡ Última pergunta. Como seu **cérebro aprende melhor**?\n\nIsso vai definir a estrutura dos seus blocos de estudo.', quick: ['Blocos longos (2-3h contínuas)','Pomodoro (50min foco + pausa)','Madrugada — tenho mais foco','Manhã cedo — mente fresca','Noturno após compromissos','Fragmentado ao longo do dia'] }
         ];
 
         let iaStep = 0, iaAnswers = {}, iaUserName = '';
@@ -2535,7 +2704,7 @@
             if (!k) return showAlert('Cole uma chave válida!');
             localStorage.setItem('gemini_api_key', k);
             closeModal('modal-apikey');
-            showAlert('Chave salva! Agora pode usar o agente IA.');
+            showAlert('Chave salva! Mentor 800+ pronto para operar.');
         }
 
         function addIaMessage(text, role) {
@@ -2543,12 +2712,12 @@
             const div = document.createElement('div');
             const isBot = role === 'bot';
             div.style.cssText = `display:flex; gap:10px; align-items:flex-start; ${isBot ? '' : 'flex-direction:row-reverse;'}`;
-            const avatar = isBot ? '🤖' : '🎓';
+            const avatar = isBot ? '🧠' : '🎓';
             // Convert **bold** markdown
             const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
             div.innerHTML = `
                 <div style="font-size:1.5rem; flex-shrink:0; margin-top:2px;">${avatar}</div>
-                <div style="background:${isBot ? 'var(--card)' : 'linear-gradient(135deg,var(--purple),var(--primary))'}; color:${isBot ? 'var(--text)' : '#fff'}; padding:12px 16px; border-radius:${isBot ? '4px 14px 14px 14px' : '14px 4px 14px 14px'}; max-width:80%; font-size:0.95rem; line-height:1.6; border:1px solid ${isBot ? 'var(--border)' : 'transparent'};">${formatted}</div>
+                <div style="background:${isBot ? 'var(--card)' : 'linear-gradient(135deg,var(--accent),var(--danger))'}; color:${isBot ? 'var(--text)' : '#000'}; padding:12px 16px; border-radius:${isBot ? '4px 14px 14px 14px' : '14px 4px 14px 14px'}; max-width:80%; font-size:0.95rem; line-height:1.6; border:1px solid ${isBot ? 'var(--border)' : 'transparent'}; font-weight:${isBot ? 'normal' : '600'};">${formatted}</div>
             `;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;
@@ -2593,13 +2762,13 @@
             if (iaStep < iaQuestions.length) {
                 setTimeout(() => {
                     let q = iaQuestions[iaStep].text;
-                    if (iaStep === 1) q = `Ótimo, ${iaUserName}! 😊 ` + q;
+                    if (iaStep === 1) q = `Certo, **${iaUserName}**. Sem mimimi, sem desculpa — só resultado. Bora.\n\n` + q;
                     addIaMessage(q, 'bot');
                     setIaQuickBtns(iaQuestions[iaStep].quick || []);
                 }, 600);
             } else {
                 setTimeout(() => {
-                    addIaMessage(`Perfeito, ${iaUserName}! 🚀 Recebi todas as suas respostas. Aguarda um momento enquanto o Gemini monta seu cronograma personalizado...`, 'bot');
+                    addIaMessage(`Diagnóstico completo, **${iaUserName}**. 🔥\n\nAgora vem o plano real. Sem enrolação, sem cronograma genérico. Processando seus dados...`, 'bot');
                     setIaQuickBtns([]);
                     document.getElementById('ia-input-area').style.display = 'none';
                     generateScheduleWithGemini();
@@ -2609,39 +2778,55 @@
 
         // Chave Gemini padrão
         if (!localStorage.getItem('gemini_api_key')) {
-            localStorage.setItem('gemini_api_key', 'AIzaSyBGxdWz7EPGIA07nYsbmCnqUQ1bIdpBST8');
+            localStorage.setItem('gemini_api_key', 'AIzaSyCDVssm4HBEonfrUhYwYdWCKlGk5fLnSFY');
         }
 
         async function generateScheduleWithGemini() {
-            const apiKey = localStorage.getItem('gemini_api_key') || 'AIzaSyBGxdWz7EPGIA07nYsbmCnqUQ1bIdpBST8';
+            const apiKey = localStorage.getItem('gemini_api_key') || 'AIzaSyCDVssm4HBEonfrUhYwYdWCKlGk5fLnSFY';
             if (!apiKey) {
                 addIaMessage('⚠️ Você ainda não configurou a chave da API Gemini! Clique em "🔑 Chave API Gemini" no topo da página.', 'bot');
                 document.getElementById('ia-input-area').style.display = 'flex';
                 return;
             }
-            const prompt = `Você é um especialista em preparação para o ENEM com foco em Medicina nas federais mais concorridas do Brasil (USP, UNICAMP, UFMG, UFRJ, etc.).
+            const prompt = `Você é o "Mentor 800+", a inteligência artificial oficial da plataforma de estudos para o ENEM 2026. Seu objetivo exclusivo é garantir que o aluno alcance uma média geral superior a 800 pontos para aprovação em cursos de alta concorrência (Medicina nas federais).
 
-Com base nas respostas abaixo de um estudante, crie um CRONOGRAMA SEMANAL DETALHADO e PERSONALIZADO em português do Brasil:
+SUA PERSONALIDADE E METODOLOGIA:
+1. Filosofia "Mente Blindada": Seu tom é direto, focado, implacável contra a procrastinação, mas extremamente motivador. Você não oferece pena, oferece plano de ação.
+2. Orientação por Dados: Guie o aluno a tomar decisões baseadas em estratégia. Lembre-o como a TRI funciona: prioridade é dominar as questões fáceis e médias, além de garantir excelência na Redação.
+3. Técnicas de Estudo: Recomende estudo ativo. Incentive blocos de foco contínuo e repetição espaçada para reter conteúdos densos de Matemática e Ciências da Natureza.
+4. Postura: treinador de atleta de elite. O foco não é estudar muito — é estudar certo e medir o desempenho diariamente.
 
+Dados do aluno para análise:
 Nome: ${iaAnswers.q1}
-Horas de estudo dias úteis: ${iaAnswers.q2}
-Horas de estudo fim de semana: ${iaAnswers.q3}
-Compromisos fixos: ${iaAnswers.q4}
+Disponibilidade dias úteis: ${iaAnswers.q2}
+Disponibilidade fim de semana: ${iaAnswers.q3}
+Compromissos fixos: ${iaAnswers.q4}
 Nível em Matemática/Física: ${iaAnswers.q5}
 Nível em Biologia/Química: ${iaAnswers.q6}
 Nível em Humanas: ${iaAnswers.q7}
 Frequência de Redação: ${iaAnswers.q8}
-Maior dificuldade: ${iaAnswers.q9}
-Estilo de estudo preferido: ${iaAnswers.q10}
+Maior inimigo/dificuldade: ${iaAnswers.q9}
+Estilo de aprendizado: ${iaAnswers.q10}
 
-IMPORTANTE:
-- Distribua as matérias de forma estratégica priorizando pontos fracos
-- Inclua sessões de questões e revisão
-- Inclua pelo menos 2 redações por semana (essencial para medicina)
-- Adicione dicas motivacionais e de técnica de estudo
-- Formate com emojis, tabela semanal (Segunda a Domingo) e dicas finais
-- Seja específico com horários e quantidade de questões
-- Lembre que Medicina nas federais exige nota altíssima no ENEM`;
+GERE O PLANO DE ATAQUE SEMANAL com estas seções obrigatórias:
+
+# 🧠 DIAGNÓSTICO DO ATLETA
+(Análise direta dos pontos fortes e fraquezas com base nos dados. Tom direto e sem filtro.)
+
+# 🎯 ESTRATÉGIA TRI — PRIORIDADES
+(Explique como a TRI impacta a nota e qual a ordem de domínio das matérias para ESSE aluno específico.)
+
+# 📅 CRONOGRAMA SEMANAL — PLANO DE ATAQUE
+(Tabela Segunda a Domingo com horários, matérias, tipo de atividade — teoria/questões/revisão/redação — e quantidade de questões por sessão. Seja específico. Adapte ao tempo disponível do aluno.)
+
+# ✍️ PROTOCOLO DE REDAÇÃO
+(Frequência, temas prioritários para Medicina, meta de nota e técnica recomendada.)
+
+# ⚡ REGRAS DA MENTE BLINDADA
+(3 a 5 regras curtas e impactantes personalizadas para a maior dificuldade declarada pelo aluno.)
+
+# 📊 META SEMANAL DE DESEMPENHO
+(Número mínimo de questões por semana, meta de acerto por área, e indicador de progresso.)`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
@@ -2652,7 +2837,7 @@ IMPORTANTE:
                 const data = await res.json();
                 if (data.error) throw new Error(data.error.message);
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Não foi possível gerar o cronograma.';
-                addIaMessage('✅ Pronto! Seu cronograma está abaixo. Boa sorte na jornada para Medicina! 🩺', 'bot');
+                addIaMessage(`✅ **Plano de Ataque entregue, ${iaUserName}.**\n\nAgora é com você. Execução bate planejamento todo dia. Role para baixo e comece hoje. 🔥`, 'bot');
                 document.getElementById('ia-result-box').style.display = 'block';
                 // Render markdown-like bold/headers
                 let formatted = text
